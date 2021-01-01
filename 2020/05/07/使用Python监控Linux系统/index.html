@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"aguai.fun","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offalse":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Python监控Linux系统">
+<meta property="og:url" content="https://aguai.fun/2020/05/07/%E4%BD%BF%E7%94%A8Python%E7%9B%91%E6%8E%A7Linux%E7%B3%BB%E7%BB%9F/index.html">
+<meta property="og:site_name" content="阿怪の博客">
+<meta property="og:description" content="Python">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200430141858411.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200507124720214.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="article:published_time" content="2020-05-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-05-07T04:51:21.676Z">
+<meta property="article:author" content="阿怪">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200430141858411.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+
+<link rel="canonical" href="https://aguai.fun/2020/05/07/%E4%BD%BF%E7%94%A8Python%E7%9B%91%E6%8E%A7Linux%E7%B3%BB%E7%BB%9F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>使用Python监控Linux系统 | 阿怪の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿怪の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">103</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://aguai.fun/2020/05/07/%E4%BD%BF%E7%94%A8Python%E7%9B%91%E6%8E%A7Linux%E7%B3%BB%E7%BB%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="阿怪">
+      <meta itemprop="description" content="直到这一刻微笑着说话为止，我至少留下了一公升眼泪">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿怪の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用Python监控Linux系统
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-05-07 00:00:00 / 修改时间：12:51:21" itemprop="dateCreated datePublished" datetime="2020-05-07T00:00:00+08:00">2020-05-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>30k</span>
+            </span>
+            <div class="post-description">Python</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="第14章-使用Python监控Linux系统"><a href="#第14章-使用Python监控Linux系统" class="headerlink" title="第14章 使用Python监控Linux系统"></a>第14章 使用Python监控Linux系统</h2><p>Linux下有许多使用Python语言编写的监控工具，如inotify-sync、dstat和glances。此外，如果要根据业务编写简单的监控脚本，很多工程师也会选择Python语言。Python语言是一门简单易学/语法清晰/表达能力强的编程语言，非常适合于编写监控程序的场景。使用Python语言编写监控程序具有以下几个优势：</p>
+<p>1、Python语言开发效率高。Python语言有自己的优势与劣势，使用Python开发监控程序是一个充分发挥Python优势，避免Python劣势的领域。对于监控程序来说，能够利用Python语言开发效率高的优势尽快完成程序的编写工作。同时，监控程序也不要求性能，因此避免了Python语言性能不如C、C++和Java的劣势。</p>
+<p>2、Python语言表达能力强。相信任何一个学习Linux的工程师都使用过shell脚本编写过监控程序。虽然Linux下有很多监控工具，也有很多文本处理程序，但是获取监控与解析结果是完全不同的工具。解析监控结果的程序不理解监控程序输出结果的具体含义。Python语言中有非常丰富的数据结构，可以用各种方式保存监控结果，以便后续处理。</p>
+<p>3、利用第三方库开发监控程序。Python的标准库本身非常强大，被称为“连电池都包含在内”。对于一个问题，如果标准库没有提供相应的工具，那么也会有开源的项目来填补这个空白。监控程序正式这样一种情况，在Python语言中，具有非常成熟的第三方库帮助开发者简化监控程序的编写工作。</p>
+<h3 id="一、Python编写的监控工具"><a href="#一、Python编写的监控工具" class="headerlink" title="一、Python编写的监控工具"></a>一、Python编写的监控工具</h3><p>我们将介绍两个Python语言编写的监控工具，分别是dstat和glances。</p>
+<h4 id="1、多功能系统资源统计工具dstat"><a href="#1、多功能系统资源统计工具dstat" class="headerlink" title="1、多功能系统资源统计工具dstat"></a>1、多功能系统资源统计工具dstat</h4><p>dstat是一个用Python语言实现的多功能系统资源统计工具，用来取代Linux下的vmstat、iostat、netstat、和ifstat等命令。并且，dstat克服了这些命令的限制，增加了额外的功能，以及更多的计数器与更好的灵活性。dstat可以在一个界面上展示非常全面的监控信息，因此，在系统监控、基准测试和故障排除等应用场景下特别有用。</p>
+<p>我们可以使用dstat监控所有系统资源的使用情况，并且可以结合不同的场景定制监控的资源。例如，在同一时间段以相同的时间频率比较网络带宽与磁盘的吞吐率。</p>
+<p>dstat将以列表的形式显示监控信息，并且使用不同的颜色进行输出，以可读性较强的单位展示监控数值。例如，对于字节数值，dstat自动根据数值的大小，以K、M、G等单位进行显示，避免了开发者使用其他命令时因为数值太大造成的困惑和错误。此外，使用dstat还可以非常方便地编写插件，用来收集默认情况下没有收到的监控信息。dstat是专门为人们实时查看监控信息设计的，因此默认将监控结果输出到屏幕终端。我们也可以将监控信息以CSV格式输出到文件，以便后续处理。</p>
+<h5 id="（1）dstat介绍"><a href="#（1）dstat介绍" class="headerlink" title="（1）dstat介绍"></a>（1）dstat介绍</h5><p>作为一个多功能系统资源统计工具，dstat具有以下特性：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">结合了vmstat，iostat，ifstat，netstat以及更多的信息</span><br><span class="line">实时显示统计情况</span><br><span class="line">在分析和排障时可以通过启用监控项并排序</span><br><span class="line">模块化设计</span><br><span class="line">使用python编写的，更方便扩展现有的工作任务</span><br><span class="line">容易扩展和添加你的计数器（请为此做出贡献）</span><br><span class="line">包含的许多扩展插件充分说明了增加新的监控项目是很方便的</span><br><span class="line">可以分组统计块设备&#x2F;网络设备，并给出总数</span><br><span class="line">可以显示每台设备的当前状态</span><br><span class="line">极准确的时间精度，即便是系统负荷较高也不会延迟显示</span><br><span class="line">显示准确地单位和和限制转换误差范围</span><br><span class="line">用不同的颜色显示不同的单位</span><br><span class="line">显示中间结果延时小于1秒</span><br><span class="line">支持输出CSV格式报表，并能导入到Gnumeric和Excel以生成图形</span><br></pre></td></tr></table></figure>
+<p>如果操作系统默认没有安装dstat，那么需要我们手动进行安装。如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install dstat</span><br></pre></td></tr></table></figure>
+<p>查看dstat命令的帮助信息与支持选项，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dstat --help</span><br></pre></td></tr></table></figure>
+<p>dstat命令的–version选项，处理显示dstat的版本以外，还会显示操作系统的版本、Python语言的版本、CPU的个数，以及dstat支持的插件列表等详细信息。如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">[root@192 ~]# dstat --version</span><br><span class="line">Dstat 0.7.2</span><br><span class="line">Written by Dag Wieers &lt;dag@wieers.com&gt;</span><br><span class="line">Homepage at http://dag.wieers.com/home-made/dstat/</span><br><span class="line"></span><br><span class="line">Platform posix/linux2</span><br><span class="line">Kernel 3.10.0-957.el7.x86_64</span><br><span class="line">Python 2.7.5 (default, Oct 30 2018, 23:45:53) </span><br><span class="line">[GCC 4.8.5 20150623 (Red Hat 4.8.5-36)]</span><br><span class="line"></span><br><span class="line">Terminal type: xterm (color support)</span><br><span class="line">Terminal size: 16 lines, 83 columns</span><br><span class="line"></span><br><span class="line">Processors: 1</span><br><span class="line">Pagesize: 4096</span><br><span class="line">Clock ticks per secs: 100</span><br><span class="line"></span><br><span class="line">internal:</span><br><span class="line">	aio, cpu, cpu24, disk, disk24, disk24old, epoch, fs, int, int24, io, ipc, </span><br><span class="line">	load, lock, mem, net, page, page24, proc, raw, socket, swap, swapold, </span><br><span class="line">	sys, tcp, time, udp, unix, vm</span><br><span class="line">/usr/share/dstat:</span><br><span class="line">	battery, battery-remain, cpufreq, dbus, disk-tps, disk-util, dstat, </span><br><span class="line">	dstat-cpu, dstat-ctxt, dstat-mem, fan, freespace, gpfs, gpfs-ops, </span><br><span class="line">	helloworld, innodb-buffer, innodb-io, innodb-ops, lustre, memcache-hits, </span><br><span class="line">	mysql-io, mysql-keys, mysql5-cmds, mysql5-conn, mysql5-io, mysql5-keys, </span><br><span class="line">	net-packets, nfs3, nfs3-ops, nfsd3, nfsd3-ops, ntp, postfix, power, </span><br><span class="line">	proc-count, qmail, rpc, rpcd, sendmail, snooze, squid, test, thermal, </span><br><span class="line">	top-bio, top-bio-adv, top-childwait, top-cpu, top-cpu-adv, top-cputime, </span><br><span class="line">	top-cputime-avg, top-int, top-io, top-io-adv, top-latency, </span><br><span class="line">	top-latency-avg, top-mem, top-oom, utmp, vm-memctl, vmk-hba, vmk-int, </span><br><span class="line">	vmk-nic, vz-cpu, vz-io, vz-ubc, wifi</span><br><span class="line">[root@192 ~]# </span><br></pre></td></tr></table></figure>
+<p>除了使用dstat命令的–version选项查看dstat的详细信息获取可支持的插件以外，还可以使用dstat命令的–list选项获取dstat的插件列表。如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@192 ~]# dstat --list</span><br><span class="line">internal:</span><br><span class="line">	aio, cpu, cpu24, disk, disk24, disk24old, epoch, fs, int, int24, io, ipc, load, lock, mem, net, page, page24, </span><br><span class="line">	proc, raw, socket, swap, swapold, sys, tcp, time, udp, unix, vm</span><br><span class="line">/usr/share/dstat:</span><br><span class="line">	battery, battery-remain, cpufreq, dbus, disk-tps, disk-util, dstat, dstat-cpu, dstat-ctxt, dstat-mem, fan, </span><br><span class="line">	freespace, gpfs, gpfs-ops, helloworld, innodb-buffer, innodb-io, innodb-ops, lustre, memcache-hits, mysql-io, </span><br><span class="line">	mysql-keys, mysql5-cmds, mysql5-conn, mysql5-io, mysql5-keys, net-packets, nfs3, nfs3-ops, nfsd3, nfsd3-ops, ntp, </span><br><span class="line">	postfix, power, proc-count, qmail, rpc, rpcd, sendmail, snooze, squid, test, thermal, top-bio, top-bio-adv, </span><br><span class="line">	top-childwait, top-cpu, top-cpu-adv, top-cputime, top-cputime-avg, top-int, top-io, top-io-adv, top-latency, </span><br><span class="line">	top-latency-avg, top-mem, top-oom, utmp, vm-memctl, vmk-hba, vmk-int, vmk-nic, vz-cpu, vz-io, vz-ubc, wifi</span><br><span class="line">[root@192 ~]# </span><br></pre></td></tr></table></figure>
+<p>直接在终端输入dstat命令，dstat将以默认参数运行。默认情况下，dstat会收集CPU、磁盘、网络、交换页和系统消息，并以1秒钟1次的频率进行输出，直到我们按Ctrl+C结束。</p>
+<h5 id="（2）dstat常用选项"><a href="#（2）dstat常用选项" class="headerlink" title="（2）dstat常用选项"></a>（2）dstat常用选项</h5><p>如下所示，dstat会提示我们没有指定任何参数，因此使用-cdngy参数运行。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@192 ~]# dstat</span><br><span class="line">You did not select any stats, using -cdngy by default.</span><br><span class="line">----total-cpu-usage---- -dsk/total- -net/total- ---paging-- ---system--</span><br><span class="line">usr sys idl wai hiq siq| read  writ| recv  send|  in   out | int   csw </span><br><span class="line">  9   3  88   0   0   0| 219k   60k|   0     0 |2682B 5427B| 163  1542 </span><br><span class="line"> 20   5  75   0   0   0|   0     0 |  66B  894B|   0     0 | 326  4218 </span><br><span class="line"> 19   6  75   0   0   0|   0     0 | 126B  410B|   0     0 | 330  4431 </span><br><span class="line"> 18   7  75   0   0   0|   0     0 |  66B  416B|   0     0 | 341  2998 </span><br><span class="line"> 20   6  74   0   0   0|   0     0 |  66B  350B|   0     0 | 340  4098 </span><br><span class="line"> 19   6  75   0   0   0|   0     0 |  66B  350B|   0     0 | 319  4010 </span><br><span class="line"> 20   5  75   0   0   0|   0     0 |  66B  350B|   0     0 | 326  4378 </span><br><span class="line"> 19   6  75   0   0   0|   0     0 |  66B  350B|   0     0 | 322  4407 </span><br><span class="line"> 20   5  75   0   0   0|   0     0 |  66B  350B|   0     0 | 332  4520 </span><br><span class="line"> 21   6  73   0   0   0|1140k    0 |  66B  350B|   0     0 | 345  3341 </span><br><span class="line"> 20   7  72   0   0   1|   0     0 |  66B  358B|   0     0 | 348  3821 </span><br></pre></td></tr></table></figure>
+<p>常用选项如下：</p>
+<blockquote>
+<p>直接跟数字，表示#秒收集一次数据，默认为一秒；dstat 5表示5秒更新一次</p>
+</blockquote>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">-c,--cpu  统计CPU状态，包括system, user, idle, wait, hardware interrupt, software interrupt等；</span><br><span class="line">-d, --disk 统计磁盘读写状态</span><br><span class="line">-D total,sda 统计指定磁盘或汇总信息</span><br><span class="line">-l, --load 统计系统负载情况，包括1分钟、5分钟、15分钟平均值</span><br><span class="line">-m, --mem 统计系统物理内存使用情况，包括used, buffers, cache, free</span><br><span class="line">-s, --swap 统计swap已使用和剩余量</span><br><span class="line">-n, --net 统计网络使用情况，包括接收和发送数据</span><br><span class="line">-N eth1,total  统计eth1接口汇总流量</span><br><span class="line">-r, --io 统计I&#x2F;O请求，包括读写请求</span><br><span class="line">-p, --proc 统计进程信息，包括runnable、uninterruptible、new</span><br><span class="line">-y, --sys 统计系统信息，包括中断、上下文切换</span><br><span class="line">-t 显示统计时时间，对分析历史数据非常有用</span><br><span class="line">--fs 统计文件打开数和inodes数</span><br></pre></td></tr></table></figure>
+<p>除了前面介绍的与监控相关的参数以外，dstat还可以像vmstat和iostat一样使用参数控制报告的时间间隔，或者同事指定时间间隔与报告次数。</p>
+<p>例如，下面的命令表示以默认的选项运行dstat，每2秒钟输出一条监控信息，并在输出10条监控信息以后退出dstat。如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root@192 ~]# dstat 2 10</span><br><span class="line">You did not select any stats, using -cdngy by default.</span><br><span class="line">----total-cpu-usage---- -dsk/total- -net/total- ---paging-- ---system--</span><br><span class="line">usr sys idl wai hiq siq| read  writ| recv  send|  in   out | int   csw </span><br><span class="line">  9   3  88   0   0   0| 218k   60k|   0     0 |2674B 5409B| 164  1550 </span><br><span class="line"> 20   6  74   0   0   0|   0     0 |  66B  594B|   0     0 | 326  3956 </span><br><span class="line"> 21   6  73   0   0   0|   0   147k|  66B  346B|   0     0 | 360  4114 </span><br><span class="line"> 20   5  76   0   0   0|   0     0 |  66B  346B|   0     0 | 320  4494 </span><br><span class="line"> 20   6  74   0   0   0|   0     0 |  96B  372B|   0     0 | 349  4144 </span><br><span class="line"> 20   5  75   0   0   0|   0     0 |  66B  342B|   0     0 | 331  4360 </span><br><span class="line"> 21   6  74   0   0   0|   0     0 |  66B  342B|   0     0 | 344  3607 </span><br><span class="line"> 19   6  75   0   0   0|   0     0 |  66B  342B|   0     0 | 334  4475 </span><br><span class="line"> 21   6  74   0   0   0|   0     0 |  66B  342B|   0     0 | 338  4580 </span><br><span class="line"> 20   7  73   0   0   1|   0     0 |  66B  342B|   0     0 | 340  4341 </span><br><span class="line"> 20   6  74   0   0   0|   0     0 |  66B  342B|   0     0 | 344  3899 </span><br><span class="line">[root@192 ~]# </span><br></pre></td></tr></table></figure>
+<h5 id="（3）dstat高级用法"><a href="#（3）dstat高级用法" class="headerlink" title="（3）dstat高级用法"></a>（3）dstat高级用法</h5><p>dstat的强大之处不仅仅是因为它聚合了多种工具的监控结果，还因为它能通过附带的插件实现一些更高级功能。如：找出磁盘中占用资源最高的进程和用户。</p>
+<p>dstat -cdlmnpsyt 5 可以得到较全面的系统性能数据。</p>
+<p>dstat的–top-(io|bio|cpu|cputime|cputime-avg|mem) 通过这几个选项，可以看到具体是哪个用户哪个进程占用了相关系统资源，对系统调优非常有效。如查看当前占用I/O、cpu、内存等最高的进程信息可以使用dstat –top-mem –top-io –top-cpu选项。以下示例演示了如何找出占用资源最多的进程。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@192 ~]# dstat --top-mem --top-io --top-cpu</span><br><span class="line">--most-expensive- ----most-expensive---- -most-expensive-</span><br><span class="line">  memory process |     i/o process      |  cpu process   </span><br><span class="line">gnome-shell  115M|polkitd     203k   10k|polkitd      3.8</span><br><span class="line">gnome-shell  115M|polkitd     459k   23k|polkitd       10</span><br><span class="line">gnome-shell  115M|polkitd     625k   31k|polkitd      9.0</span><br><span class="line">gnome-shell  115M|polkitd     592k   29k|dbus-daemon  8.0</span><br><span class="line">gnome-shell  115M|polkitd     606k   30k|polkitd      9.0</span><br><span class="line">gnome-shell  115M|polkitd     525k   26k|polkitd       10</span><br><span class="line">gnome-shell  115M|polkitd     525k   26k|dbus-daemon  8.0</span><br></pre></td></tr></table></figure>
+<p>dstat的插件保存在/usr/share/dstat目录下，我们可以参考它们的实现，编写自己的插件。</p>
+<h5 id="（4）将结果输出到CSV文件"><a href="#（4）将结果输出到CSV文件" class="headerlink" title="（4）将结果输出到CSV文件"></a>（4）将结果输出到CSV文件</h5><p>dstat还可以将监控信息保存到CSV文件中，以便后续进行处理。通过–output选项指定监控数据输出的文件。如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">[root@192 ~]# dstat -a --output dstat_output.csv</span><br><span class="line">----total-cpu-usage---- -dsk/total- -net/total- ---paging-- ---system--</span><br><span class="line">usr sys idl wai hiq siq| read  writ| recv  send|  in   out | int   csw </span><br><span class="line">  9   3  88   0   0   0| 217k   60k|   0     0 |2656B 5370B| 165  1568 </span><br><span class="line"> 19   8  50  22   0   0|  11M   50k|  66B  838B| 128k    0 | 428  3116 </span><br><span class="line"> 19   6  75   0   0   0|   0     0 |  66B  374B|   0     0 | 325  4514 </span><br><span class="line"> 25   7  25  43   0   0|5284k    0 |  66B  350B| 476k    0 | 448  4227 </span><br><span class="line"> 18   7  74   0   0   1|  32k  144k|  66B  366B|  52k    0 | 334  4524 </span><br><span class="line"> 31  11   6  52   0   0|1944k 4096B|  66B  374B| 868k    0 | 613  3846 </span><br><span class="line"> 19   6  69   6   0   0| 116k 4096B|  66B  374B| 116k    0 | 337  4367 </span><br><span class="line"> 20   6  74   0   0   0|   0     0 |  66B  374B|   0     0 | 331  4573 </span><br><span class="line"> 20   7  73   0   0   0|   0     0 |  66B  350B|   0     0 | 339  3787 </span><br><span class="line"> 18   6  76   0   0   0|   0     0 |  66B  350B|   0     0 | 317  4472 </span><br><span class="line"> 20   6  74   0   0   0|   0     0 |  66B  350B|   0     0 | 338  3675 </span><br><span class="line"> 20   5  75   0   0   0|   0     0 |  66B  350B|   0     0 | 324  4633 </span><br><span class="line"> 21   5  74   0   0   0|   0     0 |  66B  350B|   0     0 | 318  4597 </span><br><span class="line"> 19   6  75   0   0   0|   0     0 |  66B  350B|   0     0 | 333  4847 </span><br><span class="line"> 18   6  76   0   0   0|   0     0 |  66B  350B|   0     0 | 308  4742 ^C</span><br><span class="line">[root@192 ~]# cat dstat_output.csv </span><br><span class="line">&quot;Dstat 0.7.2 CSV output&quot;</span><br><span class="line">&quot;Author:&quot;,&quot;Dag Wieers &lt;dag@wieers.com&gt;&quot;,,,,&quot;URL:&quot;,&quot;http://dag.wieers.com/home-made/dstat/&quot;</span><br><span class="line">&quot;Host:&quot;,&quot;192.168.32.138&quot;,,,,&quot;User:&quot;,&quot;root&quot;</span><br><span class="line">&quot;Cmdline:&quot;,&quot;dstat -a --output dstat_output.csv&quot;,,,,&quot;Date:&quot;,&quot;22 Feb 2020 00:22:08 CST&quot;</span><br><span class="line"></span><br><span class="line">&quot;total cpu usage&quot;,,,,,,&quot;dsk/total&quot;,,&quot;net/total&quot;,,&quot;paging&quot;,,&quot;system&quot;,</span><br><span class="line">&quot;usr&quot;,&quot;sys&quot;,&quot;idl&quot;,&quot;wai&quot;,&quot;hiq&quot;,&quot;siq&quot;,&quot;read&quot;,&quot;writ&quot;,&quot;recv&quot;,&quot;send&quot;,&quot;in&quot;,&quot;out&quot;,&quot;int&quot;,&quot;csw&quot;</span><br><span class="line">8.683,2.816,88.156,0.313,0.0,0.032,222019.623,61103.678,0.0,0.0,2655.691,5370.227,164.807,1568.447</span><br><span class="line">19.388,8.163,50.0,22.449,0.0,0.0,11702272.0,51200.0,66.0,838.0,131072.0,0.0,428.0,3116.0</span><br><span class="line">19.192,6.061,74.747,0.0,0.0,0.0,0.0,0.0,66.0,374.0,0.0,0.0,325.0,4514.0</span><br><span class="line">24.510,6.863,25.490,43.137,0.0,0.0,5410816.0,0.0,66.0,350.0,487424.0,0.0,448.0,4227.0</span><br><span class="line">18.182,7.071,73.737,0.0,0.0,1.010,32768.0,147456.0,66.0,366.0,53248.0,0.0,334.0,4524.0</span><br><span class="line">30.928,11.340,6.186,51.546,0.0,0.0,1990656.0,4096.0,66.0,374.0,888832.0,0.0,613.0,3846.0</span><br><span class="line">19.192,6.061,68.687,6.061,0.0,0.0,118784.0,4096.0,66.0,374.0,118784.0,0.0,337.0,4367.0</span><br><span class="line">19.802,5.941,74.257,0.0,0.0,0.0,0.0,0.0,66.0,374.0,0.0,0.0,331.0,4573.0</span><br><span class="line">20.0,7.0,73.0,0.0,0.0,0.0,0.0,0.0,66.0,350.0,0.0,0.0,339.0,3787.0</span><br><span class="line">18.367,6.122,75.510,0.0,0.0,0.0,0.0,0.0,66.0,350.0,0.0,0.0,317.0,4472.0</span><br><span class="line">20.0,6.0,74.0,0.0,0.0,0.0,0.0,0.0,66.0,350.0,0.0,0.0,338.0,3675.0</span><br><span class="line">20.202,5.051,74.747,0.0,0.0,0.0,0.0,0.0,66.0,350.0,0.0,0.0,324.0,4633.0</span><br><span class="line">21.0,5.0,74.0,0.0,0.0,0.0,0.0,0.0,66.0,350.0,0.0,0.0,318.0,4597.0</span><br><span class="line">19.192,6.061,74.747,0.0,0.0,0.0,0.0,0.0,66.0,350.0,0.0,0.0,333.0,4847.0</span><br><span class="line">18.182,6.061,75.758,0.0,0.0,0.0,0.0,0.0,66.0,350.0,0.0,0.0,308.0,4742.0</span><br><span class="line">[root@192 ~]# </span><br></pre></td></tr></table></figure>
+<h4 id="2、交互式监控工具glances"><a href="#2、交互式监控工具glances" class="headerlink" title="2、交互式监控工具glances"></a>2、交互式监控工具glances</h4><p>在紧急情况下，工程师需要在尽可能短的时间内查看尽可能多的信息。此时，glances是一个不错的选择。glances的设计初衷就是在当前窗口中尽可能多地显示系统消息。</p>
+<p>glances是一款使用Python语言开发、基于psutil的跨平台系统监控工具，在所有Linux命令行工具中，它与top命令最相似，都是命令行交互监控工具。但是，glances实现了比top命令更齐全的接口，提供了更加丰富的功能。</p>
+<h5 id="（1）glances提供的系统信息"><a href="#（1）glances提供的系统信息" class="headerlink" title="（1）glances提供的系统信息"></a>（1）glances提供的系统信息</h5><p>glances提供的系统信息如下所示：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CPU 使用率</span><br><span class="line">内存使用情况</span><br><span class="line">内核统计信息和运行队列信息</span><br><span class="line">磁盘 I&#x2F;O 速度、传输和读&#x2F;写比率</span><br><span class="line">文件系统中的可用空间</span><br><span class="line">磁盘适配器</span><br><span class="line">网络 I&#x2F;O 速度、传输和读&#x2F;写比率</span><br><span class="line">页面空间和页面速度</span><br><span class="line">消耗资源最多的进程</span><br><span class="line">计算机信息和系统资源</span><br></pre></td></tr></table></figure>
+<p>glances 工具可以在用户的终端上实时显示重要的系统信息，并动态地对其进行更新。这个高效的工具可以工作于任何终端屏幕。另外它并不会消耗大量的 CPU 资源，通常低于百分之二。glances 在屏幕上对数据进行显示，并且每隔2秒钟对其进行更新。您也可以自己将这个时间间隔更改为更长或更短的数值。</p>
+<p>glances 工具还可以将相同的数据捕获到一个文件，便于以后对报告进行分析和绘制图形。输出文件可以是电子表格的格式 (.csv) 或者 html 格式。</p>
+<h5 id="（2）Linux下glances的安装"><a href="#（2）Linux下glances的安装" class="headerlink" title="（2）Linux下glances的安装"></a>（2）Linux下glances的安装</h5><p>在Linux系统中，可以使用yum命令或者pip命令安装glances。如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install epel-release</span><br><span class="line">yum install glances</span><br></pre></td></tr></table></figure>
+<p>glances的使用非常简单，直接输入glances命令便进入了一个类似top命令的交互式界面。在这个界面中，显示了比top更加全面，更加具有可读性的信息。</p>
+<p><img src="https://img-blog.csdnimg.cn/20200430141858411.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>glances 工作界面的说明 :<br>在图 1 的上部是 CPU 、Load（负载）、Mem（内存使用）、 Swap（交换分区）的使用情况。在图 1 的中上部是网络接口、Processes（进程）的使用情况。通常包括如下字段：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">VIRT: 虚拟内存大小</span><br><span class="line">RES: 进程占用的物理内存值</span><br><span class="line">%CPU：该进程占用的 CPU 使用率</span><br><span class="line">%MEM：该进程占用的物理内存和总内存的百分比</span><br><span class="line">PID: 进程 ID 号</span><br><span class="line">USER: 进程所有者的用户名</span><br><span class="line">TIME+: 该进程启动后占用的总的 CPU 时间</span><br><span class="line">IO_R 和 IO_W: 进程的读写 I&#x2F;O 速率</span><br><span class="line">NAME: 进程名称</span><br><span class="line">NI: 进程优先级</span><br><span class="line">S: 进程状态，其中 S 表示休眠，R 表示正在运行，Z 表示僵死状态。</span><br></pre></td></tr></table></figure>
+<h5 id="（3）glances的可读性"><a href="#（3）glances的可读性" class="headerlink" title="（3）glances的可读性"></a>（3）glances的可读性</h5><p>对比可以发现，glances对屏幕的利用率比top明显高很多，信息量很大，有许多top所没有显示的数据。而且，glances的实时变动比top颜值高太多了。</p>
+<p>Glances 会用一下几种颜色来代表状态，如下所示：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">绿色：OK（一切正常）</span><br><span class="line">蓝色：CAREFUL（需要注意）</span><br><span class="line">紫色：WARNING（警告）</span><br><span class="line">红色：CRITICAL（严重）</span><br></pre></td></tr></table></figure>
+<h5 id="（4）glances常见命令"><a href="#（4）glances常见命令" class="headerlink" title="（4）glances常见命令"></a>（4）glances常见命令</h5><p>glances是一个交互式的工具，因此我们也可以输入命令来控制glances的行为。glances常见的命令有：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">h：显示帮助信息</span><br><span class="line">q：离开程序退出</span><br><span class="line">c：按照 CPU 实时负载对系统进程进行排序</span><br><span class="line">m：按照内存使用状况对系统进程排序</span><br><span class="line">i：按照 I&#x2F;O 使用状况对系统进程排序</span><br><span class="line">p：按照进程名称排序</span><br><span class="line">d：显示磁盘读写状况</span><br><span class="line">w：删除日志文件</span><br><span class="line">l：显示日志</span><br><span class="line">s：显示传感器信息</span><br><span class="line">f：显示系统信息</span><br><span class="line">1：轮流显示每个 CPU 内核的使用情况（次选项仅仅使用在多核 CPU 系统）</span><br></pre></td></tr></table></figure>
+<p>glances还支持将采集的数据导入到其他服务中心，包括InfluxDB、Cassandra、CouchDB、OpenTSDB、Prometheus、StatsD、ElasticSearch、RabbitMQ/ActiveMQ、ZeroMQ、Kafaka和Riemann。</p>
+<h3 id="二、Python监控Linux"><a href="#二、Python监控Linux" class="headerlink" title="二、Python监控Linux"></a>二、Python监控Linux</h3><p>shell查看磁盘的监控信息，如下所示：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># ll /proc/ | wc -l</span></span><br><span class="line"><span class="number">317</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@bogon proc]# cat /proc/diskstats </span><br><span class="line">   8       0 sda 85935 21845 10913707 101067 3119 81257 743486 15647 0 31410 109079</span><br><span class="line">   8       1 sda1 1822 0 12456 397 4 0 4096 74 0 457 462</span><br><span class="line">   8       2 sda2 84082 21845 10897907 100659 3115 81257 739390 15573 0 30950 108604</span><br><span class="line">  11       0 sr0 0 0 0 0 0 0 0 0 0 0 0</span><br><span class="line"> 253       0 dm-0 80726 0 10688467 99971 2275 0 82606 10224 0 27927 110196</span><br><span class="line"> 253       1 dm-1 25123 0 205184 7367 82098 0 656784 616558 0 5167 623924</span><br></pre></td></tr></table></figure>
+<p>shell脚本监控Linux</p>
+<p>monitor.sh文件</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#/bin/sh</span><br><span class="line">cpu_idle=<span class="constructor">$(<span class="params">top</span> -<span class="params">n2</span> | <span class="params">grep</span> &#x27;Cpu&#x27; | <span class="params">tail</span> -<span class="params">n</span> 1 | <span class="params">awk</span> &#x27;&#123;<span class="params">print</span> $8&#125;&#x27;)</span></span><br><span class="line">cpu_usage=<span class="constructor">$(<span class="params">printf</span> <span class="string">&quot;%.2f&quot;</span> `<span class="params">echo</span> <span class="string">&quot;scale=2; 100 - $cpu_idle&quot;</span> | <span class="params">bc</span>`)</span></span><br><span class="line">mem_free=<span class="constructor">$(<span class="params">free</span> -<span class="params">m</span> | <span class="params">awk</span> &#x27;<span class="operator">/</span>Mem:<span class="operator">/</span>&#123;<span class="params">print</span> $4 + $6&#125;&#x27;)</span></span><br><span class="line">mem_total=<span class="constructor">$(<span class="params">free</span> -<span class="params">m</span> | <span class="params">awk</span> &#x27;<span class="operator">/</span>Mem:<span class="operator">/</span>&#123;<span class="params">print</span> $2&#125;&#x27;)</span></span><br><span class="line">mem_used=<span class="constructor">$(<span class="params">echo</span> <span class="string">&quot;$mem_total - $mem_free&quot;</span> | <span class="params">bc</span>)</span></span><br><span class="line">mem_rate=<span class="constructor">$(<span class="params">echo</span> <span class="string">&quot;$mem_used * 100 / $mem_total&quot;</span> | <span class="params">bc</span>)</span></span><br><span class="line">disk_usage=<span class="constructor">$(<span class="params">df</span> -<span class="params">h</span> <span class="operator">/</span> | <span class="params">tail</span> -<span class="params">n</span> 1 | <span class="params">awk</span> &#x27;&#123;<span class="params">print</span> $5&#125;&#x27;)</span></span><br><span class="line">disk_used=<span class="constructor">$(<span class="params">df</span> -<span class="params">h</span> <span class="operator">/</span> | <span class="params">tail</span> -<span class="params">n</span> 1 | <span class="params">awk</span> &#x27;&#123;<span class="params">print</span> $3&#125;&#x27;)</span></span><br><span class="line">echo <span class="string">&quot;CPU利用率：$cpu_usage %&quot;</span></span><br><span class="line">echo <span class="string">&quot;内存使用量: $mem_used M&quot;</span></span><br><span class="line">echo <span class="string">&quot;内存利用率：$mem_rate %&quot;</span></span><br><span class="line">echo <span class="string">&quot;磁盘空间使用量：$disk_used&quot;</span></span><br><span class="line">echo <span class="string">&quot;磁盘空间利用率：$disk_usage&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">yum</span> install dos<span class="number">2</span>unix</span><br><span class="line"><span class="attribute">dos2unix</span> monitor.sh</span><br></pre></td></tr></table></figure>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost script]<span class="attr"># sh monitor.sh </span></span><br><span class="line"><span class="attr">CPU利用率：0</span><span class="number">.10</span> <span class="meta">%</span></span><br><span class="line">内存使用量: <span class="number">917</span> M</span><br><span class="line">内存利用率：<span class="number">24</span> <span class="meta">%</span></span><br><span class="line">磁盘空间使用量：<span class="number">4.9</span>G</span><br><span class="line">磁盘空间利用率：<span class="number">29</span><span class="meta">%</span></span><br></pre></td></tr></table></figure>
+<p>编写一个Python脚本，监控磁盘信息，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding=utf-8</span></span><br><span class="line"><span class="comment"># !/usr/bin/python</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> print_function</span><br><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> namedtuple</span><br><span class="line"></span><br><span class="line">disk = namedtuple(<span class="string">&#x27;Disk&#x27;</span>, <span class="string">&#x27;major_number minor_number device_name&#x27;</span></span><br><span class="line">                          <span class="string">&#x27; read_count read_merged_count read_sections&#x27;</span></span><br><span class="line">                          <span class="string">&#x27; time_spent_reading write_count write_merged_count&#x27;</span></span><br><span class="line">                          <span class="string">&#x27; write_sections time_spent_write io_requests&#x27;</span></span><br><span class="line">                          <span class="string">&#x27; time_spent_doing_io weighted_time_spent_dong_io&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_disk_info</span>(<span class="params">device</span>):</span></span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;/proc/diskstats&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">            <span class="keyword">if</span> line.split()[<span class="number">2</span>] == device:</span><br><span class="line">                <span class="keyword">return</span> disk(*(line.split()))</span><br><span class="line">    <span class="keyword">raise</span> RuntimeError(<span class="string">&#x27;设备(&#123;0&#125;)没找到。。。&#x27;</span>.<span class="built_in">format</span>(device))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span>(<span class="params">device</span>):</span></span><br><span class="line">    disk_info = get_disk_info(device)</span><br><span class="line"></span><br><span class="line">    print(disk_info)</span><br><span class="line">    print(<span class="string">&quot;磁盘写入次数:&#123;0&#125;&quot;</span>.<span class="built_in">format</span>(disk_info.write_count))</span><br><span class="line">    print(<span class="string">&quot;磁盘写入的字节数：&#123;0&#125;&quot;</span>.<span class="built_in">format</span>(<span class="built_in">float</span>(disk_info.write_sections) * <span class="number">512</span>))</span><br><span class="line">    print(<span class="string">&quot;磁盘写入的延时：&#123;0&#125;&quot;</span>.<span class="built_in">format</span>(disk_info.time_spent_write))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    main(<span class="string">&#x27;sda1&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost script]# python3 monitor_disk.py </span><br><span class="line">Disk(<span class="attribute">major_number</span>=<span class="string">&#x27;8&#x27;</span>, <span class="attribute">minor_number</span>=<span class="string">&#x27;1&#x27;</span>, <span class="attribute">device_name</span>=<span class="string">&#x27;sda1&#x27;</span>, <span class="attribute">read_count</span>=<span class="string">&#x27;656&#x27;</span>, <span class="attribute">read_merged_count</span>=<span class="string">&#x27;0&#x27;</span>, <span class="attribute">read_sections</span>=<span class="string">&#x27;52726&#x27;</span>, <span class="attribute">time_spent_reading</span>=<span class="string">&#x27;172&#x27;</span>, <span class="attribute">write_count</span>=<span class="string">&#x27;22&#x27;</span>, <span class="attribute">write_merged_count</span>=<span class="string">&#x27;0&#x27;</span>, <span class="attribute">write_sections</span>=<span class="string">&#x27;4216&#x27;</span>, <span class="attribute">time_spent_write</span>=<span class="string">&#x27;17&#x27;</span>, <span class="attribute">io_requests</span>=<span class="string">&#x27;0&#x27;</span>, <span class="attribute">time_spent_doing_io</span>=<span class="string">&#x27;153&#x27;</span>, <span class="attribute">weighted_time_spent_dong_io</span>=<span class="string">&#x27;184&#x27;</span>)</span><br><span class="line">磁盘写入次数:22</span><br><span class="line">磁盘写入的字节数：2158592.0</span><br><span class="line">磁盘写入的延时：17</span><br></pre></td></tr></table></figure>
+<h3 id="三、使用开源库监控Linux"><a href="#三、使用开源库监控Linux" class="headerlink" title="三、使用开源库监控Linux"></a>三、使用开源库监控Linux</h3><p>在这一小节，我们将介绍一个在Python生态中广泛使用的开源项目，即psutil。随后，我们将使用psutil重构前一小节编写的监控程序。另外，还会简单介绍psutil提供的进程管理功能。</p>
+<h4 id="1、psutil介绍"><a href="#1、psutil介绍" class="headerlink" title="1、psutil介绍"></a>1、psutil介绍</h4><blockquote>
+<p>psutil = process and system utilities</p>
+</blockquote>
+<p>psutil是一个开源且跨平台的库，其提供了便利的函数用来获取操作系统的信息，比如CPU，内存，磁盘，网络等。此外，psutil还可以用来进行进程管理，包括判断进程是否存在、获取进程列表、获取进程详细信息等。而且psutil还提供了许多命令行工具提供的功能，包括：ps，top，lsof，netstat，ifconfig， who，df，kill，free，nice，ionice，iostat，iotop，uptime，pidof，tty，taskset，pmap。</p>
+<p>psutil是一个跨平台的库，支持Linux、Windows、OSX、FreeBSD、OpenBSD、NetBSD、Sun Solaris、AIX等操作系统。同时，psutil也支持32位与64位的系统架构，支持Python2.6到Python3.x之间的所有Python版本。</p>
+<p>psutil具有简单易用、功能强大、跨平台等诸多优点，广泛应用于开源项目中，比较有名的有glances、Facebook的osquery、Google的grr等。psutil不但广泛应用于Python语言开发的开源项目中，还被移植到了其他编程语言中，如Go语言的gopsutil、C语言的cpslib、Rust语言的rust-psutil、Ruby语言的posixpsutil等。</p>
+<p>psutil是一个第三方的开源项目，因此，需要先安装才能够使用。如果安装了Anaconda，psutil就已经可用了。否则，需要在命令行下通过pip安装：</p>
+<p>python2:</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https:<span class="regexp">//</span>pypi.python.org<span class="regexp">/packages/</span>source<span class="regexp">/p/</span>psutil/psutil-<span class="number">2.0</span>.<span class="number">0</span>.tar.gz --no-check-certificate</span><br></pre></td></tr></table></figure>
+<p>python3:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# pip install psutil</span><br><span class="line">Collecting psutil</span><br><span class="line">  Downloading psutil-5.7.0.tar.gz (449 kB)</span><br><span class="line">     |████████████████████████████████| 449 kB 4.6 kB/s </span><br><span class="line">Installing collected packages: psutil</span><br><span class="line">    Running setup.py install for psutil ... done</span><br><span class="line">Successfully installed psutil-5.7.0</span><br></pre></td></tr></table></figure>
+<p>psutil包含了异常、类、功能函数和常量，其中功能函数用来获取系统的信息，如CPU、磁盘、内存、网络等。类用来实现进程的管理功能。</p>
+<h4 id="2、psutil提供的功能函数"><a href="#2、psutil提供的功能函数" class="headerlink" title="2、psutil提供的功能函数"></a>2、psutil提供的功能函数</h4><p>根据函数的功能，主要分为CPU、磁盘、内存、网络几类，下面将会总几个方面来介绍psutil提供的功能函数。在这一小节，我们也将学习如何使用psutil来简化使用shell脚本获取监控信息的程序，并获取CPU、内存、磁盘和网络等不同维度。</p>
+<h5 id="（1）CPU"><a href="#（1）CPU" class="headerlink" title="（1）CPU"></a>（1）CPU</h5><p>与CPU相关的功能函数如下：</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>psutil.cpu_count()</td>
+<td>cpu_count(,[logical]):默认返回逻辑CPU的个数,当设置logical的参数为False时，返回物理CPU的个数。</td>
+</tr>
+<tr>
+<td>psutil.cpu_percent()</td>
+<td>cpu_percent(,[percpu],[interval])：返回CPU的利用率,percpu为True时显示所有物理核心的利用率,interval不为0时,则阻塞时显示interval执行的时间内的平均利用率</td>
+</tr>
+<tr>
+<td>psutil.cpu_times()</td>
+<td>cpu_times(,[percpu])：以命名元组(namedtuple)的形式返回cpu的时间花费,percpu=True表示获取每个CPU的时间花费</td>
+</tr>
+<tr>
+<td>psutil.cpu_times_percent()</td>
+<td>cpu_times_percent(,[percpu])：功能和cpu_times大致相同，看字面意思就能知道，该函数返回的是耗时比例。</td>
+</tr>
+<tr>
+<td>psutil.cpu_stats()</td>
+<td>cpu_stats()以命名元组的形式返回CPU的统计信息，包括上下文切换，中断，软中断和系统调用次数。</td>
+</tr>
+<tr>
+<td>psutil.cpu_freq()</td>
+<td>cpu_freq([percpu])：返回cpu频率</td>
+</tr>
+</tbody></table>
+<h6 id="1）cpu-count"><a href="#1）cpu-count" class="headerlink" title="1）cpu_count"></a>1）cpu_count</h6><blockquote>
+<p>默认返回逻辑CPU的个数,当设置logical的参数为False时，返回物理CPU的个数。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">In [1]: import psutil                                                              </span><br><span class="line"></span><br><span class="line">In [2]: psutil.cpu_count()                                                         </span><br><span class="line">Out[2]: 2</span><br><span class="line"></span><br><span class="line">In [3]: psutil.cpu_count(logical&#x3D;False)                                            </span><br><span class="line">Out[3]: 1</span><br></pre></td></tr></table></figure>
+<h6 id="2）cpu-percent"><a href="#2）cpu-percent" class="headerlink" title="2）cpu_percent"></a>2）cpu_percent</h6><blockquote>
+<p>返回CPU的利用率，percpu为True时显示所有物理核心的利用率，interval不为0时，则阻塞时显示interval执行的时间内的平均利用率。</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">4</span>]: psutil.cpu_percent()                                                       </span><br><span class="line">Out[<span class="number">4</span>]: <span class="number">1.5</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">5</span>]: psutil.cpu_percent(percpu=<span class="literal">True</span>)                                            </span><br><span class="line">Out[<span class="number">5</span>]: [<span class="number">1.3</span>, <span class="number">1.5</span>]</span><br><span class="line"></span><br><span class="line">In [<span class="number">6</span>]: psutil.cpu_percent(percpu=<span class="literal">True</span>,interval=<span class="number">2</span>)                                 </span><br><span class="line">Out[<span class="number">6</span>]: [<span class="number">1.0</span>, <span class="number">0.0</span>]</span><br></pre></td></tr></table></figure>
+<h6 id="3）cpu-times"><a href="#3）cpu-times" class="headerlink" title="3）cpu_times"></a>3）cpu_times</h6><p>以命名元组(namedtuple)的形式返回cpu的时间花费，percpu=True表示获取每个CPU的时间花费。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">7</span>]: psutil.cpu_times()                                                         </span><br><span class="line">Out[<span class="number">7</span>]: scputimes(user=<span class="number">41.51</span>, nice=<span class="number">2.05</span>, system=<span class="number">35.36</span>, idle=<span class="number">2096.05</span>, iowait=<span class="number">5.45</span>, irq=<span class="number">0.0</span>, softirq=<span class="number">1.31</span>, steal=<span class="number">0.0</span>, guest=<span class="number">0.0</span>, guest_nice=<span class="number">0.0</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">8</span>]: psutil.cpu_times_percent()                                                 </span><br><span class="line">Out[<span class="number">8</span>]: scputimes(user=<span class="number">0.3</span>, nice=<span class="number">0.0</span>, system=<span class="number">0.1</span>, idle=<span class="number">99.5</span>, iowait=<span class="number">0.0</span>, irq=<span class="number">0.0</span>, softirq=<span class="number">0.0</span>, steal=<span class="number">0.0</span>, guest=<span class="number">0.0</span>, guest_nice=<span class="number">0.0</span>)</span><br></pre></td></tr></table></figure>
+<h6 id="4）cpu-stats"><a href="#4）cpu-stats" class="headerlink" title="4）cpu_stats"></a>4）cpu_stats</h6><p>以命名元组的形式返回CPU的统计信息，包括上下文切换，中断，软中断和系统调用次数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">10</span>]: psutil.cpu_stats()                                                        </span><br><span class="line">Out[<span class="number">10</span>]: scpustats(ctx_switches=<span class="number">538642</span>, interrupts=<span class="number">238329</span>, soft_interrupts=<span class="number">273448</span>, syscalls=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<h6 id="5）cpu-freq"><a href="#5）cpu-freq" class="headerlink" title="5）cpu_freq"></a>5）cpu_freq</h6><p>返回cpu频率。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">11</span>]: psutil.cpu_freq()                                                         </span><br><span class="line">Out[<span class="number">11</span>]: scpufreq(current=<span class="number">2394.464</span>, <span class="built_in">min</span>=<span class="number">0.0</span>, <span class="built_in">max</span>=<span class="number">0.0</span>)</span><br></pre></td></tr></table></figure>
+<h5 id="（2）内存"><a href="#（2）内存" class="headerlink" title="（2）内存"></a>（2）内存</h5><p>与内存相关的功能函数如下：</p>
+<h6 id="1）virtual-memory"><a href="#1）virtual-memory" class="headerlink" title="1）virtual_memory"></a>1）virtual_memory</h6><p>以命名元组的形式返回内存使用情况，包括总内存、可用内存、内存利用率、buffer和cache等。除了内存利用率，其它字段都以字节为单位返回。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: <span class="keyword">import</span> psutil                                                              </span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: psutil.virtual_memory()                                                    </span><br><span class="line">Out[<span class="number">2</span>]: svmem(total=<span class="number">1019797504</span>, available=<span class="number">95744000</span>, percent=<span class="number">90.6</span>, used=<span class="number">758079488</span>, free=<span class="number">67502080</span>, active=<span class="number">295485440</span>, inactive=<span class="number">417394688</span>, buffers=<span class="number">0</span>, cached=<span class="number">194215936</span>, shared=<span class="number">19103744</span>, slab=<span class="number">92905472</span>)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>单位转换</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#/usr/bin/python</span></span><br><span class="line"><span class="comment">#-*- conding:utf-8 _*_</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> psutil</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bytes2human</span>(<span class="params">n</span>):</span></span><br><span class="line">     symbols = (<span class="string">&#x27;K&#x27;</span>,<span class="string">&#x27;M&#x27;</span>,<span class="string">&#x27;G&#x27;</span>,<span class="string">&#x27;T&#x27;</span>,<span class="string">&#x27;P&#x27;</span>,<span class="string">&#x27;E&#x27;</span>,<span class="string">&#x27;Z&#x27;</span>,<span class="string">&#x27;Y&#x27;</span>)</span><br><span class="line">     prefix = &#123;&#125;</span><br><span class="line">     <span class="keyword">for</span> i,s <span class="keyword">in</span> <span class="built_in">enumerate</span>(symbols):</span><br><span class="line">         prefix[s] = <span class="number">1</span> &lt;&lt; (i + <span class="number">1</span>) * <span class="number">10</span></span><br><span class="line">     <span class="keyword">for</span> s <span class="keyword">in</span> <span class="built_in">reversed</span>(symbols):</span><br><span class="line">         <span class="keyword">if</span> n &gt;= prefix[s]:</span><br><span class="line">             value = <span class="built_in">float</span>(n) / prefix[s]</span><br><span class="line">             <span class="keyword">return</span> <span class="string">&#x27;%.1f%s&#x27;</span> % (value,s)</span><br><span class="line">     <span class="keyword">return</span> <span class="string">&#x27;%sB&#x27;</span> % n</span><br><span class="line"></span><br><span class="line">print(<span class="string">&quot;总内存：&quot;</span> + bytes2human(psutil.virtual_memory().total))</span><br></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost <span class="keyword">script</span>]<span class="comment"># python3 monitor_mem.py </span></span><br><span class="line">总内存：<span class="number">3.7</span>G</span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">In</span> [<span class="number">1</span>]: import psutil                                                          </span><br><span class="line"></span><br><span class="line">   ...:     symbols = (<span class="string">&#x27;K&#x27;</span>, <span class="string">&#x27;M&#x27;</span>, <span class="string">&#x27;G&#x27;</span>, <span class="string">&#x27;T&#x27;</span>, <span class="string">&#x27;P&#x27;</span>, <span class="string">&#x27;E&#x27;</span>, <span class="string">&#x27;Z&#x27;</span>, <span class="string">&#x27;Y&#x27;</span>) </span><br><span class="line">   ...:     prefix = &#123;&#125; </span><br><span class="line">   ...:     for i, s in enumerate(symbols): </span><br><span class="line">   ...:         prefix[s] = <span class="number">1</span> &lt;&lt; (i + <span class="number">1</span>) * <span class="number">10</span> </span><br><span class="line">   ...:     for s in reversed(symbols): </span><br><span class="line">   ...:         if n &gt;= prefix[s]: </span><br><span class="line">   ...:             value = float(n) / prefix[s] </span><br><span class="line">   ...:             return <span class="string">&#x27;%.1f%s&#x27;</span> <span class="comment">% (value, s) </span></span><br><span class="line">   ...:     return <span class="string">&quot;%sB&quot;</span> <span class="comment">% n </span></span><br><span class="line">   ...: bytes2human(psutil.virtual_memory().total)                             </span><br><span class="line">   ...:     symbols = (<span class="string">&#x27;K&#x27;</span>, <span class="string">&#x27;M&#x27;</span>, <span class="string">&#x27;G&#x27;</span>, <span class="string">&#x27;T&#x27;</span>, <span class="string">&#x27;P&#x27;</span>, <span class="string">&#x27;E&#x27;</span>, <span class="string">&#x27;Z&#x27;</span>, <span class="string">&#x27;Y&#x27;</span>) </span><br><span class="line">   ...:     prefix = &#123;&#125; </span><br><span class="line">   ...:     for i, s in enumerate(symbols): </span><br><span class="line">   ...:         prefix[s] = <span class="number">1</span> &lt;&lt; (i + <span class="number">1</span>) * <span class="number">10</span> </span><br><span class="line">   ...:     for s in reversed(symbols): </span><br><span class="line">   ...:         if n &gt;= prefix[s]: </span><br><span class="line">   ...:             value = float(n) / prefix[s] </span><br><span class="line">   ...:             return <span class="string">&#x27;%.1f%s&#x27;</span> <span class="comment">% (value, s) </span></span><br><span class="line">   ...:     return <span class="string">&quot;%sB&quot;</span> <span class="comment">% n </span></span><br><span class="line">   ...: bytes2human(psutil.virtual_memory().total)                             </span><br><span class="line"><span class="symbol">Out</span>[<span class="number">2</span>]: <span class="string">&#x27;3.7G&#x27;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200507124720214.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h6 id="2）swap-memory"><a href="#2）swap-memory" class="headerlink" title="2）swap_memory"></a>2）swap_memory</h6><p>以命名元组的形式返回swap/memory使用情况，包含swap中页的换入和换出。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">3</span>]: psutil.swap_memory()                                                       </span><br><span class="line">Out[<span class="number">3</span>]: sswap(total=<span class="number">2147479552</span>, used=<span class="number">141819904</span>, free=<span class="number">2005659648</span>, percent=<span class="number">6.6</span>, sin=<span class="number">24666112</span>, sout=<span class="number">147292160</span>)</span><br></pre></td></tr></table></figure>
+<h5 id="（3）磁盘"><a href="#（3）磁盘" class="headerlink" title="（3）磁盘"></a>（3）磁盘</h5><p>与磁盘相关的功能如下：</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>psutil.disk_io_counters()</td>
+<td>disk_io_counters([perdisk])：以命名元组的形式返回磁盘io统计信息(汇总的)，包括读、写的次数，读、写的字节数等。 当perdisk的值为True，则分别列出单个磁盘的统计信息(字典：key为磁盘名称，value为统计的namedtuple)。</td>
+</tr>
+<tr>
+<td>psutil.disk_partitions()</td>
+<td>disk_partitions([all=False])：以命名元组的形式返回所有已挂载的磁盘，包含磁盘名称，挂载点，文件系统类型等信息。 当all等于True时，返回包含/proc等特殊文件系统的挂载信息</td>
+</tr>
+<tr>
+<td>psutil.disk_usage()</td>
+<td>disk_usage(path)：以命名元组的形式返回path所在磁盘的使用情况，包括磁盘的容量、已经使用的磁盘容量、磁盘的空间利用率等。</td>
+</tr>
+</tbody></table>
+<h6 id="1）psutil-disk-io-counters"><a href="#1）psutil-disk-io-counters" class="headerlink" title="1）psutil.disk_io_counters"></a>1）psutil.disk_io_counters</h6><p>以命名元组的形式返回磁盘io统计信息(汇总的)，包括读、写的次数，读、写的字节数等。 当perdisk的值为True，则分别列出单个磁盘的统计信息(字典：key为磁盘名称，value为统计的namedtuple)。有了disk_io_counters函数，省去了解析/proc/diskstats文件的烦恼。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: <span class="keyword">import</span> psutil                                                              </span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: psutil.disk_io_counters()                                                  </span><br><span class="line">Out[<span class="number">2</span>]: sdiskio(read_count=<span class="number">86913</span>, write_count=<span class="number">46560</span>, read_bytes=<span class="number">5038501376</span>, write_bytes=<span class="number">408987648</span>, read_time=<span class="number">77974</span>, write_time=<span class="number">79557</span>, read_merged_count=<span class="number">5933</span>, write_merged_count=<span class="number">35916</span>, busy_time=<span class="number">42153</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">3</span>]: psutil.disk_io_counters(perdisk=<span class="literal">True</span>)                                      </span><br><span class="line">Out[<span class="number">3</span>]: </span><br><span class="line">&#123;<span class="string">&#x27;sda&#x27;</span>: sdiskio(read_count=<span class="number">41472</span>, write_count=<span class="number">5340</span>, read_bytes=<span class="number">2524417024</span>, write_bytes=<span class="number">205662720</span>, read_time=<span class="number">38302</span>, write_time=<span class="number">4484</span>, read_merged_count=<span class="number">5933</span>, write_merged_count=<span class="number">35916</span>, busy_time=<span class="number">21074</span>),</span><br><span class="line"> <span class="string">&#x27;sda1&#x27;</span>: sdiskio(read_count=<span class="number">1854</span>, write_count=<span class="number">4</span>, read_bytes=<span class="number">6441472</span>, write_bytes=<span class="number">2097152</span>, read_time=<span class="number">370</span>, write_time=<span class="number">35</span>, read_merged_count=<span class="number">0</span>, write_merged_count=<span class="number">0</span>, busy_time=<span class="number">396</span>),</span><br><span class="line"> <span class="string">&#x27;sda2&#x27;</span>: sdiskio(read_count=<span class="number">39587</span>, write_count=<span class="number">5337</span>, read_bytes=<span class="number">2516263424</span>, write_bytes=<span class="number">203570688</span>, read_time=<span class="number">37925</span>, write_time=<span class="number">4449</span>, read_merged_count=<span class="number">5933</span>, write_merged_count=<span class="number">35916</span>, busy_time=<span class="number">20675</span>),</span><br><span class="line"> <span class="string">&#x27;sr0&#x27;</span>: sdiskio(read_count=<span class="number">0</span>, write_count=<span class="number">0</span>, read_bytes=<span class="number">0</span>, write_bytes=<span class="number">0</span>, read_time=<span class="number">0</span>, write_time=<span class="number">0</span>, read_merged_count=<span class="number">0</span>, write_merged_count=<span class="number">0</span>, busy_time=<span class="number">0</span>),</span><br><span class="line"> <span class="string">&#x27;dm-0&#x27;</span>: sdiskio(read_count=<span class="number">38566</span>, write_count=<span class="number">5197</span>, read_bytes=<span class="number">2483773952</span>, write_bytes=<span class="number">55885312</span>, read_time=<span class="number">37685</span>, write_time=<span class="number">3546</span>, read_merged_count=<span class="number">0</span>, write_merged_count=<span class="number">0</span>, busy_time=<span class="number">19410</span>),</span><br><span class="line"> <span class="string">&#x27;dm-1&#x27;</span>: sdiskio(read_count=<span class="number">6875</span>, write_count=<span class="number">36059</span>, read_bytes=<span class="number">30310400</span>, write_bytes=<span class="number">147697664</span>, read_time=<span class="number">1987</span>, write_time=<span class="number">71537</span>, read_merged_count=<span class="number">0</span>, write_merged_count=<span class="number">0</span>, busy_time=<span class="number">1673</span>)&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="2）psutil-disk-partitions"><a href="#2）psutil-disk-partitions" class="headerlink" title="2）psutil.disk_partitions"></a>2）psutil.disk_partitions</h6><p>以命名元组的形式返回所有已挂载的磁盘，包含磁盘名称，挂载点，文件系统类型等信息。当all等于True时，返回包含/proc等特殊文件系统的挂载信息。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">4</span>]: psutil.disk_partitions()                                                   </span><br><span class="line">Out[<span class="number">4</span>]: </span><br><span class="line">[sdiskpart(device=<span class="string">&#x27;/dev/mapper/centos-root&#x27;</span>, mountpoint=<span class="string">&#x27;/&#x27;</span>, fstype=<span class="string">&#x27;xfs&#x27;</span>, opts=<span class="string">&#x27;rw,seclabel,relatime,attr2,inode64,noquota&#x27;</span>),</span><br><span class="line"> sdiskpart(device=<span class="string">&#x27;/dev/sda1&#x27;</span>, mountpoint=<span class="string">&#x27;/boot&#x27;</span>, fstype=<span class="string">&#x27;xfs&#x27;</span>, opts=<span class="string">&#x27;rw,seclabel,relatime,attr2,inode64,noquota&#x27;</span>)]</span><br><span class="line"></span><br><span class="line">In [<span class="number">5</span>]: [device <span class="keyword">for</span> device <span class="keyword">in</span> psutil.disk_partitions() <span class="keyword">if</span> device.mountpoint == <span class="string">&#x27;/&#x27;</span>]</span><br><span class="line">Out[<span class="number">5</span>]: [sdiskpart(device=<span class="string">&#x27;/dev/mapper/centos-root&#x27;</span>, mountpoint=<span class="string">&#x27;/&#x27;</span>, fstype=<span class="string">&#x27;xfs&#x27;</span>, opts=<span class="string">&#x27;rw,seclabel,relatime,attr2,inode64,noquota&#x27;</span>)]</span><br><span class="line"></span><br><span class="line">In [<span class="number">6</span>]: <span class="function"><span class="keyword">def</span> <span class="title">get_disk_via_mountpoint</span>(<span class="params">point</span>):</span> </span><br><span class="line">    ...:     disk = [item <span class="keyword">for</span> item <span class="keyword">in</span> psutil.disk_partitions() <span class="keyword">if</span> item.mountpoint == point] </span><br><span class="line">    ...:     <span class="keyword">return</span> disk[<span class="number">0</span>].device </span><br><span class="line">    ...:                             </span><br><span class="line"></span><br><span class="line">In [<span class="number">7</span>]: get_disk_via_mountpoint(<span class="string">&#x27;/&#x27;</span>)</span><br><span class="line">Out[<span class="number">7</span>]: <span class="string">&#x27;/dev/mapper/centos-root&#x27;</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">8</span>]: get_disk_via_mountpoint(<span class="string">&#x27;/boot&#x27;</span>) </span><br><span class="line">Out[<span class="number">8</span>]: <span class="string">&#x27;/dev/sda1&#x27;</span></span><br></pre></td></tr></table></figure>
+<h6 id="3）psutil-disk-usage"><a href="#3）psutil-disk-usage" class="headerlink" title="3）psutil.disk_usage"></a>3）psutil.disk_usage</h6><p>以命名元组的形式返回path所在磁盘的使用情况，包括磁盘的容量、已经使用的磁盘容量、磁盘的空间利用率等。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">9</span>]: psutil.disk_usage(<span class="string">&#x27;/&#x27;</span>)       </span><br><span class="line">Out[<span class="number">9</span>]: sdiskusage(total=<span class="number">18238930944</span>, used=<span class="number">6775488512</span>, free=<span class="number">11463442432</span>, percent=<span class="number">37.1</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">10</span>]: psutil.disk_usage(<span class="string">&#x27;/&#x27;</span>).percent</span><br><span class="line">Out[<span class="number">10</span>]: <span class="number">37.2</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">11</span>]: <span class="built_in">type</span>(psutil.disk_usage(<span class="string">&#x27;/&#x27;</span>).percent)</span><br><span class="line">Out[<span class="number">11</span>]: <span class="built_in">float</span></span><br></pre></td></tr></table></figure>
+<h5 id="（4）网络"><a href="#（4）网络" class="headerlink" title="（4）网络"></a>（4）网络</h5><p>与网络相关的函数如下：</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>详情</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>psutil.net_io_counter([pernic])</td>
+<td>以命名元组的形式返回当前系统中每块网卡的网络io统计信息，包括收发字节数，收发包的数量、出错的情况和删包情况。当pernic为True时，则列出所有网卡的统计信息。</td>
+</tr>
+<tr>
+<td>psutil.net_connections([kind])</td>
+<td>以列表的形式返回每个网络连接的详细信息(namedtuple)。命名元组包含fd, family, type, laddr, raddr, status, pid等信息。kind表示过滤的连接类型，支持的值如下：(默认为inet)</td>
+</tr>
+<tr>
+<td>psutil.net_if_addrs()</td>
+<td>以字典的形式返回网卡的配置信息，包括IP地址和mac地址、子网掩码和广播地址。</td>
+</tr>
+<tr>
+<td>psutil.net_if_stats()</td>
+<td>返回网卡的详细信息，包括是否启动、通信类型、传输速度与mtu。</td>
+</tr>
+<tr>
+<td>psutil.users()</td>
+<td>以命名元组的方式返回当前登陆用户的信息，包括用户名，登陆时间，终端，与主机信息</td>
+</tr>
+<tr>
+<td>psutil.boot_time()</td>
+<td>以时间戳的形式返回系统的启动时间</td>
+</tr>
+</tbody></table>
+<h6 id="1）psutil-net-io-counter"><a href="#1）psutil-net-io-counter" class="headerlink" title="1）psutil.net_io_counter"></a>1）psutil.net_io_counter</h6><p>以命名元组的形式返回当前系统中每块网卡的网络io统计信息，包括收发字节数，收发包的数量、出错的情况和删包情况。当pernic为True时，则列出所有网卡的统计信息。使用net_io_counter函数与自己解析/proc/net/dev文件内容实现的功能相同。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: <span class="keyword">import</span> psutil                </span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: psutil.net_io_counters()     </span><br><span class="line">Out[<span class="number">2</span>]: snetio(bytes_sent=<span class="number">720405</span>, bytes_recv=<span class="number">3661606</span>, packets_sent=<span class="number">5520</span>, packets_recv=<span class="number">14886</span>, errin=<span class="number">0</span>, errout=<span class="number">0</span>, dropin=<span class="number">0</span>, dropout=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">3</span>]: psutil.net_io_counters(pernic=<span class="literal">True</span>) </span><br><span class="line">Out[<span class="number">3</span>]: </span><br><span class="line">&#123;<span class="string">&#x27;ens37&#x27;</span>: snetio(bytes_sent=<span class="number">724145</span>, bytes_recv=<span class="number">3365944</span>, packets_sent=<span class="number">5538</span>, packets_recv=<span class="number">10017</span>, errin=<span class="number">0</span>, errout=<span class="number">0</span>, dropin=<span class="number">0</span>, dropout=<span class="number">0</span>),</span><br><span class="line"> <span class="string">&#x27;lo&#x27;</span>: snetio(bytes_sent=<span class="number">0</span>, bytes_recv=<span class="number">0</span>, packets_sent=<span class="number">0</span>, packets_recv=<span class="number">0</span>, errin=<span class="number">0</span>, errout=<span class="number">0</span>, dropin=<span class="number">0</span>, dropout=<span class="number">0</span>),</span><br><span class="line"> <span class="string">&#x27;virbr0-nic&#x27;</span>: snetio(bytes_sent=<span class="number">0</span>, bytes_recv=<span class="number">0</span>, packets_sent=<span class="number">0</span>, packets_recv=<span class="number">0</span>, errin=<span class="number">0</span>, errout=<span class="number">0</span>, dropin=<span class="number">0</span>, dropout=<span class="number">0</span>),</span><br><span class="line"> <span class="string">&#x27;virbr0&#x27;</span>: snetio(bytes_sent=<span class="number">0</span>, bytes_recv=<span class="number">0</span>, packets_sent=<span class="number">0</span>, packets_recv=<span class="number">0</span>, errin=<span class="number">0</span>, errout=<span class="number">0</span>, dropin=<span class="number">0</span>, dropout=<span class="number">0</span>),</span><br><span class="line"> <span class="string">&#x27;ens33&#x27;</span>: snetio(bytes_sent=<span class="number">0</span>, bytes_recv=<span class="number">298202</span>, packets_sent=<span class="number">0</span>, packets_recv=<span class="number">4899</span>, errin=<span class="number">0</span>, errout=<span class="number">0</span>, dropin=<span class="number">0</span>, dropout=<span class="number">0</span>)&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="2）net-connections"><a href="#2）net-connections" class="headerlink" title="2）net_connections"></a>2）net_connections</h6><p>以列表的形式返回每个网络连接的详细信息(namedtuple)，可以使用该函数查看网络连接状态，统计连接个数以及处于特定状态的网络连接个数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">4</span>]: psutil.net_connections()      </span><br><span class="line">Out[<span class="number">4</span>]: </span><br><span class="line">[sconn(fd=<span class="number">6</span>, family=&lt;AddressFamily.AF_INET6: <span class="number">10</span>&gt;, <span class="built_in">type</span>=&lt;SocketKind.SOCK_STREAM: <span class="number">1</span>&gt;, laddr=addr(ip=<span class="string">&#x27;::&#x27;</span>, port=<span class="number">111</span>), raddr=(), status=<span class="string">&#x27;LISTEN&#x27;</span>, pid=<span class="number">6558</span>),</span><br><span class="line"> sconn(fd=<span class="number">7</span>, family=&lt;AddressFamily.AF_INET6: <span class="number">10</span>&gt;, <span class="built_in">type</span>=&lt;SocketKind.SOCK_DGRAM: <span class="number">2</span>&gt;, laddr=addr(ip=<span class="string">&#x27;::&#x27;</span>, port=<span class="number">111</span>), raddr=(), status=<span class="string">&#x27;NONE&#x27;</span>, pid=<span class="number">6558</span>),</span><br><span class="line"> sconn(fd=<span class="number">8</span>, family=&lt;AddressFamily.AF_INET6: <span class="number">10</span>&gt;, <span class="built_in">type</span>=&lt;SocketKind.SOCK_STREAM: <span class="number">1</span>&gt;, laddr=addr(ip=<span class="string">&#x27;::1&#x27;</span>, port=<span class="number">6010</span>), raddr=(), status=<span class="string">&#x27;LISTEN&#x27;</span>, pid=<span class="number">9047</span>),</span><br><span class="line"> sconn(fd=<span class="number">6</span>, family=&lt;AddressFamily.AF_INET: <span class="number">2</span>&gt;, <span class="built_in">type</span>=&lt;SocketKind.SOCK_STREAM: <span class="number">1</span>&gt;,</span><br><span class="line">......</span><br><span class="line"></span><br><span class="line">In [<span class="number">5</span>]: conns = psutil.net_connections()</span><br><span class="line"></span><br><span class="line">In [<span class="number">6</span>]: <span class="built_in">len</span>([conn <span class="keyword">for</span> conn <span class="keyword">in</span> conns <span class="keyword">if</span> conn.status == <span class="string">&#x27;TIME_WAIT&#x27;</span>])   </span><br><span class="line">Out[<span class="number">6</span>]: <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="3）net-if-addrs"><a href="#3）net-if-addrs" class="headerlink" title="3）net_if_addrs"></a>3）net_if_addrs</h6><p>以字典的形式返回网卡的配置信息，包括IP地址和mac地址、子网掩码和广播地址。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">7</span>]: psutil.net_if_addrs()                                                                                               </span><br><span class="line">Out[<span class="number">7</span>]: </span><br><span class="line">&#123;<span class="string">&#x27;lo&#x27;</span>: [snicaddr(family=&lt;AddressFamily.AF_INET: <span class="number">2</span>&gt;, address=<span class="string">&#x27;127.0.0.1&#x27;</span>, netmask=<span class="string">&#x27;255.0.0.0&#x27;</span>, broadcast=<span class="literal">None</span>, ptp=<span class="literal">None</span>),</span><br><span class="line">  snicaddr(family=&lt;AddressFamily.AF_INET6: <span class="number">10</span>&gt;, address=<span class="string">&#x27;::1&#x27;</span>, netmask=<span class="string">&#x27;ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff&#x27;</span>, broadcast=<span class="literal">None</span>, ptp=<span class="literal">None</span>),</span><br><span class="line">  snicaddr(family=&lt;AddressFamily.AF_PACKET: <span class="number">17</span>&gt;, address=<span class="string">&#x27;00:00:00:00:00:00&#x27;</span>, netmask=<span class="literal">None</span>, broadcast=<span class="literal">None</span>, ptp=<span class="literal">None</span>)],</span><br><span class="line"> <span class="string">&#x27;ens37&#x27;</span>: [snicaddr(family=&lt;AddressFamily.AF_INET: <span class="number">2</span>&gt;, address=<span class="string">&#x27;192.168.1.131&#x27;</span>, netmask=<span class="string">&#x27;255.255.255.255&#x27;</span>, broadcast=<span class="string">&#x27;192.168.1.131&#x27;</span>, ptp=<span class="literal">None</span>),</span><br><span class="line">  snicaddr(family=&lt;AddressFamily.AF_INET6: <span class="number">10</span>&gt;, address=<span class="string">&#x27;240e:82:e03:7342:4378:7be3:558c:fc88&#x27;</span>, netmask=<span class="string">&#x27;ffff:ffff:ffff:ffff::&#x27;</span>, broadcast=<span class="literal">None</span>, ptp=<span class="literal">None</span>)</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+<h6 id="4）psutil-net-if-stats"><a href="#4）psutil-net-if-stats" class="headerlink" title="4）psutil.net_if_stats"></a>4）psutil.net_if_stats</h6><p>返回网卡的详细信息，包括是否启动、通信类型、传输速度与mtu。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">8</span>]: psutil.net_if_stats()        </span><br><span class="line">Out[<span class="number">8</span>]: </span><br><span class="line">&#123;<span class="string">&#x27;ens37&#x27;</span>: snicstats(isup=<span class="literal">True</span>, duplex=&lt;NicDuplex.NIC_DUPLEX_FULL: <span class="number">2</span>&gt;, speed=<span class="number">1000</span>, mtu=<span class="number">1500</span>),</span><br><span class="line"> <span class="string">&#x27;lo&#x27;</span>: snicstats(isup=<span class="literal">True</span>, duplex=&lt;NicDuplex.NIC_DUPLEX_UNKNOWN: <span class="number">0</span>&gt;, speed=<span class="number">0</span>, mtu=<span class="number">65536</span>),</span><br><span class="line"> <span class="string">&#x27;virbr0-nic&#x27;</span>: snicstats(isup=<span class="literal">False</span>, duplex=&lt;NicDuplex.NIC_DUPLEX_FULL: <span class="number">2</span>&gt;, speed=<span class="number">10</span>, mtu=<span class="number">1500</span>),</span><br><span class="line"> <span class="string">&#x27;virbr0&#x27;</span>: snicstats(isup=<span class="literal">True</span>, duplex=&lt;NicDuplex.NIC_DUPLEX_UNKNOWN: <span class="number">0</span>&gt;, speed=<span class="number">0</span>, mtu=<span class="number">1500</span>),</span><br><span class="line"> <span class="string">&#x27;ens33&#x27;</span>: snicstats(isup=<span class="literal">True</span>, duplex=&lt;NicDuplex.NIC_DUPLEX_FULL: <span class="number">2</span>&gt;, speed=<span class="number">1000</span>, mtu=<span class="number">1500</span>)&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="（5）其他"><a href="#（5）其他" class="headerlink" title="（5）其他"></a>（5）其他</h5><h6 id="1）users"><a href="#1）users" class="headerlink" title="1）users"></a>1）users</h6><p>以命名元组的方式返回当前登陆用户的信息，包括用户名，登陆时间，终端，与主机信息。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">9</span>]: psutil.users()              </span><br><span class="line">Out[<span class="number">9</span>]: </span><br><span class="line">[suser(name=<span class="string">&#x27;root&#x27;</span>, terminal=<span class="string">&#x27;:0&#x27;</span>, host=<span class="string">&#x27;localhost&#x27;</span>, started=<span class="number">1582366080.0</span>, pid=<span class="number">7991</span>),</span><br><span class="line"> suser(name=<span class="string">&#x27;root&#x27;</span>, terminal=<span class="string">&#x27;pts/0&#x27;</span>, host=<span class="string">&#x27;localhost&#x27;</span>, started=<span class="number">1582366208.0</span>, pid=<span class="number">8927</span>),</span><br><span class="line"> suser(name=<span class="string">&#x27;root&#x27;</span>, terminal=<span class="string">&#x27;pts/1&#x27;</span>, host=<span class="string">&#x27;192.168.1.4&#x27;</span>, started=<span class="number">1582370816.0</span>, pid=<span class="number">10099</span>),</span><br><span class="line"> suser(name=<span class="string">&#x27;root&#x27;</span>, terminal=<span class="string">&#x27;pts/3&#x27;</span>, host=<span class="string">&#x27;192.168.1.4&#x27;</span>, started=<span class="number">1582369408.0</span>, pid=<span class="number">9787</span>)]</span><br></pre></td></tr></table></figure>
+<h6 id="2）boot-time"><a href="#2）boot-time" class="headerlink" title="2）boot_time"></a>2）boot_time</h6><p>以时间戳的形式返回系统的启动时间。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">10</span>]: psutil.boot_time()    </span><br><span class="line">Out[<span class="number">10</span>]: <span class="number">1582527367.0</span></span><br><span class="line">    </span><br><span class="line">In [<span class="number">11</span>]: datetime.datetime.fromtimestamp(psutil.boot_time()).strftime(<span class="string">&#x27;%Y-%m-%d %H:%M:%S&#x27;</span>)                                  </span><br><span class="line">Out[<span class="number">11</span>]: <span class="string">&#x27;2020-02-24 14:56:07&#x27;</span></span><br></pre></td></tr></table></figure>
+<h4 id="3、综合案例：使用psutil实现监控程序"><a href="#3、综合案例：使用psutil实现监控程序" class="headerlink" title="3、综合案例：使用psutil实现监控程序"></a>3、综合案例：使用psutil实现监控程序</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding=utf-8</span></span><br><span class="line"><span class="comment"># !/usr/bin/python</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> psutil</span><br><span class="line"><span class="keyword">import</span> datetime</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bytes2human</span>(<span class="params">n</span>):</span></span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;内存单位转换的方法&#x27;&#x27;&#x27;</span></span><br><span class="line">    symbols = (<span class="string">&#x27;K&#x27;</span>, <span class="string">&#x27;M&#x27;</span>, <span class="string">&#x27;G&#x27;</span>, <span class="string">&#x27;T&#x27;</span>, <span class="string">&#x27;P&#x27;</span>, <span class="string">&#x27;E&#x27;</span>, <span class="string">&#x27;Z&#x27;</span>, <span class="string">&#x27;Y&#x27;</span>)</span><br><span class="line">    prefix = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> i, s <span class="keyword">in</span> <span class="built_in">enumerate</span>(symbols):</span><br><span class="line">        prefix[s] = <span class="number">1</span> &lt;&lt; (i + <span class="number">1</span>) * <span class="number">10</span></span><br><span class="line">    <span class="keyword">for</span> s <span class="keyword">in</span> <span class="built_in">reversed</span>(symbols):</span><br><span class="line">        <span class="keyword">if</span> n &gt;= prefix[s]:</span><br><span class="line">            value = <span class="built_in">float</span>(n) / prefix[s]</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;%.1f%s&#x27;</span> % (value, s)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;%sB&quot;</span> % n</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_cpu_info</span>():</span></span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;获取CPU使用率&#x27;&#x27;&#x27;</span></span><br><span class="line">    cpu_count = psutil.cpu_count()</span><br><span class="line">    cpu_percent = psutil.cpu_percent(interval=<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">dict</span>(cpu_count=cpu_count, cpu_percent=cpu_percent)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_memory_info</span>():</span></span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;获取内存信息&#x27;&#x27;&#x27;</span></span><br><span class="line">    virtual_mem = psutil.virtual_memory()</span><br><span class="line">    mem_total = bytes2human(virtual_mem.total)</span><br><span class="line">    mem_percent = virtual_mem.percent</span><br><span class="line">    mem_free = bytes2human(virtual_mem.free + virtual_mem.buffers + virtual_mem.cached)</span><br><span class="line">    mem_used = bytes2human(virtual_mem.total * mem_percent / <span class="number">100</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">dict</span>(mem_total=mem_total, mem_percent=mem_percent, mem_free=mem_free, mem_used=mem_used)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_disk_info</span>():</span></span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;获取磁盘信息&#x27;&#x27;&#x27;</span></span><br><span class="line">    disk_usage = psutil.disk_usage(<span class="string">&#x27;/&#x27;</span>)</span><br><span class="line">    disk_total = bytes2human(disk_usage.total)</span><br><span class="line">    disk_percent = disk_usage.percent</span><br><span class="line">    disk_free = bytes2human(disk_usage.free)</span><br><span class="line">    disk_used = bytes2human(disk_usage.used)</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">dict</span>(disk_total=disk_total, disk_percent=disk_percent, disk_free=disk_free, disk_used=disk_used)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_boot_info</span>():</span></span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;获取启动时间&#x27;&#x27;&#x27;</span></span><br><span class="line">    boot_time = datetime.datetime.fromtimestamp(psutil.boot_time()).strftime(<span class="string">&quot;%Y-%m-%d %H:%M:%S&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">dict</span>(boot_time=boot_time)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">collect_monitor_data</span>():</span></span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;集中监控硬件信息&#x27;&#x27;&#x27;</span></span><br><span class="line">    data = &#123;&#125;</span><br><span class="line">    data.update(get_boot_info())</span><br><span class="line">    data.update(get_cpu_info())</span><br><span class="line">    data.update(get_memory_info())</span><br><span class="line">    data.update(get_disk_info())</span><br><span class="line">    print(data)</span><br><span class="line">    <span class="keyword">return</span> data</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">collect_monitor_data()</span><br></pre></td></tr></table></figure>
+<h4 id="4、psutil进程管理"><a href="#4、psutil进程管理" class="headerlink" title="4、psutil进程管理"></a>4、psutil进程管理</h4><p>psutil还提供了作为进程管理的功能函数，包括获取进程列表，判断是否存在，以及进程管理的类封装。</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>详情</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>psutil.Process()</td>
+<td>对进程进行封装，可以使用该类的方法获取进行的详细信息，或者给进程发送信号。</td>
+</tr>
+<tr>
+<td>psutil.pids()</td>
+<td>以列表的形式返回当前正在运行的进程</td>
+</tr>
+<tr>
+<td>psutil.pid_exists(1)</td>
+<td>判断给点定的pid是否存在</td>
+</tr>
+<tr>
+<td>psutil.process_iter()</td>
+<td>迭代当前正在运行的进程，返回的是每个进程的Process对象</td>
+</tr>
+</tbody></table>
+<h6 id="1）Process类"><a href="#1）Process类" class="headerlink" title="1）Process类"></a>1）Process类</h6><p>对进程进行封装，可以使用该类的方法获取进行的详细信息，或者给进程发送信号。  </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: <span class="keyword">import</span> psutil                 </span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: init_process = psutil.Process()</span><br><span class="line"></span><br><span class="line">In [<span class="number">3</span>]: init_process.cmdline()      </span><br><span class="line">Out[<span class="number">3</span>]: [<span class="string">&#x27;/usr/local/python38/bin/python3.8&#x27;</span>, <span class="string">&#x27;/usr/local/python38/bin/ipython&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<p>Process类包含很多方法来获取进程的详细信息。下面是几个较常用的方法：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">name：获取进程的名称</span><br><span class="line">cmdline：获取启动进程的命令行参数</span><br><span class="line">create_time：获取进程的创建时间(时间戳格式)</span><br><span class="line">num_fds：进程打开的文件个数</span><br><span class="line">num_threads：进程的子进程个数</span><br><span class="line">is_running：判断进程是否正在运行</span><br><span class="line">send_signal：给进程发送信号，类似与os.kill等</span><br><span class="line">kill：发送SIGKILL信号结束进程</span><br><span class="line">terminate：发送SIGTEAM信号结束进程</span><br></pre></td></tr></table></figure>
+<h6 id="2）pids"><a href="#2）pids" class="headerlink" title="2）pids"></a>2）pids</h6><p>以列表的形式返回当前正在运行的进程。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: <span class="keyword">import</span> psutil                 </span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: init_process = psutil.Process()</span><br><span class="line"></span><br><span class="line">In [<span class="number">3</span>]: init_process.cmdline()       </span><br><span class="line">Out[<span class="number">3</span>]: [<span class="string">&#x27;/usr/local/python38/bin/python3.8&#x27;</span>, <span class="string">&#x27;/usr/local/python38/bin/ipython&#x27;</span>]</span><br><span class="line"></span><br><span class="line">In [<span class="number">4</span>]: psutil.pids()[:<span class="number">5</span>]            </span><br><span class="line">Out[<span class="number">4</span>]: [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">7</span>]</span><br></pre></td></tr></table></figure>
+<h6 id="3）pid-exists"><a href="#3）pid-exists" class="headerlink" title="3）pid_exists"></a>3）pid_exists</h6><p>判断给点定的pid是否存在。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">5</span>]: psutil.pid_exists(<span class="number">1</span>)          </span><br><span class="line">Out[<span class="number">5</span>]: <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">6</span>]: psutil.pid_exists(<span class="number">10245</span>)                              </span><br><span class="line">Out[<span class="number">6</span>]: <span class="literal">False</span></span><br></pre></td></tr></table></figure>
+<h6 id="4）process-iter"><a href="#4）process-iter" class="headerlink" title="4）process_iter"></a>4）process_iter</h6><p>迭代当前正在运行的进程，返回的是每个进程的Process对象，而pids返回的是进程的列表。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">In</span> <span class="selector-attr">[55]</span>: <span class="selector-tag">len</span>(<span class="selector-attr">[item for item in psutil.process_iter()]</span>)                                                                </span><br><span class="line"><span class="selector-tag">Out</span><span class="selector-attr">[55]</span>: 234</span><br></pre></td></tr></table></figure>
+<h3 id="四、使用Python监控MongoDB"><a href="#四、使用Python监控MongoDB" class="headerlink" title="四、使用Python监控MongoDB"></a>四、使用Python监控MongoDB</h3><p>对于MongoDB数据库来说，获取监控的方法比较简单，因为MongoDB本身流返回给我们一个字典形式的数据。如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pymongo</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#/usr/bin/python</span></span><br><span class="line"><span class="comment">#_*_ coding:utf-8 _*_</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> print_function</span><br><span class="line"><span class="keyword">import</span> pymongo</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">client = pymongo.MongoClient(host=<span class="string">&#x27;127.0.0.1:27017&#x27;</span>)</span><br><span class="line">client.admin.authenticate(<span class="string">&#x27;laoyu&#x27;</span>,<span class="string">&#x27;laoyu&#x27;</span>)</span><br><span class="line">rs = client.admin.command(<span class="string">&#x27;replSetGetStatus&#x27;</span>)</span><br><span class="line"></span><br><span class="line">print(<span class="string">&quot;set:&quot;</span>,rs[<span class="string">&#x27;set&#x27;</span>])</span><br><span class="line">print(<span class="string">&quot;myState:&quot;</span>,rs[<span class="string">&#x27;myState&#x27;</span>])</span><br><span class="line">print(<span class="string">&#x27;num of members:&#x27;</span>,<span class="built_in">len</span>(rs[<span class="string">&#x27;members&#x27;</span>]))</span><br></pre></td></tr></table></figure>
+
+
+<p>l.pids()[:5]<br>Out[4]: [1, 2, 3, 5, 7]</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">###### <span class="number">3</span>）pid_exists</span><br><span class="line"></span><br><span class="line">判断给点定的pid是否存在。</span><br><span class="line"></span><br><span class="line">​```python</span><br><span class="line">In [<span class="number">5</span>]: psutil.pid_exists(<span class="number">1</span>)          </span><br><span class="line">Out[<span class="number">5</span>]: <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">6</span>]: psutil.pid_exists(<span class="number">10245</span>)                              </span><br><span class="line">Out[<span class="number">6</span>]: <span class="literal">False</span></span><br></pre></td></tr></table></figure>
+<h6 id="4）process-iter-1"><a href="#4）process-iter-1" class="headerlink" title="4）process_iter"></a>4）process_iter</h6><p>迭代当前正在运行的进程，返回的是每个进程的Process对象，而pids返回的是进程的列表。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="阿怪 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="阿怪 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿怪
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://aguai.fun/2020/05/07/%E4%BD%BF%E7%94%A8Python%E7%9B%91%E6%8E%A7Linux%E7%B3%BB%E7%BB%9F/" title="使用Python监控Linux系统">https://aguai.fun/2020/05/07/使用Python监控Linux系统/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+  
+</div>
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Python/" rel="tag"># Python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/28/Python%E6%89%A7%E8%A1%8C%E5%A4%96%E9%83%A8%E5%91%BD%E4%BB%A4/" rel="prev" title="Python执行外部命令">
+      <i class="fa fa-chevron-left"></i> Python执行外部命令
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/05/08/%E5%A4%84%E7%90%86Excel%E6%96%87%E4%BB%B6/" rel="next" title="处理Excel文件">
+      处理Excel文件 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC14%E7%AB%A0-%E4%BD%BF%E7%94%A8Python%E7%9B%91%E6%8E%A7Linux%E7%B3%BB%E7%BB%9F"><span class="nav-text">第14章 使用Python监控Linux系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81Python%E7%BC%96%E5%86%99%E7%9A%84%E7%9B%91%E6%8E%A7%E5%B7%A5%E5%85%B7"><span class="nav-text">一、Python编写的监控工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81%E5%A4%9A%E5%8A%9F%E8%83%BD%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90%E7%BB%9F%E8%AE%A1%E5%B7%A5%E5%85%B7dstat"><span class="nav-text">1、多功能系统资源统计工具dstat</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%881%EF%BC%89dstat%E4%BB%8B%E7%BB%8D"><span class="nav-text">（1）dstat介绍</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%882%EF%BC%89dstat%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9"><span class="nav-text">（2）dstat常用选项</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%883%EF%BC%89dstat%E9%AB%98%E7%BA%A7%E7%94%A8%E6%B3%95"><span class="nav-text">（3）dstat高级用法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%884%EF%BC%89%E5%B0%86%E7%BB%93%E6%9E%9C%E8%BE%93%E5%87%BA%E5%88%B0CSV%E6%96%87%E4%BB%B6"><span class="nav-text">（4）将结果输出到CSV文件</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81%E4%BA%A4%E4%BA%92%E5%BC%8F%E7%9B%91%E6%8E%A7%E5%B7%A5%E5%85%B7glances"><span class="nav-text">2、交互式监控工具glances</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%881%EF%BC%89glances%E6%8F%90%E4%BE%9B%E7%9A%84%E7%B3%BB%E7%BB%9F%E4%BF%A1%E6%81%AF"><span class="nav-text">（1）glances提供的系统信息</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%882%EF%BC%89Linux%E4%B8%8Bglances%E7%9A%84%E5%AE%89%E8%A3%85"><span class="nav-text">（2）Linux下glances的安装</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%883%EF%BC%89glances%E7%9A%84%E5%8F%AF%E8%AF%BB%E6%80%A7"><span class="nav-text">（3）glances的可读性</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%884%EF%BC%89glances%E5%B8%B8%E8%A7%81%E5%91%BD%E4%BB%A4"><span class="nav-text">（4）glances常见命令</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81Python%E7%9B%91%E6%8E%A7Linux"><span class="nav-text">二、Python监控Linux</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%BD%BF%E7%94%A8%E5%BC%80%E6%BA%90%E5%BA%93%E7%9B%91%E6%8E%A7Linux"><span class="nav-text">三、使用开源库监控Linux</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81psutil%E4%BB%8B%E7%BB%8D"><span class="nav-text">1、psutil介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81psutil%E6%8F%90%E4%BE%9B%E7%9A%84%E5%8A%9F%E8%83%BD%E5%87%BD%E6%95%B0"><span class="nav-text">2、psutil提供的功能函数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%881%EF%BC%89CPU"><span class="nav-text">（1）CPU</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#1%EF%BC%89cpu-count"><span class="nav-text">1）cpu_count</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2%EF%BC%89cpu-percent"><span class="nav-text">2）cpu_percent</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3%EF%BC%89cpu-times"><span class="nav-text">3）cpu_times</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#4%EF%BC%89cpu-stats"><span class="nav-text">4）cpu_stats</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#5%EF%BC%89cpu-freq"><span class="nav-text">5）cpu_freq</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%882%EF%BC%89%E5%86%85%E5%AD%98"><span class="nav-text">（2）内存</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#1%EF%BC%89virtual-memory"><span class="nav-text">1）virtual_memory</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2%EF%BC%89swap-memory"><span class="nav-text">2）swap_memory</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%883%EF%BC%89%E7%A3%81%E7%9B%98"><span class="nav-text">（3）磁盘</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#1%EF%BC%89psutil-disk-io-counters"><span class="nav-text">1）psutil.disk_io_counters</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2%EF%BC%89psutil-disk-partitions"><span class="nav-text">2）psutil.disk_partitions</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3%EF%BC%89psutil-disk-usage"><span class="nav-text">3）psutil.disk_usage</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%884%EF%BC%89%E7%BD%91%E7%BB%9C"><span class="nav-text">（4）网络</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#1%EF%BC%89psutil-net-io-counter"><span class="nav-text">1）psutil.net_io_counter</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2%EF%BC%89net-connections"><span class="nav-text">2）net_connections</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3%EF%BC%89net-if-addrs"><span class="nav-text">3）net_if_addrs</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#4%EF%BC%89psutil-net-if-stats"><span class="nav-text">4）psutil.net_if_stats</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%885%EF%BC%89%E5%85%B6%E4%BB%96"><span class="nav-text">（5）其他</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#1%EF%BC%89users"><span class="nav-text">1）users</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2%EF%BC%89boot-time"><span class="nav-text">2）boot_time</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3%E3%80%81%E7%BB%BC%E5%90%88%E6%A1%88%E4%BE%8B%EF%BC%9A%E4%BD%BF%E7%94%A8psutil%E5%AE%9E%E7%8E%B0%E7%9B%91%E6%8E%A7%E7%A8%8B%E5%BA%8F"><span class="nav-text">3、综合案例：使用psutil实现监控程序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4%E3%80%81psutil%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86"><span class="nav-text">4、psutil进程管理</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#1%EF%BC%89Process%E7%B1%BB"><span class="nav-text">1）Process类</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2%EF%BC%89pids"><span class="nav-text">2）pids</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3%EF%BC%89pid-exists"><span class="nav-text">3）pid_exists</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#4%EF%BC%89process-iter"><span class="nav-text">4）process_iter</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%BD%BF%E7%94%A8Python%E7%9B%91%E6%8E%A7MongoDB"><span class="nav-text">四、使用Python监控MongoDB</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#4%EF%BC%89process-iter-1"><span class="nav-text">4）process_iter</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="阿怪"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">阿怪</p>
+  <div class="site-description" itemprop="description">直到这一刻微笑着说话为止，我至少留下了一公升眼泪</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">103</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/a_guai_" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;a_guai_" rel="noopener" target="_blank"><i class="crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="阿怪"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">博客</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">574k</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/clicklove.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
+

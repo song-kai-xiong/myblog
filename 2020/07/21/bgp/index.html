@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"aguai.fun","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offalse":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="华为">
+<meta property="og:type" content="article">
+<meta property="og:title" content="bgp">
+<meta property="og:url" content="https://aguai.fun/2020/07/21/bgp/index.html">
+<meta property="og:site_name" content="阿怪の博客">
+<meta property="og:description" content="华为">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200721205037960.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="article:published_time" content="2020-07-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-07-24T01:16:16.354Z">
+<meta property="article:author" content="阿怪">
+<meta property="article:tag" content="华为">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200721205037960.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+
+<link rel="canonical" href="https://aguai.fun/2020/07/21/bgp/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>bgp | 阿怪の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿怪の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">103</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://aguai.fun/2020/07/21/bgp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="阿怪">
+      <meta itemprop="description" content="直到这一刻微笑着说话为止，我至少留下了一公升眼泪">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿怪の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          bgp
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-07-21 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-21T00:00:00+08:00">2020-07-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-07-24 09:16:16" itemprop="dateModified" datetime="2020-07-24T09:16:16+08:00">2020-07-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%8D%8E%E4%B8%BA/" itemprop="url" rel="index"><span itemprop="name">华为</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.8k</span>
+            </span>
+            <div class="post-description">华为</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="路由"><a href="#路由" class="headerlink" title="路由"></a>路由</h1><blockquote>
+<p>静态路由：用于小规模内网环境，死板不灵活，单向<br>动态路由：用于大规模网络环境，自动学习，灵活，需要占用一定的带宽资源</p>
+</blockquote>
+<h1 id="常见的动态路由协议"><a href="#常见的动态路由协议" class="headerlink" title="常见的动态路由协议"></a>常见的动态路由协议</h1><blockquote>
+<p>内部网关协议：rip  ospf  is-is  igrp eigrp<br>外部网关协议：BGP</p>
+<p>自治系统编号：1-65535<br>                           1-65511    公有AS<br>                           65512-65535 私有AS</p>
+</blockquote>
+<blockquote>
+<p>BGP:border gateway protocal,边界网关协议<br>   类型：距离矢量路由协议<br>   作用：连接不同的自治系统（AS），解决AS之间的选路问题，更适合互联网，无路由环</p>
+</blockquote>
+<h1 id="BGP的特征"><a href="#BGP的特征" class="headerlink" title="BGP的特征"></a>BGP的特征</h1><blockquote>
+<p>tcp 179<br>外部路由协议，实现AS之间路由传递<br>距离矢量路由协议<br>可靠的路由更新机制<br>丰富的Metric度量方法<br>无路由环<br>可为路由条目附带多种属性信息<br>支持CIDR（无类别域间选路）<br>丰富的路由过滤和策略<br>非周期性更新<br>路由更新只发增量路由<br>周期性发送keepalive报文，保持tcp连通</p>
+</blockquote>
+<h1 id="BGP的5报文"><a href="#BGP的5报文" class="headerlink" title="BGP的5报文"></a>BGP的5报文</h1><ol>
+<li>​    open:建立BGP对等体之间的连接</li>
+<li>​    update:更新增量路由</li>
+<li>​    notification:检测错误状态，报错</li>
+<li>​    route-refresh:告知对等体本地支持的路由刷新能力</li>
+<li>​    keepalive:周期性发送，保持有效连接</li>
+</ol>
+<h1 id="BGP的6状态机"><a href="#BGP的6状态机" class="headerlink" title="BGP的6状态机"></a>BGP的6状态机</h1><ol>
+<li>​    idle：初始状态，拒绝任何连接</li>
+<li>​    connect：连接态，等待tcp连接的建立</li>
+<li>​    active：活跃态，尝试tcp连接</li>
+<li>​    opensent：检查态，检查收到的open报文，如果报文正确转到下一连接状态openconfirm；如果报文错误，转到idle</li>
+<li>​    openconfirm:等待态，等待对等体的keepalive或notification报文，如果是keepalive就进入到established；如果是notification就回到idle</li>
+<li>​    established:建立态，对等体之间正常收发信息</li>
+</ol>
+<h1 id="BGP的5表"><a href="#BGP的5表" class="headerlink" title="BGP的5表"></a>BGP的5表</h1><ol>
+<li>​    IP路由表（IP-RIB）:全局路由信息库，包含所有最优的ip路由信息</li>
+<li>​    BGP路由表（Loc-RIB）：本地bgp speaker通告的路由信息，选其中最优添加到ip路由表</li>
+<li>​    邻居表：邻居清单列表</li>
+<li>​    Adi-RIB-In：对等体宣告的未处理的路由信息</li>
+<li>​    Adi-RIB-Out：本地宣告给对等体的路由信息    </li>
+</ol>
+<h1 id="BGP邻居关系类型"><a href="#BGP邻居关系类型" class="headerlink" title="BGP邻居关系类型"></a>BGP邻居关系类型</h1><blockquote>
+<p>IBGP：一个AS内部的BGP邻居关系<br>EBGP：AS之间的BGP邻居关系</p>
+</blockquote>
+<blockquote>
+<p>命令：<br>        bgp 200                        #宣告自己的自治系统编号<br>        router-id 2.2.2.2            #宣告自己的路由器id<br>        peer 12.1.1.1 as-number 100 #和谁（对等体ip及AS号码）建立bgp邻居关系    </p>
+</blockquote>
+<h1 id="通告BGP路由的方法"><a href="#通告BGP路由的方法" class="headerlink" title="通告BGP路由的方法"></a>通告BGP路由的方法</h1><blockquote>
+<p>network:network命令发布，一般直接发布路由到bgp<br>    命令：<br>        bgp 100<br>        router-id 1.1.1.1<br>        peer 12.0.0.2 as-number 100<br>        network 1.1.1.1 32<br>        network 2.2.2.2 32</p>
+</blockquote>
+<blockquote>
+<p>Import：一般用于把其他路由协议的路由信息导入到bgp<br>    命令：<br>        import-route ospf 110            </p>
+</blockquote>
+<h1 id="BGP属性"><a href="#BGP属性" class="headerlink" title="BGP属性"></a>BGP属性</h1><blockquote>
+<p>​    origin:起源<br>​    AS-path:到达目的经过的AS编号<br>​    next-hop：路由下一跳信息<br>​    local-pref:标识bgp路由的优先级，默认100，值越高越优先<br>​    med:判断流量进入邻居AS时的最佳路由，默认0，值越小越优先    </p>
+</blockquote>
+<h1 id="BGP选路原则"><a href="#BGP选路原则" class="headerlink" title="BGP选路原则"></a>BGP选路原则</h1><blockquote>
+<p>​    目标路由下一跳不可达，则忽略<br>​    preferred-value值高者优先<br>​    local-preference值高者优先<br>​    聚合路由高于非聚合路由<br>​    手动聚合高于自动聚合<br>​    network注入高于import导入<br>​    AS路径值少者优先<br>​    比较origin：IGP&gt;EGP&gt;imcomplete<br>​    med值小者优先<br>​    EBGP优先IBGP</p>
+</blockquote>
+<h1 id="练习"><a href="#练习" class="headerlink" title="练习"></a>练习</h1><p><img src="https://img-blog.csdnimg.cn/20200721205037960.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<blockquote>
+<p>某企业因为业务需求，要使运营商网络(R1:1.1.1.1)和公司（R4：4.4.4.4）网络路由可达。需要在所有router间运行BGP协议，r1和r2、r3之间建立ebgp连接，r2、r3和r4之间建立ibgp全连接。运营商网络为as100，公司网络为as200，在as200内，使用igp协议来计算路由（该例使用ospf作为igp协议）</p>
+</blockquote>
+<blockquote>
+<p>需求：<br>要求实现两个as之间的互相通信(192.168.1.0与192.168.2.0)<br>As 200内部通过ospf互相通信<br>通过修改bgp属性使实现业务需求的路径从r2切换到r3</p>
+</blockquote>
+<h2 id="R1"><a href="#R1" class="headerlink" title="R1"></a>R1</h2><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;Huawei&gt;sys</span><br><span class="line">[huawei]undo <span class="meta">info</span> enable</span><br><span class="line">[huawei]sysname <span class="built_in">r1</span></span><br><span class="line">[<span class="built_in">r1</span>]interface GigabitEthernet0/<span class="number">0</span>/<span class="number">0</span></span><br><span class="line">[<span class="built_in">R1</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">0</span>]<span class="built_in">ip</span> address <span class="number">10</span>.<span class="number">0</span>.<span class="number">12</span>.<span class="number">1</span> <span class="number">255</span>.<span class="number">255</span>.<span class="number">255</span>.<span class="number">0</span> </span><br><span class="line">[<span class="built_in">r1</span>]interface GigabitEthernet0/<span class="number">0</span>/<span class="number">1</span></span><br><span class="line">[<span class="built_in">R1</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">0</span>]<span class="built_in">ip</span> address <span class="number">10</span>.<span class="number">0</span>.<span class="number">13</span>.<span class="number">1</span> <span class="number">255</span>.<span class="number">255</span>.<span class="number">255</span>.<span class="number">0</span> </span><br><span class="line"><span class="symbol">r1</span>]interface GigabitEthernet0/<span class="number">0</span>/<span class="number">2</span></span><br><span class="line">[<span class="built_in">R1</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">2</span>]<span class="built_in">ip</span> address <span class="number">192</span>.<span class="number">168</span>.<span class="number">1</span>.<span class="number">1</span> <span class="number">255</span>.<span class="number">255</span>.<span class="number">255</span>.<span class="number">0</span></span><br><span class="line">[<span class="built_in">r1</span>]interface LoopBack <span class="number">0</span></span><br><span class="line">[<span class="built_in">R1</span>-LoopBack0]<span class="built_in">ip</span> address <span class="number">1</span>.<span class="number">1</span>.<span class="number">1</span>.<span class="number">1</span> <span class="number">255</span>.<span class="number">255</span>.<span class="number">255</span>.<span class="number">255</span> </span><br><span class="line">[<span class="built_in">R1</span>-LoopBack0]quit</span><br><span class="line">[<span class="built_in">r1</span>]bgp <span class="number">100</span>		<span class="comment">//进入bgp视图，其中本端AS号为100</span></span><br><span class="line">[<span class="built_in">R1</span>-bgp]router-id <span class="number">1</span>.<span class="number">1</span>.<span class="number">1</span>.<span class="number">1</span>		<span class="comment">//配置BGP的router-id</span></span><br><span class="line">[<span class="built_in">R1</span>-bgp]peer <span class="number">10</span>.<span class="number">0</span>.<span class="number">12</span>.<span class="number">2</span> as-number <span class="number">200</span> 		<span class="comment">//配置BGP的router-id</span></span><br><span class="line">[<span class="built_in">R1</span>-bgp]peer <span class="number">10</span>.<span class="number">0</span>.<span class="number">13</span>.<span class="number">3</span> as-number <span class="number">200</span> 		<span class="comment">//和10.0.13.3建立EBGP另据关系</span></span><br><span class="line">[<span class="built_in">R1</span>-bgp]network <span class="number">1</span>.<span class="number">1</span>.<span class="number">1</span>.<span class="number">1</span> <span class="number">32</span>		<span class="comment">//通告网络1.1.1.1/32</span></span><br><span class="line">[<span class="built_in">R1</span>-bgp]network <span class="number">192</span>.<span class="number">168</span>.<span class="number">1</span>.<span class="number">0</span> <span class="number">24</span></span><br></pre></td></tr></table></figure>
+<h2 id="R2"><a href="#R2" class="headerlink" title="R2"></a>R2</h2><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[huawei]sysname <span class="built_in">r2</span></span><br><span class="line">[<span class="built_in">r2</span>]interface GigabitEthernet0/<span class="number">0</span>/<span class="number">0</span>]<span class="built_in">ip</span> address <span class="number">10</span>.<span class="number">0</span>.<span class="number">12</span>.<span class="number">2</span> <span class="number">255</span>.<span class="number">255</span>.<span class="number">255</span>.<span class="number">0</span> </span><br><span class="line">[<span class="built_in">r2</span>]interface GigabitEthernet0/<span class="number">0</span>/<span class="number">1</span></span><br><span class="line">[<span class="built_in">R2</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">2</span>]<span class="built_in">ip</span> address <span class="number">10</span>.<span class="number">0</span>.<span class="number">24</span>.<span class="number">2</span> <span class="number">255</span>.<span class="number">255</span>.<span class="number">255</span>.<span class="number">0</span> </span><br><span class="line">[<span class="built_in">r2</span>]interface LoopBack <span class="number">0</span></span><br><span class="line">[<span class="built_in">R2</span>-LoopBack0]<span class="built_in">ip</span> address <span class="number">2</span>.<span class="number">2</span>.<span class="number">2</span>.<span class="number">2</span> <span class="number">255</span>.<span class="number">255</span>.<span class="number">255</span>.<span class="number">255</span> </span><br><span class="line">[<span class="built_in">R2</span>-LoopBack0]quit</span><br><span class="line">[<span class="built_in">r2</span>]bgp <span class="number">200</span></span><br><span class="line">[<span class="built_in">R2</span>-bgp]router-id <span class="number">2</span>.<span class="number">2</span>.<span class="number">2</span>.<span class="number">2</span></span><br><span class="line">[<span class="built_in">R2</span>-bgp]peer <span class="number">10</span>.<span class="number">0</span>.<span class="number">12</span>.<span class="number">1</span> as-number <span class="number">100</span> </span><br><span class="line">[<span class="built_in">R2</span>-bgp]peer <span class="number">10</span>.<span class="number">0</span>.<span class="number">24</span>.<span class="number">4</span> as-number <span class="number">200</span> </span><br><span class="line">[<span class="built_in">R2</span>-bgp]peer <span class="number">10</span>.<span class="number">0</span>.<span class="number">24</span>.<span class="number">4</span> next-hop-local </span><br><span class="line">[<span class="built_in">R2</span>-bgp]quit</span><br><span class="line">[<span class="built_in">r2</span>]ospf <span class="number">110</span> </span><br><span class="line">[<span class="built_in">R2</span>-ospf-<span class="number">110</span>]<span class="meta">area</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span> </span><br><span class="line">[<span class="built_in">R2</span>-ospf-<span class="number">110</span>]network <span class="number">10</span>.<span class="number">0</span>.<span class="number">24</span>.<span class="number">0</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">255</span> </span><br><span class="line">[<span class="built_in">R2</span>-ospf-<span class="number">110</span>]network <span class="number">2</span>.<span class="number">2</span>.<span class="number">2</span>.<span class="number">2</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span> </span><br></pre></td></tr></table></figure>
+<h2 id="R3"><a href="#R3" class="headerlink" title="R3"></a>R3</h2><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;Huawei&gt;sys</span><br><span class="line">[huawei]undo <span class="meta">info</span> enable</span><br><span class="line">[huawei]sysname <span class="built_in">r3</span></span><br><span class="line">[<span class="built_in">r3</span>]interface GigabitEthernet0/<span class="number">0</span>/<span class="number">0</span>]<span class="built_in">ip</span> address <span class="number">10</span>.<span class="number">0</span>.<span class="number">13</span>.<span class="number">3</span> <span class="number">255</span>.<span class="number">255</span>.<span class="number">255</span>.<span class="number">0</span> </span><br><span class="line">[<span class="built_in">r3</span>]interface GigabitEthernet0/<span class="number">0</span>/<span class="number">1</span></span><br><span class="line">[<span class="built_in">R3</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">2</span>]<span class="built_in">ip</span> address <span class="number">10</span>.<span class="number">0</span>.<span class="number">34</span>.<span class="number">3</span> <span class="number">255</span>.<span class="number">255</span>.<span class="number">255</span>.<span class="number">0</span> </span><br><span class="line">[<span class="built_in">r3</span>]interface LoopBack <span class="number">0</span></span><br><span class="line">[<span class="built_in">R3</span>-LoopBack0]<span class="built_in">ip</span> address <span class="number">3</span>.<span class="number">3</span>.<span class="number">3</span>.<span class="number">3</span> <span class="number">32</span> </span><br><span class="line">[<span class="built_in">R3</span>-LoopBack0]quit</span><br><span class="line">[<span class="built_in">r3</span>]bgp <span class="number">200</span></span><br><span class="line">[<span class="built_in">R3</span>-bgp]router-id <span class="number">3</span>.<span class="number">3</span>.<span class="number">3</span>.<span class="number">3</span></span><br><span class="line">[<span class="built_in">R3</span>-bgp]peer <span class="number">10</span>.<span class="number">0</span>.<span class="number">13</span>.<span class="number">1</span> as-number <span class="number">100</span> </span><br><span class="line">[<span class="built_in">R3</span>-bgp]peer <span class="number">10</span>.<span class="number">0</span>.<span class="number">34</span>.<span class="number">4</span> as-number <span class="number">200</span> </span><br><span class="line">[<span class="built_in">R3</span>-bgp]peer <span class="number">10</span>.<span class="number">0</span>.<span class="number">34</span>.<span class="number">4</span> next-hop-local </span><br><span class="line">[<span class="built_in">R3</span>-bgp]quit</span><br><span class="line">[<span class="built_in">R3</span>]ospf <span class="number">110</span> </span><br><span class="line">[<span class="built_in">R3</span>-ospf-<span class="number">110</span>]<span class="meta">area</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span> </span><br><span class="line">[<span class="built_in">R3</span>-ospf-<span class="number">110</span>]network <span class="number">10</span>.<span class="number">0</span>.<span class="number">34</span>.<span class="number">0</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">255</span> </span><br><span class="line">[<span class="built_in">R3</span>-ospf-<span class="number">110</span>]network <span class="number">3</span>.<span class="number">3</span>.<span class="number">3</span>.<span class="number">3</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span></span><br></pre></td></tr></table></figure>
+<h2 id="R4"><a href="#R4" class="headerlink" title="R4"></a>R4</h2><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&lt;Huawei&gt;sys</span><br><span class="line">[huawei]undo <span class="meta">info</span> enable</span><br><span class="line">[huawei]sysname <span class="built_in">r4</span></span><br><span class="line">[<span class="built_in">r4</span>]interface GigabitEthernet0/<span class="number">0</span>/<span class="number">0</span>]<span class="built_in">ip</span> address <span class="number">10</span>.<span class="number">0</span>.<span class="number">24</span>.<span class="number">4</span> <span class="number">255</span>.<span class="number">255</span>.<span class="number">255</span>.<span class="number">0</span> </span><br><span class="line">[<span class="built_in">r4</span>]interface GigabitEthernet0/<span class="number">0</span>/<span class="number">1</span></span><br><span class="line">[<span class="built_in">R4</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">2</span>]<span class="built_in">ip</span> address <span class="number">10</span>.<span class="number">0</span>.<span class="number">34</span>.<span class="number">4</span> <span class="number">255</span>.<span class="number">255</span>.<span class="number">255</span>.<span class="number">0</span> </span><br><span class="line">[<span class="built_in">r4</span>]interface GigabitEthernet0/<span class="number">0</span>/<span class="number">2</span></span><br><span class="line">[<span class="built_in">R4</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">2</span>]<span class="built_in">ip</span> address <span class="number">192</span>.<span class="number">168</span>.<span class="number">2</span>.<span class="number">1</span> <span class="number">255</span>.<span class="number">255</span>.<span class="number">255</span>.<span class="number">0</span></span><br><span class="line">[<span class="built_in">r4</span>]interface LoopBack <span class="number">0</span></span><br><span class="line">[<span class="built_in">R4</span>-LoopBack0]<span class="built_in">ip</span> address <span class="number">4</span>.<span class="number">4</span>.<span class="number">4</span>.<span class="number">4</span> <span class="number">255</span>.<span class="number">255</span>.<span class="number">255</span>.<span class="number">255</span> </span><br><span class="line">[<span class="built_in">R4</span>-LoopBack0]quit</span><br><span class="line">[<span class="built_in">r4</span>]bgp <span class="number">200</span></span><br><span class="line">[<span class="built_in">R4</span>-bgp]router-id <span class="number">4</span>.<span class="number">4</span>.<span class="number">4</span>.<span class="number">4</span></span><br><span class="line">[<span class="built_in">R4</span>-bgp]peer <span class="number">10</span>.<span class="number">0</span>.<span class="number">24</span>.<span class="number">2</span> as-number <span class="number">200</span> </span><br><span class="line">[<span class="built_in">R4</span>-bgp]peer <span class="number">10</span>.<span class="number">0</span>.<span class="number">34</span>.<span class="number">3</span> as-number <span class="number">200</span></span><br><span class="line">[<span class="built_in">R4</span>-bgp]network <span class="number">4</span>.<span class="number">4</span>.<span class="number">4</span>.<span class="number">4</span> <span class="number">32</span></span><br><span class="line">[<span class="built_in">R4</span>-bgp]network  <span class="number">192</span>.<span class="number">168</span>.<span class="number">2</span>.<span class="number">0</span> <span class="number">24</span></span><br><span class="line">[<span class="built_in">R4</span>-bgp]peer <span class="number">10</span>.<span class="number">0</span>.<span class="number">34</span>.<span class="number">3</span> next-hop-local</span><br><span class="line">[<span class="built_in">R4</span>-bgp]peer <span class="number">10</span>.<span class="number">0</span>.<span class="number">24</span>.<span class="number">2</span> next-hop-local</span><br><span class="line">[<span class="built_in">R4</span>-bgp]quit</span><br><span class="line">[<span class="built_in">R4</span>]ospf <span class="number">110</span></span><br><span class="line">[<span class="built_in">R4</span>-ospf-<span class="number">110</span>]<span class="meta">area</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span></span><br><span class="line">[<span class="built_in">R4</span>-ospf-<span class="number">110</span>]network <span class="number">4</span>.<span class="number">4</span>.<span class="number">4</span>.<span class="number">4</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span></span><br><span class="line">[<span class="built_in">R4</span>-ospf-<span class="number">110</span>]network <span class="number">10</span>.<span class="number">0</span>.<span class="number">34</span>.<span class="number">0</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">255</span></span><br><span class="line">[<span class="built_in">R4</span>-ospf-<span class="number">110</span>]network <span class="number">10</span>.<span class="number">0</span>.<span class="number">24</span>.<span class="number">0</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">255</span></span><br><span class="line">[<span class="built_in">R4</span>-ospf-<span class="number">110</span>]network <span class="number">192</span>.<span class="number">168</span>.<span class="number">2</span>.<span class="number">0</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">255</span></span><br></pre></td></tr></table></figure>
+<h2 id="查看配置"><a href="#查看配置" class="headerlink" title="查看配置"></a>查看配置</h2><h3 id="R4-1"><a href="#R4-1" class="headerlink" title="R4"></a>R4</h3><figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[R4]disp bgp routing-table </span><br><span class="line"></span><br><span class="line"> BGP Local router ID is 4.4.4.4 </span><br><span class="line"> Status codes: * - valid, &gt; - best, d - damped,</span><br><span class="line">               h - history,  i - internal, s - suppressed, S - Stale</span><br><span class="line">               Origin : i - IGP, e - EGP, ? - incomplete</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> Total Number of Routes: 5</span><br><span class="line">      Network            NextHop        MED        LocPrf    PrefVal Path/Ogn</span><br><span class="line"></span><br><span class="line"> *&gt;i  1.1.1.1/32         10.0.24.2      <span class="number"> 0 </span>        <span class="number"> 100 </span>      <span class="number"> 0 </span>     100i</span><br><span class="line"> * i                     10.0.34.3      <span class="number"> 0 </span>        <span class="number"> 100 </span>      <span class="number"> 0 </span>     100i</span><br><span class="line"> *&gt;i  2.2.2.2/32         10.0.24.2      <span class="number"> 0 </span>        <span class="number"> 100 </span>      <span class="number"> 0 </span>     i</span><br><span class="line"> *&gt;i  3.3.3.3/32         10.0.34.3      <span class="number"> 0 </span>        <span class="number"> 100 </span>      <span class="number"> 0 </span>     i</span><br><span class="line"> *&gt;   4.4.4.4/32         0.0.0.0        <span class="number"> 0 </span>                   <span class="number"> 0 </span>     i</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>左右两台pc机填写ip，看是否能相互ping通</p>
+</blockquote>
+<h2 id="在r3上修改local-preference值"><a href="#在r3上修改local-preference值" class="headerlink" title="在r3上修改local-preference值"></a>在r3上修改local-preference值</h2><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">r3</span>]route-policy lop permit node <span class="number">10</span> </span><br><span class="line">[<span class="built_in">r3</span>-route-policy]apply local-preference <span class="number">222</span> </span><br><span class="line">[<span class="built_in">r3</span>]bgp <span class="number">200</span></span><br><span class="line">[<span class="built_in">r3</span>-bgp]peer <span class="number">10</span>.<span class="number">0</span>.<span class="number">34</span>.<span class="number">4</span> route-policy lop <span class="meta">export</span></span><br><span class="line">[<span class="built_in">r3</span>-bgp]quit</span><br><span class="line">[<span class="built_in">r3</span>]quit</span><br><span class="line">&lt;<span class="built_in">r3</span>&gt;reset bgp all</span><br></pre></td></tr></table></figure>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;R4&gt;dis bgp routing-table </span><br><span class="line"></span><br><span class="line"> BGP Local router ID is 4.4.4.4 </span><br><span class="line"> Status codes: * - valid, &gt; - best, d - damped,</span><br><span class="line">               h - history,  i - internal, s - suppressed, S - Stale</span><br><span class="line">               Origin : i - IGP, e - EGP, ? - incomplete</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> Total Number of Routes: 4</span><br><span class="line">      Network            NextHop        MED        LocPrf    PrefVal Path/Ogn</span><br><span class="line"></span><br><span class="line"> *&gt;i  1.1.1.1/32         10.0.34.3      <span class="number"> 0 </span>        <span class="number"> 222 </span>      <span class="number"> 0 </span>     100i</span><br><span class="line"> *&gt;i  2.2.2.2/32         10.0.24.2      <span class="number"> 0 </span>        <span class="number"> 100 </span>      <span class="number"> 0 </span>     i</span><br><span class="line"> *&gt;i  3.3.3.3/32         10.0.34.3      <span class="number"> 0 </span>        <span class="number"> 222 </span>      <span class="number"> 0 </span>     i</span><br><span class="line"> *&gt;   4.4.4.4/32         0.0.0.0        <span class="number"> 0 </span>                   <span class="number"> 0 </span>     i</span><br></pre></td></tr></table></figure>
+<h2 id="修改as-path属性"><a href="#修改as-path属性" class="headerlink" title="修改as-path属性"></a>修改as-path属性</h2><h3 id="为了还原最初走r2的的效果，请先清除第1）步的配置，在bgp进程中删除策略调用语句"><a href="#为了还原最初走r2的的效果，请先清除第1）步的配置，在bgp进程中删除策略调用语句" class="headerlink" title="为了还原最初走r2的的效果，请先清除第1）步的配置，在bgp进程中删除策略调用语句"></a>为了还原最初走r2的的效果，请先清除第1）步的配置，在bgp进程中删除策略调用语句</h3><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">R3</span>]bgp  <span class="number">200</span></span><br><span class="line">[<span class="built_in">R3</span>-bpg]undo peer <span class="number">10</span>.<span class="number">0</span>.<span class="number">34</span>.<span class="number">4</span> route-policy lop <span class="meta">export</span></span><br></pre></td></tr></table></figure>
+<h3 id="在r2上修改as-path属性并传出个r4"><a href="#在r2上修改as-path属性并传出个r4" class="headerlink" title="在r2上修改as-path属性并传出个r4"></a>在r2上修改as-path属性并传出个r4</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">R2</span>]route-policy  <span class="keyword">as</span> permit node <span class="number">10</span></span><br><span class="line">[<span class="meta">R2-route-policy</span>]apply <span class="keyword">as</span>-path  <span class="number">123</span> <span class="number">123</span> <span class="number">123</span>  additive </span><br><span class="line">[<span class="meta">R2-route-policy</span>]quit</span><br><span class="line">[<span class="meta">R2</span>]bgp <span class="number">200</span></span><br><span class="line">[<span class="meta">R2-bgp</span>]peer <span class="number">10.0</span><span class="number">.24</span><span class="number">.4</span> route-policy <span class="keyword">as</span> export</span><br><span class="line">[<span class="meta">r2-bgp</span>]quit</span><br><span class="line">[<span class="meta">r2</span>]quit</span><br><span class="line">&lt;r2&gt;reset bgp all</span><br></pre></td></tr></table></figure>
+<h2 id="通过med属性控制路由"><a href="#通过med属性控制路由" class="headerlink" title="通过med属性控制路由"></a>通过med属性控制路由</h2><h3 id="R1到r4的默认路径为r1—r2—r4"><a href="#R1到r4的默认路径为r1—r2—r4" class="headerlink" title="R1到r4的默认路径为r1—r2—r4"></a>R1到r4的默认路径为r1—r2—r4</h3><figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;R1&gt;disp bgp routing-table </span><br><span class="line"></span><br><span class="line"> BGP Local router ID is <span class="number">1.1.1.1</span> </span><br><span class="line"> Status codes: * - valid, &gt; - best, d - damped,</span><br><span class="line">               h - history,  i - internal, s - suppressed, S - Stale</span><br><span class="line">               Origin : i - IGP, e - EGP, ? - incomplete</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> Total Number of Routes: <span class="number">7</span></span><br><span class="line">      Network            NextHop        MED        LocPrf    PrefVal Path/Ogn</span><br><span class="line"></span><br><span class="line"> *&gt;   <span class="number">1.1.1.1</span>/<span class="number">32</span>         <span class="number">0.0.0.0</span>         <span class="number">0</span>                     <span class="number">0</span>      i</span><br><span class="line"> *&gt;   <span class="number">2.2.2.2</span>/<span class="number">32</span>         <span class="number">10.0.12.2</span>       <span class="number">0</span>                     <span class="number">0</span>      <span class="number">200</span>i</span><br><span class="line"> *                       <span class="number">10.0.13.3</span>                             <span class="number">0</span>      <span class="number">200 123 12</span></span><br><span class="line"><span class="number">3</span> <span class="number">123</span>i</span><br><span class="line"> *&gt;   <span class="number">3.3.3.3</span>/<span class="number">32</span>         <span class="number">10.0.12.2</span>                             <span class="number">0</span>      <span class="number">200</span>i</span><br><span class="line"> *                       <span class="number">10.0.13.3</span>       <span class="number">0</span>                     <span class="number">0</span>      <span class="number">200</span>i</span><br><span class="line"> *&gt;   <span class="number">4.4.4.4</span>/<span class="number">32</span>         <span class="number">10.0.12.2</span>                             <span class="number">0</span>      <span class="number">200</span>i</span><br><span class="line"> *                       <span class="number">10.0.13.3</span>                             <span class="number">0</span>      <span class="number">200</span>i</span><br></pre></td></tr></table></figure>
+<h3 id="修改为r1—r3—-r4"><a href="#修改为r1—r3—-r4" class="headerlink" title="修改为r1—r3—-r4"></a>修改为r1—r3—-r4</h3><p>在r2上进行修改MED属性并传出给r1，可以使r1去往r4的路由改走r3</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">[R2]route-policy  med  permit node <span class="number">10</span></span><br><span class="line">[R2-route-policy]apply cost + <span class="number">500</span></span><br><span class="line">[R2-route-policy]quit</span><br><span class="line">[R2]bgp <span class="number">200</span></span><br><span class="line">[R2-bgp]peer <span class="number">10.0.12.1</span> route-policy  med export</span><br><span class="line">[R2-bgp]quit</span><br><span class="line">&lt;R1&gt;disp bgp routing-table</span><br><span class="line"></span><br><span class="line"> BGP Local router ID is <span class="number">1.1.1.1</span> </span><br><span class="line"> Status codes: * - valid, &gt; - best, d - damped,</span><br><span class="line">               h - history,  i - internal, s - suppressed, S - Stale</span><br><span class="line">               Origin : i - IGP, e - EGP, ? - incomplete</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> Total Number of Routes: <span class="number">7</span></span><br><span class="line">      Network            NextHop        MED        LocPrf    PrefVal Path/Ogn</span><br><span class="line"></span><br><span class="line"> *&gt;   <span class="number">1.1.1.1</span>/<span class="number">32</span>         <span class="number">0.0.0.0</span>         <span class="number">0</span>                     <span class="number">0</span>      i</span><br><span class="line"> *&gt;   <span class="number">2.2.2.2</span>/<span class="number">32</span>         <span class="number">10.0.12.2</span>       <span class="number">500</span>                   <span class="number">0</span>      <span class="number">200</span>i</span><br><span class="line"> *                       <span class="number">10.0.13.3</span>                             <span class="number">0</span>      <span class="number">200 123 12</span></span><br><span class="line"><span class="number">3</span> <span class="number">123</span>i</span><br><span class="line"> *&gt;   <span class="number">3.3.3.3</span>/<span class="number">32</span>         <span class="number">10.0.13.3</span>       <span class="number">0</span>                     <span class="number">0</span>      <span class="number">200</span>i</span><br><span class="line"> *                       <span class="number">10.0.12.2</span>       <span class="number">500</span>                   <span class="number">0</span>      <span class="number">200</span>i</span><br><span class="line"> *&gt;   <span class="number">4.4.4.4</span>/<span class="number">32</span>         <span class="number">10.0.13.3</span>                             <span class="number">0</span>      <span class="number">200</span>i</span><br><span class="line"> *                       <span class="number">10.0.12.2</span>       <span class="number">500</span>                   <span class="number">0</span>      <span class="number">200</span>i</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="阿怪 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="阿怪 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿怪
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://aguai.fun/2020/07/21/bgp/" title="bgp">https://aguai.fun/2020/07/21/bgp/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+  
+</div>
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8D%8E%E4%B8%BA/" rel="tag"># 华为</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/18/Hybrid%E6%8E%A5%E5%8F%A3%E3%80%81MSTP%E5%8D%8F%E8%AE%AE/" rel="prev" title="Hybrid接口、MSTP协议">
+      <i class="fa fa-chevron-left"></i> Hybrid接口、MSTP协议
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/07/24/%E5%8D%8E%E4%B8%BA%E9%98%B2%E7%81%AB%E5%A2%99/" rel="next" title="华为防火墙">
+      华为防火墙 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1"><span class="nav-text">路由</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE"><span class="nav-text">常见的动态路由协议</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BGP%E7%9A%84%E7%89%B9%E5%BE%81"><span class="nav-text">BGP的特征</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BGP%E7%9A%845%E6%8A%A5%E6%96%87"><span class="nav-text">BGP的5报文</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BGP%E7%9A%846%E7%8A%B6%E6%80%81%E6%9C%BA"><span class="nav-text">BGP的6状态机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BGP%E7%9A%845%E8%A1%A8"><span class="nav-text">BGP的5表</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BGP%E9%82%BB%E5%B1%85%E5%85%B3%E7%B3%BB%E7%B1%BB%E5%9E%8B"><span class="nav-text">BGP邻居关系类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%9A%E5%91%8ABGP%E8%B7%AF%E7%94%B1%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-text">通告BGP路由的方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BGP%E5%B1%9E%E6%80%A7"><span class="nav-text">BGP属性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BGP%E9%80%89%E8%B7%AF%E5%8E%9F%E5%88%99"><span class="nav-text">BGP选路原则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0"><span class="nav-text">练习</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#R1"><span class="nav-text">R1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#R2"><span class="nav-text">R2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#R3"><span class="nav-text">R3</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#R4"><span class="nav-text">R4</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E9%85%8D%E7%BD%AE"><span class="nav-text">查看配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#R4-1"><span class="nav-text">R4</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8r3%E4%B8%8A%E4%BF%AE%E6%94%B9local-preference%E5%80%BC"><span class="nav-text">在r3上修改local-preference值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9as-path%E5%B1%9E%E6%80%A7"><span class="nav-text">修改as-path属性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BA%86%E8%BF%98%E5%8E%9F%E6%9C%80%E5%88%9D%E8%B5%B0r2%E7%9A%84%E7%9A%84%E6%95%88%E6%9E%9C%EF%BC%8C%E8%AF%B7%E5%85%88%E6%B8%85%E9%99%A4%E7%AC%AC1%EF%BC%89%E6%AD%A5%E7%9A%84%E9%85%8D%E7%BD%AE%EF%BC%8C%E5%9C%A8bgp%E8%BF%9B%E7%A8%8B%E4%B8%AD%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5%E8%B0%83%E7%94%A8%E8%AF%AD%E5%8F%A5"><span class="nav-text">为了还原最初走r2的的效果，请先清除第1）步的配置，在bgp进程中删除策略调用语句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8r2%E4%B8%8A%E4%BF%AE%E6%94%B9as-path%E5%B1%9E%E6%80%A7%E5%B9%B6%E4%BC%A0%E5%87%BA%E4%B8%AAr4"><span class="nav-text">在r2上修改as-path属性并传出个r4</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87med%E5%B1%9E%E6%80%A7%E6%8E%A7%E5%88%B6%E8%B7%AF%E7%94%B1"><span class="nav-text">通过med属性控制路由</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#R1%E5%88%B0r4%E7%9A%84%E9%BB%98%E8%AE%A4%E8%B7%AF%E5%BE%84%E4%B8%BAr1%E2%80%94r2%E2%80%94r4"><span class="nav-text">R1到r4的默认路径为r1—r2—r4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E4%B8%BAr1%E2%80%94r3%E2%80%94-r4"><span class="nav-text">修改为r1—r3—-r4</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="阿怪"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">阿怪</p>
+  <div class="site-description" itemprop="description">直到这一刻微笑着说话为止，我至少留下了一公升眼泪</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">103</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/a_guai_" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;a_guai_" rel="noopener" target="_blank"><i class="crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="阿怪"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">博客</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">574k</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/clicklove.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
+

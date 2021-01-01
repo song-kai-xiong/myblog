@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"aguai.fun","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offalse":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="mysql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分表和分区">
+<meta property="og:url" content="https://aguai.fun/2020/06/23/%E5%88%86%E8%A1%A8%E5%92%8C%E5%88%86%E5%8C%BA/index.html">
+<meta property="og:site_name" content="阿怪の博客">
+<meta property="og:description" content="mysql">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200623181423271.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="article:published_time" content="2020-06-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-06-23T10:16:30.817Z">
+<meta property="article:author" content="阿怪">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200623181423271.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+
+<link rel="canonical" href="https://aguai.fun/2020/06/23/%E5%88%86%E8%A1%A8%E5%92%8C%E5%88%86%E5%8C%BA/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>分表和分区 | 阿怪の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿怪の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">103</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://aguai.fun/2020/06/23/%E5%88%86%E8%A1%A8%E5%92%8C%E5%88%86%E5%8C%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="阿怪">
+      <meta itemprop="description" content="直到这一刻微笑着说话为止，我至少留下了一公升眼泪">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿怪の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          分表和分区
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-06-23 00:00:00 / 修改时间：18:16:30" itemprop="dateCreated datePublished" datetime="2020-06-23T00:00:00+08:00">2020-06-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.7k</span>
+            </span>
+            <div class="post-description">mysql</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="mysql数据库文件拓展名"><a href="#mysql数据库文件拓展名" class="headerlink" title="mysql数据库文件拓展名"></a>mysql数据库文件拓展名</h1><p><img src="https://img-blog.csdnimg.cn/20200623181423271.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>格式文件.frm    描述表的结构（列、列类型、索引，等等）</p>
+<p>数据文件.ISD(ISAM) 或 .MYD (MyISAM)   包含表的数据─即它的行</p>
+<p>索引文件.ISD(ISAM) 或 .MYI (MyISAM)    包含数据文件中任何索引的索引树。无论该表有无索引，索引文件都存在 </p>
+<h1 id="分表"><a href="#分表" class="headerlink" title="分表"></a>分表</h1><h2 id="什么是分表？"><a href="#什么是分表？" class="headerlink" title="什么是分表？"></a>什么是分表？</h2><ul>
+<li>分表是将一个大表按照一定的规则分解成多张具有独立存储空间的实体表，每个表都对应三个文件，MYD数据 文件，.MYI索引文件，.frm表结构文件。这些表可以分布在同一块磁盘上，也可以在不同的机器上。app读写的 时候根据事先定义好的规则得到对应的表名，然后去操作它。 将单个数据库表进行拆分，拆分成多个数据表，然后用户访问的时候，根据一定的算法（如用hash的方式，也 可以用求余（取模）的方式），让用户访问不同的表，这样数据分散到多个数据表中，减少了单个数据表的访 问压力。提升了数据库访问性能。分表的目的就在于此，减小数据库的负担，缩短查询时间。  </li>
+</ul>
+<h2 id="Mysql分表分为垂直切分和水平切分"><a href="#Mysql分表分为垂直切分和水平切分" class="headerlink" title="Mysql分表分为垂直切分和水平切分"></a>Mysql分表分为垂直切分和水平切分</h2><ul>
+<li>垂直切分是指数据表列的拆分，把一张列比较多的表拆分为多张表 通常我们按以下原则进行垂直拆分: 把不常 用的字段单独放在一张表; 把text，blob（binary large object，二进制大对象）等大字段拆分出来放在附表中; 经常组合查询的列放在一张表中; 垂直拆分更多时候就应该在数据表设计之初就执行的步骤，然后查询的时候用 join关键起来即可。 </li>
+<li>水平拆分是指数据表行的拆分，把一张的表的数据拆成多张表来存放。 水平拆分原则 通常情况下，我们使用 hash、取模等方式来进行表的拆分 比如一张有400W的用户表users，为提高其查询效率我们把其分成4张表 users1，users2，users3，users4 通过用ID取模的方法把数据分散到四张表内Id%4= [0,1,2,3] 然后查询,更新,删 除也是通过取模的方法来查询 部分业务逻辑也可以通过地区，年份等字段来进行归档拆分; 进行拆分后的表， 这时我们就要约束用户查询行为。比如我们是按年来进行拆分的,这个时候在页面设计上就约束用户必须要先选 择年,然后才能进行查询。  </li>
+</ul>
+<h2 id="分表的几种方式："><a href="#分表的几种方式：" class="headerlink" title="分表的几种方式："></a>分表的几种方式：</h2><h3 id="mysql集群"><a href="#mysql集群" class="headerlink" title="mysql集群"></a>mysql集群</h3><ul>
+<li>它并不是分表，但起到了和分表相同的作用。集群可分担数据库的操作次数，将任务分担到多台数据库上。集 群可以读写分离，减少读写压力。从而提升数据库性能。  </li>
+</ul>
+<h3 id="预先估计会出现大数据量并且访问频繁的表，将其分为若干个表"><a href="#预先估计会出现大数据量并且访问频繁的表，将其分为若干个表" class="headerlink" title="预先估计会出现大数据量并且访问频繁的表，将其分为若干个表"></a>预先估计会出现大数据量并且访问频繁的表，将其分为若干个表</h3><ul>
+<li>根据一定的算法（如用hash的方式，也可以用求余（取模）的方式）让用户访问不同的表。 例如论坛里面发表 帖子的表，时间长了这张表肯定很大，几十万，几百万都有可能。聊天室里面信息表，几十个人在一起一聊一 个晚上，时间长了，这张表的数据肯定很大。像这样的情况很多。所以这种能预估出来的大数据量表，我们就 事先分出个N个表，这个N是多少，根据实际情况而定。以聊天信息表为例：我们事先建100个这样的表， message_00,message_01,message_02……….message_98,message_99.然后根据用户的ID来判断这个用户的聊天 信息放到哪张表里面，可以用hash的方式来获得，也可以用求余的方式来获得，方法很多。 或者可以设计每张 表容纳的数据量是N条，那么如何判断某张表的数据是否容量已满呢？可以在程序段对于要新增数据的表，在 插入前先做统计表记录数量的操作</li>
+</ul>
+<h3 id="利用merge存储引擎来实现分表"><a href="#利用merge存储引擎来实现分表" class="headerlink" title="利用merge存储引擎来实现分表"></a>利用merge存储引擎来实现分表</h3><ul>
+<li>如果要把已有的大数据量表分开比较痛苦，最痛苦的事就是改代码，因为程序里面的sql语句已经写好了，用 merge存储引擎来实现分表, 这种方法比较适合。 merge分表，分为主表和子表，主表类似于一个壳子，逻辑上 封装了子表，实际上数据都是存储在子表中的。 我们可以通过主表插入和查询数据，如果清楚分表规律，也可 以直接操作子表。 </li>
+</ul>
+<h2 id="分表案例"><a href="#分表案例" class="headerlink" title="分表案例"></a>分表案例</h2><h3 id="创建表"><a href="#创建表" class="headerlink" title="创建表"></a>创建表</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">drop</span> database IF <span class="keyword">EXISTS</span> testdb;</span><br><span class="line"><span class="keyword">create</span> database testdb;</span><br><span class="line">use testdb;</span><br><span class="line"></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">member</span>(</span><br><span class="line">id <span class="type">bigint</span> auto_increment <span class="keyword">primary</span> <span class="keyword">key</span>,</span><br><span class="line">name <span class="type">varchar</span>(<span class="number">20</span>),</span><br><span class="line">sex tinyint <span class="keyword">not</span> <span class="keyword">null</span> <span class="keyword">default</span> <span class="string">&#x27;0&#x27;</span></span><br><span class="line">)engine<span class="operator">=</span>myisam <span class="keyword">default</span> charset<span class="operator">=</span>utf8 auto_increment<span class="operator">=</span><span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">member</span>(name,sex) <span class="keyword">values</span>(<span class="string">&#x27;tom1&#x27;</span>,<span class="number">1</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">member</span>(name,sex) <span class="keyword">select</span> name,sex <span class="keyword">from</span> <span class="keyword">member</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="创建两个分表"><a href="#创建两个分表" class="headerlink" title="创建两个分表"></a>创建两个分表</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">use testdb;</span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">table</span> IF <span class="keyword">EXISTS</span> tb_member1;</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb_member1(</span><br><span class="line">id <span class="type">bigint</span> <span class="keyword">primary</span> <span class="keyword">key</span> ,</span><br><span class="line">name <span class="type">varchar</span>(<span class="number">20</span>),</span><br><span class="line">sex tinyint <span class="keyword">not</span> <span class="keyword">null</span> <span class="keyword">default</span> <span class="string">&#x27;0&#x27;</span></span><br><span class="line">)ENGINE<span class="operator">=</span>MyISAM <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8 ;</span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">table</span> IF <span class="keyword">EXISTS</span> tb_member2;</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb_member2(</span><br><span class="line">id <span class="type">bigint</span> <span class="keyword">primary</span> <span class="keyword">key</span>,</span><br><span class="line">name <span class="type">varchar</span>(<span class="number">20</span>),</span><br><span class="line">sex tinyint <span class="keyword">not</span> <span class="keyword">null</span> <span class="keyword">default</span> <span class="string">&#x27;0&#x27;</span></span><br><span class="line">)ENGINE<span class="operator">=</span>MyISAM <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8;</span><br></pre></td></tr></table></figure>
+<h3 id="创建主表tb-member"><a href="#创建主表tb-member" class="headerlink" title="创建主表tb_member"></a>创建主表tb_member</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">table</span> IF <span class="keyword">EXISTS</span> tb_member;</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb_member(</span><br><span class="line">id <span class="type">bigint</span> <span class="keyword">primary</span> <span class="keyword">key</span> ,</span><br><span class="line">name <span class="type">varchar</span>(<span class="number">20</span>),</span><br><span class="line">sex tinyint <span class="keyword">not</span> <span class="keyword">null</span> <span class="keyword">default</span> <span class="string">&#x27;0&#x27;</span></span><br><span class="line">) ENGINE<span class="operator">=</span><span class="keyword">MERGE</span> <span class="keyword">UNION</span><span class="operator">=</span>(tb_member1,tb_member2) INSERT_METHOD<span class="operator">=</span><span class="keyword">LAST</span> CHARSET<span class="operator">=</span>utf8 ;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">member</span>(name,sex) <span class="keyword">values</span>(<span class="string">&#x27;tom2&#x27;</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">member</span>(name,sex) <span class="keyword">select</span> name,sex <span class="keyword">from</span> <span class="keyword">member</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">member</span>(name,sex) <span class="keyword">values</span>(<span class="string">&#x27;tom3&#x27;</span>,<span class="number">3</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">member</span>(name,sex) <span class="keyword">select</span> name,sex <span class="keyword">from</span> <span class="keyword">member</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">member</span>(name,sex) <span class="keyword">values</span>(<span class="string">&#x27;tom4&#x27;</span>,<span class="number">4</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">member</span>(name,sex) <span class="keyword">select</span> name,sex <span class="keyword">from</span> <span class="keyword">member</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="按照已经有行插入"><a href="#按照已经有行插入" class="headerlink" title="按照已经有行插入"></a>按照已经有行插入</h3><figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tb_member1<span class="built_in">(id</span><span class="built_in">,name</span>,sex) select<span class="built_in"> id</span><span class="built_in">,name</span>,sex from member <span class="keyword">where</span></span><br><span class="line">id<span class="meta">%2</span>=<span class="number">0</span>;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tb_member2<span class="built_in">(id</span><span class="built_in">,name</span>,sex) select<span class="built_in"> id</span><span class="built_in">,name</span>,sex from member <span class="keyword">where</span></span><br><span class="line">id<span class="meta">%2</span>=<span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="检索"><a href="#检索" class="headerlink" title="检索"></a>检索</h3><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> tb_member1;</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> tb_member2;</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> tb_member;</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> tb_member <span class="keyword">where</span> id=<span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意：总表只是一个外壳，存取数据发生在一个一个的子表里面。</p>
+<p>注意：每个子表都有自已独立的相关表文 件，而主表只是一个壳，并没有完整的相关表文件  </p>
+</blockquote>
+<h1 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h1><h2 id="什么是分区"><a href="#什么是分区" class="headerlink" title="什么是分区"></a>什么是分区</h2><ul>
+<li>分区和分表相似，都是按照规则分解表。不同在于分表将大表分解为若干个独立的实体表，而分区是将数据分段划分在多个位置存放，分区后，表还是一张表，但数据散列到多个位置了。app读写的时候操作的还是表名 字，db自动去组织分区的数据。  </li>
+</ul>
+<h2 id="分区主要有两种形式："><a href="#分区主要有两种形式：" class="headerlink" title="分区主要有两种形式："></a>分区主要有两种形式：</h2><ul>
+<li>水平分区（Horizontal Partitioning）这种形式分区是对表的行进行分区，所有在表中定义的列在每个数据集中 都能找到，所以表的特性依然得以保持。 </li>
+<li>举个简单例子：一个包含十年发票记录的表可以被分区为十个不同的分区，每个分区包含的是其中一年的记 录。 </li>
+<li>垂直分区（Vertical Partitioning）这种分区方式一般来说是通过对表的垂直划分来减少目标表的宽度，使某些 特定的列被划分到特定的分区，每个分区都包含了其中的列所对应的行。 </li>
+<li>举个简单例子：一个包含了大text和BLOB列的表，这些text和BLOB列又不经常被访问，这时候就要把这些不经 常使用的text和BLOB了划分到另一个分区，在保证它们数据相关性的同时还能提高访问速度。 </li>
+</ul>
+<h2 id="查看是否支持分区"><a href="#查看是否支持分区" class="headerlink" title="查看是否支持分区"></a>查看是否支持分区</h2><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show plugins;</span><br><span class="line">|<span class="string"> partition            </span>|<span class="string"> ACTIVE   </span>|<span class="string"> STORAGE ENGINE     </span>|<span class="string"> NULL                 </span>|<span class="string"> GPL     </span>|</span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SHOW VARIABLES LIKE <span class="emphasis">&#x27;%partition%&#x27;</span>;</span><br><span class="line"><span class="code">+-----------------------+</span>---------------+</span><br><span class="line">|Variable_name | Value |</span><br><span class="line"><span class="code">+-----------------------+</span>---------------+</span><br><span class="line">| have_partition_engine | YES |</span><br><span class="line"><span class="code">+-----------------------+</span>------------------+</span><br></pre></td></tr></table></figure>
+<h2 id="创建range分区表"><a href="#创建range分区表" class="headerlink" title="创建range分区表"></a>创建range分区表</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">use testdb;</span><br><span class="line"></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> if <span class="keyword">not</span> <span class="keyword">exists</span> <span class="keyword">user</span> (</span><br><span class="line">	id <span class="type">int</span> <span class="keyword">not</span> <span class="keyword">null</span> auto_increment,</span><br><span class="line">	name <span class="type">varchar</span>(<span class="number">30</span>) <span class="keyword">not</span> <span class="keyword">null</span> <span class="keyword">default</span> <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">	sex <span class="type">int</span>(<span class="number">1</span>) <span class="keyword">not</span> <span class="keyword">null</span> <span class="keyword">default</span> <span class="string">&#x27;0&#x27;</span>,</span><br><span class="line">	<span class="keyword">primary</span> <span class="keyword">key</span>(id)</span><br><span class="line">)<span class="keyword">default</span> charset<span class="operator">=</span>utf8 auto_increment<span class="operator">=</span><span class="number">1</span></span><br><span class="line"><span class="keyword">partition</span> <span class="keyword">by</span> <span class="keyword">range</span>(id) (</span><br><span class="line">	<span class="keyword">partition</span> p0 <span class="keyword">values</span> less than (<span class="number">3</span>),</span><br><span class="line">	<span class="keyword">partition</span> p1 <span class="keyword">values</span> less than (<span class="number">6</span>),</span><br><span class="line">	<span class="keyword">partition</span> p2 <span class="keyword">values</span> less than (<span class="number">9</span>),</span><br><span class="line">	<span class="keyword">partition</span> p3 <span class="keyword">values</span> less than (<span class="number">12</span>),</span><br><span class="line">	<span class="keyword">partition</span> p4 <span class="keyword">values</span> less than maxvalue</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> testdb.<span class="keyword">user</span>(name,sex)<span class="keyword">values</span> (<span class="string">&#x27;tom1&#x27;</span>,<span class="string">&#x27;0&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> testdb.<span class="keyword">user</span>(name,sex)<span class="keyword">values</span> (<span class="string">&#x27;tom2&#x27;</span>,<span class="string">&#x27;1&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> testdb.<span class="keyword">user</span>(name,sex)<span class="keyword">values</span> (<span class="string">&#x27;tom3&#x27;</span>,<span class="string">&#x27;1&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> testdb.<span class="keyword">user</span>(name,sex)<span class="keyword">values</span> (<span class="string">&#x27;tom4&#x27;</span>,<span class="string">&#x27;0&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> testdb.<span class="keyword">user</span>(name,sex)<span class="keyword">values</span> (<span class="string">&#x27;tom5&#x27;</span>,<span class="string">&#x27;0&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> testdb.<span class="keyword">user</span>(name,sex)<span class="keyword">values</span> (<span class="string">&#x27;tom6&#x27;</span>,<span class="string">&#x27;1&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> testdb.<span class="keyword">user</span>(name,sex)<span class="keyword">values</span> (<span class="string">&#x27;tom7&#x27;</span>,<span class="string">&#x27;1&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> testdb.<span class="keyword">user</span>(name,sex)<span class="keyword">values</span> (<span class="string">&#x27;tom8&#x27;</span>,<span class="string">&#x27;1&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> testdb.<span class="keyword">user</span>(name,sex)<span class="keyword">values</span> (<span class="string">&#x27;tom9&#x27;</span>,<span class="string">&#x27;1&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> testdb.<span class="keyword">user</span>(name,sex)<span class="keyword">values</span> (<span class="string">&#x27;tom10&#x27;</span>,<span class="string">&#x27;1&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> testdb.<span class="keyword">user</span>(name,sex)<span class="keyword">values</span> (<span class="string">&#x27;tom11&#x27;</span>,<span class="string">&#x27;1&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> testdb.<span class="keyword">user</span>(name,sex)<span class="keyword">values</span> (<span class="string">&#x27;tom12&#x27;</span>,<span class="string">&#x27;1&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> testdb.<span class="keyword">user</span>(name,sex)<span class="keyword">values</span> (<span class="string">&#x27;tom13&#x27;</span>,<span class="string">&#x27;1&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> testdb.<span class="keyword">user</span>(name,sex)<span class="keyword">values</span> (<span class="string">&#x27;tom14&#x27;</span>,<span class="string">&#x27;1&#x27;</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="从某个分区中查询数据"><a href="#从某个分区中查询数据" class="headerlink" title="从某个分区中查询数据"></a>从某个分区中查询数据</h2><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> testdb.<span class="keyword">user</span> <span class="keyword">partition</span>(p0);</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> testdb.<span class="keyword">user</span> <span class="keyword">partition</span>(p1);</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> testdb.<span class="keyword">user</span> <span class="keyword">partition</span>(p2);</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> testdb.<span class="keyword">user</span> <span class="keyword">partition</span>(p3);</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> testdb.<span class="keyword">user</span> <span class="keyword">partition</span>(p4);</span><br></pre></td></tr></table></figure>
+<h2 id="删除分区-当删除了一个分区，也同时删除了该分区中所有的数据。"><a href="#删除分区-当删除了一个分区，也同时删除了该分区中所有的数据。" class="headerlink" title="删除分区 当删除了一个分区，也同时删除了该分区中所有的数据。"></a>删除分区 当删除了一个分区，也同时删除了该分区中所有的数据。</h2><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> testdb.<span class="keyword">user</span> <span class="keyword">drop</span> <span class="keyword">partition</span> p4;</span><br></pre></td></tr></table></figure>
+<h2 id="新增分区"><a href="#新增分区" class="headerlink" title="新增分区"></a>新增分区</h2><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> testdb.<span class="keyword">user</span> <span class="keyword">add</span> <span class="keyword">partition</span>(</span><br><span class="line">  <span class="keyword">partition</span> m5 <span class="keyword">values</span> less than (<span class="number">13</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> testdb.<span class="keyword">user</span> <span class="keyword">partition</span>(m5);</span><br></pre></td></tr></table></figure>
+<h2 id="查看分区"><a href="#查看分区" class="headerlink" title="查看分区"></a>查看分区</h2><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> PARTITION_NAME,PARTITION_METHOD,PARTITION_DESCRIPTION,TABLE_ROWS <span class="keyword">from</span> information_schema. <span class="symbol">`PARTITIONS`</span></span><br><span class="line"><span class="keyword">where</span> table_schema=<span class="string">&#x27;testdb&#x27;</span></span><br><span class="line"><span class="keyword">and</span> table_name=<span class="string">&#x27;user&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="分区合并"><a href="#分区合并" class="headerlink" title="分区合并"></a>分区合并</h2><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> testdb.<span class="keyword">user</span></span><br><span class="line">REORGANIZE <span class="keyword">PARTITION</span> p1,p2,p3 <span class="keyword">into</span>(</span><br><span class="line">	<span class="keyword">PARTITION</span> t1 <span class="keyword">VALUES</span> less than (<span class="number">8</span>),</span><br><span class="line">	<span class="keyword">PARTITION</span> t2 <span class="keyword">VALUES</span> less than (<span class="number">12</span>),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h2 id="分区时，将不同分区放到不同存储位置"><a href="#分区时，将不同分区放到不同存储位置" class="headerlink" title="分区时，将不同分区放到不同存储位置"></a>分区时，将不同分区放到不同存储位置</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> t_user(</span><br><span class="line">	id <span class="type">int</span> <span class="keyword">not</span> <span class="keyword">null</span> auto_increment,</span><br><span class="line">	name <span class="type">varchar</span>(<span class="number">30</span>) <span class="keyword">not</span> <span class="keyword">null</span> <span class="keyword">default</span> <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">	<span class="keyword">primary</span> <span class="keyword">key</span>(id)</span><br><span class="line">) engine<span class="operator">=</span>innodb <span class="keyword">default</span> charset<span class="operator">=</span>utf8 auto_increment<span class="operator">=</span><span class="number">1</span> </span><br><span class="line"><span class="keyword">partition</span> <span class="keyword">by</span> <span class="keyword">range</span>(id)(</span><br><span class="line">	<span class="keyword">partition</span> p1 <span class="keyword">values</span> less than (<span class="number">3</span>) data directory <span class="string">&#x27;E:\1&#x27;</span>,</span><br><span class="line">	<span class="keyword">partition</span> p2 <span class="keyword">values</span> less than (<span class="number">6</span>) data directory <span class="string">&#x27;E:\2&#x27;</span>,</span><br><span class="line">	<span class="keyword">partition</span> p3 <span class="keyword">values</span> less than (<span class="number">9</span>) data directory <span class="string">&#x27;E:\3&#x27;</span>);</span><br></pre></td></tr></table></figure>
+<p>然后查看E:\1文件夹</p>
+<p>给t_user表中插入内容</p>
+<h2 id="hash分区"><a href="#hash分区" class="headerlink" title="hash分区"></a>hash分区</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> t_hash( a <span class="type">int</span>(<span class="number">11</span>), b datetime) <span class="keyword">partition</span> <span class="keyword">by</span> hash(<span class="keyword">year</span>(b))</span><br><span class="line">partitions <span class="number">4</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t_hash <span class="keyword">values</span>(<span class="number">1</span>,<span class="string">&#x27;2020-06-23&#x27;</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> PARTITION_NAME,PARTITION_METHOD,PARTITION_DESCRIPTION,TABLE_ROWS </span><br><span class="line"><span class="keyword">from</span> information_schema. <span class="symbol">`PARTITIONS`</span></span><br><span class="line"><span class="keyword">where</span> table_schema=<span class="string">&#x27;testdb&#x27;</span></span><br><span class="line"><span class="keyword">and</span> table_name=<span class="string">&#x27;t_hash&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<h1 id="mysql分表和分区有什么区别"><a href="#mysql分表和分区有什么区别" class="headerlink" title="mysql分表和分区有什么区别"></a>mysql分表和分区有什么区别</h1><ul>
+<li>实现方式上 </li>
+</ul>
+<ol>
+<li>mysql的分表是真正的分表，一张表分成很多表后，每一个小表都是完整的一张表，都对 应三个文件，一个.MYD数据文件，.MYI索引文件，.frm表结构文件。 </li>
+<li>分区不一样，一张大表进行分区后，他还是一张表，不会变成二张表，但是他存放数据的区块变多了  </li>
+</ol>
+<ul>
+<li>数据处理上 </li>
+</ul>
+<ol>
+<li>分表后，数据都是存放在分表里，总表只是一个外壳，存取数据发生在一个一个的分表 里面。  </li>
+<li>分区呢，不存在分表的概念，分区只不过把存放数据的文件分成了许多小块，分区后的表呢，还是一 张表，数据处理还是由自己来完成。  </li>
+</ol>
+<ul>
+<li>提高性能上 </li>
+</ul>
+<ol>
+<li>分表后，单表的并发能力提高了，磁盘I/O性能也提高了。并发能力为什么提高了呢，因 为查寻一次所花的时间变短了，如果出现高并发的话，总表可以根据不同的查询，将并发压力分到不同 的小表里面。  </li>
+<li>mysql提出了分区的概念，主要是想突破磁盘I/O瓶颈，想提高磁盘的读写能力，来增加mysql性能。 在这一点上，分区和分表的测重点不同，分表重点是存取数据时，如何提高mysql并发能力上；而分区 呢，如何突破磁盘的读写能力，从而达到提高mysql性能的目的。  </li>
+</ol>
+<ul>
+<li>实现的难易度上 </li>
+</ul>
+<ol>
+<li>分表的方法有很多，用merge来分表，是最简单的一种方式。这种方式跟分区难易度差不多，并且对 程序代码来说可以做到透明的。如果是用其他分表方式就比分区麻烦了。 </li>
+<li>分区实现是比较简单的，建立分区表，根建平常的表没什么区别，并且对开代码端来说是透明的。  </li>
+</ol>
+<h1 id="mysql分表和分区有什么联系"><a href="#mysql分表和分区有什么联系" class="headerlink" title="mysql分表和分区有什么联系"></a>mysql分表和分区有什么联系</h1><ol>
+<li>都能提高mysql的性高，在高并发状态下都有一个良好的表现。  </li>
+<li>分表和分区不矛盾，可以相互配合的，对于那些大访问量，并且表数据比较多的表，我们可以采取分表 和分区结合的方式，访问量不大，但是表数据很多的表，我们可以采取分区的方式等。  </li>
+<li>分表技术是比较麻烦的，需要手动去创建子表，app服务端读写时候需要计算子表名。采用merge好一 些，但也要创建子表和配置子表间的union关系。<br>的。如果是用其他分表方式就比分区麻烦了。 </li>
+<li>分区实现是比较简单的，建立分区表，根建平常的表没什么区别，并且对开代码端来说是透明的。  </li>
+</ol>
+<h1 id="mysql分表和分区有什么联系-1"><a href="#mysql分表和分区有什么联系-1" class="headerlink" title="mysql分表和分区有什么联系"></a>mysql分表和分区有什么联系</h1><ol>
+<li>都能提高mysql的性高，在高并发状态下都有一个良好的表现。  </li>
+<li>分表和分区不矛盾，可以相互配合的，对于那些大访问量，并且表数据比较多的表，我们可以采取分表 和分区结合的方式，访问量不大，但是表数据很多的表，我们可以采取分区的方式等。  </li>
+<li>分表技术是比较麻烦的，需要手动去创建子表，app服务端读写时候需要计算子表名。采用merge好一 些，但也要创建子表和配置子表间的union关系。 </li>
+<li>表分区相对于分表，操作方便，不需要创建子表。 </li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="阿怪 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="阿怪 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿怪
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://aguai.fun/2020/06/23/%E5%88%86%E8%A1%A8%E5%92%8C%E5%88%86%E5%8C%BA/" title="分表和分区">https://aguai.fun/2020/06/23/分表和分区/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+  
+</div>
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/mysql/" rel="tag"># mysql</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/06/22/mysql%E4%BC%98%E5%8C%96/" rel="prev" title="mysql优化">
+      <i class="fa fa-chevron-left"></i> mysql优化
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/06/28/%E5%A4%87%E4%BB%BD%E8%BF%98%E5%8E%9F/" rel="next" title="备份还原">
+      备份还原 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#mysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%96%87%E4%BB%B6%E6%8B%93%E5%B1%95%E5%90%8D"><span class="nav-text">mysql数据库文件拓展名</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E8%A1%A8"><span class="nav-text">分表</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%88%86%E8%A1%A8%EF%BC%9F"><span class="nav-text">什么是分表？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mysql%E5%88%86%E8%A1%A8%E5%88%86%E4%B8%BA%E5%9E%82%E7%9B%B4%E5%88%87%E5%88%86%E5%92%8C%E6%B0%B4%E5%B9%B3%E5%88%87%E5%88%86"><span class="nav-text">Mysql分表分为垂直切分和水平切分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E8%A1%A8%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F%EF%BC%9A"><span class="nav-text">分表的几种方式：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mysql%E9%9B%86%E7%BE%A4"><span class="nav-text">mysql集群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%84%E5%85%88%E4%BC%B0%E8%AE%A1%E4%BC%9A%E5%87%BA%E7%8E%B0%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%87%8F%E5%B9%B6%E4%B8%94%E8%AE%BF%E9%97%AE%E9%A2%91%E7%B9%81%E7%9A%84%E8%A1%A8%EF%BC%8C%E5%B0%86%E5%85%B6%E5%88%86%E4%B8%BA%E8%8B%A5%E5%B9%B2%E4%B8%AA%E8%A1%A8"><span class="nav-text">预先估计会出现大数据量并且访问频繁的表，将其分为若干个表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A9%E7%94%A8merge%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E6%9D%A5%E5%AE%9E%E7%8E%B0%E5%88%86%E8%A1%A8"><span class="nav-text">利用merge存储引擎来实现分表</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E8%A1%A8%E6%A1%88%E4%BE%8B"><span class="nav-text">分表案例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%A1%A8"><span class="nav-text">创建表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E4%B8%A4%E4%B8%AA%E5%88%86%E8%A1%A8"><span class="nav-text">创建两个分表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E4%B8%BB%E8%A1%A8tb-member"><span class="nav-text">创建主表tb_member</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%89%E7%85%A7%E5%B7%B2%E7%BB%8F%E6%9C%89%E8%A1%8C%E6%8F%92%E5%85%A5"><span class="nav-text">按照已经有行插入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A3%80%E7%B4%A2"><span class="nav-text">检索</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%8C%BA"><span class="nav-text">分区</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%88%86%E5%8C%BA"><span class="nav-text">什么是分区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%8C%BA%E4%B8%BB%E8%A6%81%E6%9C%89%E4%B8%A4%E7%A7%8D%E5%BD%A2%E5%BC%8F%EF%BC%9A"><span class="nav-text">分区主要有两种形式：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E6%98%AF%E5%90%A6%E6%94%AF%E6%8C%81%E5%88%86%E5%8C%BA"><span class="nav-text">查看是否支持分区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BArange%E5%88%86%E5%8C%BA%E8%A1%A8"><span class="nav-text">创建range分区表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E6%9F%90%E4%B8%AA%E5%88%86%E5%8C%BA%E4%B8%AD%E6%9F%A5%E8%AF%A2%E6%95%B0%E6%8D%AE"><span class="nav-text">从某个分区中查询数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E5%88%86%E5%8C%BA-%E5%BD%93%E5%88%A0%E9%99%A4%E4%BA%86%E4%B8%80%E4%B8%AA%E5%88%86%E5%8C%BA%EF%BC%8C%E4%B9%9F%E5%90%8C%E6%97%B6%E5%88%A0%E9%99%A4%E4%BA%86%E8%AF%A5%E5%88%86%E5%8C%BA%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E6%95%B0%E6%8D%AE%E3%80%82"><span class="nav-text">删除分区 当删除了一个分区，也同时删除了该分区中所有的数据。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E%E5%88%86%E5%8C%BA"><span class="nav-text">新增分区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%88%86%E5%8C%BA"><span class="nav-text">查看分区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%8C%BA%E5%90%88%E5%B9%B6"><span class="nav-text">分区合并</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%8C%BA%E6%97%B6%EF%BC%8C%E5%B0%86%E4%B8%8D%E5%90%8C%E5%88%86%E5%8C%BA%E6%94%BE%E5%88%B0%E4%B8%8D%E5%90%8C%E5%AD%98%E5%82%A8%E4%BD%8D%E7%BD%AE"><span class="nav-text">分区时，将不同分区放到不同存储位置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hash%E5%88%86%E5%8C%BA"><span class="nav-text">hash分区</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#mysql%E5%88%86%E8%A1%A8%E5%92%8C%E5%88%86%E5%8C%BA%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">mysql分表和分区有什么区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#mysql%E5%88%86%E8%A1%A8%E5%92%8C%E5%88%86%E5%8C%BA%E6%9C%89%E4%BB%80%E4%B9%88%E8%81%94%E7%B3%BB"><span class="nav-text">mysql分表和分区有什么联系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#mysql%E5%88%86%E8%A1%A8%E5%92%8C%E5%88%86%E5%8C%BA%E6%9C%89%E4%BB%80%E4%B9%88%E8%81%94%E7%B3%BB-1"><span class="nav-text">mysql分表和分区有什么联系</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="阿怪"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">阿怪</p>
+  <div class="site-description" itemprop="description">直到这一刻微笑着说话为止，我至少留下了一公升眼泪</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">103</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/a_guai_" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;a_guai_" rel="noopener" target="_blank"><i class="crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="阿怪"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">博客</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">574k</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/clicklove.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
+

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"aguai.fun","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offalse":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="脚本">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初始化系统脚本">
+<meta property="og:url" content="https://aguai.fun/2020/11/13/%E5%88%9D%E5%A7%8B%E5%8C%96%E7%B3%BB%E7%BB%9F%E8%84%9A%E6%9C%AC/index.html">
+<meta property="og:site_name" content="阿怪の博客">
+<meta property="og:description" content="脚本">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-12T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-11-13T07:19:55.578Z">
+<meta property="article:author" content="阿怪">
+<meta property="article:tag" content="脚本">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://aguai.fun/2020/11/13/%E5%88%9D%E5%A7%8B%E5%8C%96%E7%B3%BB%E7%BB%9F%E8%84%9A%E6%9C%AC/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>初始化系统脚本 | 阿怪の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿怪の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">103</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://aguai.fun/2020/11/13/%E5%88%9D%E5%A7%8B%E5%8C%96%E7%B3%BB%E7%BB%9F%E8%84%9A%E6%9C%AC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="阿怪">
+      <meta itemprop="description" content="直到这一刻微笑着说话为止，我至少留下了一公升眼泪">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿怪の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          初始化系统脚本
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-11-13 00:00:00 / 修改时间：15:19:55" itemprop="dateCreated datePublished" datetime="2020-11-13T00:00:00+08:00">2020-11-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%84%9A%E6%9C%AC/" itemprop="url" rel="index"><span itemprop="name">脚本</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.3k</span>
+            </span>
+            <div class="post-description">脚本</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/env bash</span></span><br><span class="line"><span class="comment"># Author : 宋凯雄</span></span><br><span class="line"><span class="comment"># Date   : 2020-07-31</span></span><br><span class="line"><span class="comment"># Email  : lvjianzhao@aspirecn.com</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -e</span><br><span class="line">item=1</span><br><span class="line"><span class="function"><span class="title">h2</span></span>() &#123; </span><br><span class="line">       <span class="built_in">printf</span> <span class="string">&quot;\n<span class="variable">$&#123;underline&#125;</span><span class="variable">$&#123;bold&#125;</span><span class="variable">$&#123;white&#125;</span>%s<span class="variable">$&#123;reset&#125;</span>\n&quot;</span> <span class="string">&quot;<span class="variable">$@</span>&quot;</span></span><br><span class="line">   &#125;</span><br><span class="line">cur_dir=<span class="string">&quot;<span class="subst">$( cd <span class="string">&quot;<span class="subst">$( dirname <span class="string">&quot;<span class="variable">$&#123;BASH_SOURCE[0]&#125;</span>&quot;</span> )</span>&quot;</span> &amp;&amp; pwd )</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$&#123;cur_dir&#125;</span></span><br><span class="line"></span><br><span class="line">h2 <span class="string">&quot;[Step <span class="variable">$item</span>]: 确认执行此脚本用户是否为root...&quot;</span>; <span class="built_in">let</span> item+=1</span><br><span class="line"><span class="keyword">if</span> [[ $(id -u) -ne 0 ]];<span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> -e <span class="string">&quot;\033[31m </span></span><br><span class="line"><span class="string">             此脚本必须使用root执行，当前用户非root, 正在退出脚本...</span></span><br><span class="line"><span class="string">     \033[0m&quot;</span></span><br><span class="line">             sleep 1 &amp;&amp; <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">h2 <span class="string">&quot;[Step <span class="variable">$item</span>]: 关闭selinux...&quot;</span>; <span class="built_in">let</span> item+=1</span><br><span class="line"></span><br><span class="line">setenforce 0 &amp;&gt;/dev/null</span><br><span class="line">sed -i <span class="string">&#x27;s/^SELINUX=enforcing/SELINUX=disabled/g&#x27;</span> /etc/sysconfig/selinux &amp;&gt;/dev/null</span><br><span class="line">sed -i <span class="string">&#x27;s/^SELINUX=enforcing/SELINUX=disabled/g&#x27;</span> /etc/selinux/config &amp;&gt;/dev/null</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">h2 <span class="string">&quot;[Step <span class="variable">$item</span>]: 修改yum超时时间...&quot;</span>; <span class="built_in">let</span> item+=1</span><br><span class="line"></span><br><span class="line">sed -i <span class="string">&#x27;/timeout=.*/d&#x27;</span> /etc/yum.conf</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;timeout=60&#x27;</span> &gt;&gt;/etc/yum.conf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">h2 <span class="string">&quot;[Step <span class="variable">$item</span>]: 安装基础软件...&quot;</span>; <span class="built_in">let</span> item+=1</span><br><span class="line"><span class="comment"># 如果不能出网，请提前将rpm包下载到本地，然后上传至此脚本同级目录下</span></span><br><span class="line"><span class="comment"># 以下是下载rpm到本地的简单脚本，可以作为参考</span></span><br><span class="line"><span class="meta">#!/usr/bin/env bash</span></span><br><span class="line"><span class="comment">#yum_list=( wget apr apr-devel apr-util autoconf automake  curl dos2unix expat-devel vim lrzsz traceroute unzip vim zlib-devel bison bzip2 clang make net-tools openssl openssl-devel rsync sshpass )</span></span><br><span class="line"><span class="comment">#for i in $&#123;yum_list[@]&#125;</span></span><br><span class="line"><span class="comment">#do</span></span><br><span class="line"><span class="comment">#yum -y install --downloadonly --downloaddir=/tmp/rpm/$i/ $i</span></span><br><span class="line"><span class="comment">#done</span></span><br><span class="line"><span class="comment">#cd /tmp/ &amp;&amp; tar zcf rpm.tgz rpm</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> +e</span><br><span class="line">yum clean all &amp;&gt; /dev/null</span><br><span class="line">yum makecache &amp;&gt; /dev/null</span><br><span class="line">repolist_sum=$(yum repolist | awk <span class="string">&#x27;END&#123;print $2&#125;&#x27;</span>)</span><br><span class="line"><span class="built_in">set</span> -e</span><br><span class="line"><span class="keyword">if</span> [[ <span class="variable">$&#123;repolist_sum&#125;</span> -ne 0 ]];<span class="keyword">then</span></span><br><span class="line">       yum -y groupinstall Development tools &amp;&gt;/dev/null</span><br><span class="line">       yum -y install wget apr apr-devel apr-util autoconf automake  curl dos2unix expat-devel \</span><br><span class="line">                      vim lrzsz traceroute unzip vim zlib-devel bison bzip2 clang\</span><br><span class="line">                      make net-tools openssl openssl-devel rsync sshpass &amp;&gt; /dev/null</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">       tar zxf rpm.tgz &amp;&amp; yum_list=$(ls rpm)</span><br><span class="line">       <span class="keyword">for</span> i <span class="keyword">in</span> <span class="variable">$&#123;yum_list[@]&#125;</span></span><br><span class="line">       <span class="keyword">do</span></span><br><span class="line">           yum -y localinstall ./rpm/<span class="variable">$&#123;i&#125;</span>/* &amp;&gt; /dev/null</span><br><span class="line">       <span class="keyword">done</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">h2 <span class="string">&quot;[Step <span class="variable">$item</span>]: 终端美化...&quot;</span>; <span class="built_in">let</span> item+=1</span><br><span class="line"></span><br><span class="line">sed <span class="string">&#x27;/^PS1=.*/d&#x27;</span> /etc/profile -i</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;PS1=&#x27;[\[\e[36m\]\#::\[\e[31m\]\u@\[\e[32m\]\h\[\e[36m\]::\w]\$ &gt;&gt;&gt;\[\e[m\]&#x27;&quot;</span> &gt;&gt; /etc/profile</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">h2 <span class="string">&quot;[Step <span class="variable">$item</span>]: 关闭发邮件...&quot;</span>; <span class="built_in">let</span> item+=1</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">&quot;<span class="subst">$(grep MAILCHECK /etc/profile)</span>&quot;</span> ];<span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&#x27;unset MAILCHECK&#x27;</span>&gt;&gt;/etc/profile</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line">sed -i <span class="string">&quot;s/^MAILTO=root/MAILTO=\&quot;\&quot;/g&quot;</span> /etc/crontab</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">h2 <span class="string">&quot;[Step <span class="variable">$item</span>]: 优化sshd连接...&quot;</span>; <span class="built_in">let</span> item+=1</span><br><span class="line"></span><br><span class="line">sed -i <span class="string">&#x27;/^export[ ]*TMOUT=.*/d&#x27;</span> /etc/profile</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;export TMOUT=0&#x27;</span>&gt;&gt;/etc/profile</span><br><span class="line">sed -i <span class="string">&#x27;s/#UseDNS yes/UseDNS no/g&#x27;</span> /etc/ssh/sshd_config</span><br><span class="line">systemctl restart sshd</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">h2 <span class="string">&quot;[Step <span class="variable">$item</span>]: 系统文件描述符等限制及内核优化...&quot;</span>; <span class="built_in">let</span> item+=1</span><br><span class="line"></span><br><span class="line">mv /etc/security/limits.conf&#123;,.bak&#125;</span><br><span class="line">mv /etc/sysctl.conf&#123;,.bak&#125;</span><br><span class="line"></span><br><span class="line">cat &gt;&gt; /etc/security/limits.conf  &lt;&lt; <span class="string">EOF</span></span><br><span class="line"><span class="string">*                -       nofile          655360</span></span><br><span class="line"><span class="string">*                -       memlock         unlimited</span></span><br><span class="line"><span class="string">*                -       stack           655360</span></span><br><span class="line"><span class="string">*                -       nproc           unlimited</span></span><br><span class="line"><span class="string">EOF</span></span><br><span class="line"></span><br><span class="line">cat &gt;&gt; /etc/sysctl.conf &lt;&lt; <span class="string">EOF</span></span><br><span class="line"><span class="string">kernel.sysrq = 0</span></span><br><span class="line"><span class="string">kernel.core_uses_pid = 1</span></span><br><span class="line"><span class="string">kernel.msgmnb = 65536</span></span><br><span class="line"><span class="string">kernel.msgmax = 65536</span></span><br><span class="line"><span class="string">kernel.shmmax = 68719476736</span></span><br><span class="line"><span class="string">kernel.shmall = 4294967296</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">net.ipv4.tcp_tw_reuse = 1</span></span><br><span class="line"><span class="string">net.ipv4.tcp_tw_recycle = 0</span></span><br><span class="line"><span class="string">net.ipv4.tcp_max_tw_buckets = 1800000</span></span><br><span class="line"><span class="string">net.ipv4.tcp_fin_timeout = 30</span></span><br><span class="line"><span class="string">net.ipv4.tcp_timestamps = 0</span></span><br><span class="line"><span class="string">net.ipv4.tcp_sack = 1</span></span><br><span class="line"><span class="string">net.ipv4.tcp_window_scaling = 1</span></span><br><span class="line"><span class="string">net.ipv4.tcp_ecn = 0</span></span><br><span class="line"><span class="string">net.ipv4.tcp_keepalive_time = 600</span></span><br><span class="line"><span class="string">net.ipv4.tcp_keepalive_intvl = 30</span></span><br><span class="line"><span class="string">net.ipv4.tcp_keepalive_probes = 3</span></span><br><span class="line"><span class="string">net.ipv4.tcp_max_orphans = 655360</span></span><br><span class="line"><span class="string">net.ipv4.tcp_max_syn_backlog = 262144</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">net.ipv4.tcp_mem = 65536 131072 262144</span></span><br><span class="line"><span class="string">net.ipv4.udp_mem = 65536 131072 262144</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">net.ipv4.tcp_rmem = 4096 87380 16777216</span></span><br><span class="line"><span class="string">net.ipv4.tcp_wmem = 4096 16384 16777216</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">net.ipv4.ip_local_port_range = 1024 65535</span></span><br><span class="line"><span class="string">net.ipv4.route.gc_timeout = 100</span></span><br><span class="line"><span class="string">net.ipv4.conf.all.accept_redirects = 0</span></span><br><span class="line"><span class="string">net.ipv4.conf.all.accept_source_route = 0</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">net.core.somaxconn = 65535</span></span><br><span class="line"><span class="string">net.core.rmem_default = 8388608</span></span><br><span class="line"><span class="string">net.core.wmem_default = 8388608</span></span><br><span class="line"><span class="string">net.core.rmem_max = 16777216</span></span><br><span class="line"><span class="string">net.core.wmem_max = 16777216</span></span><br><span class="line"><span class="string">net.core.netdev_max_backlog = 262144</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">vm.swappiness = 10</span></span><br><span class="line"><span class="string">vm.overcommit_memory = 1</span></span><br><span class="line"><span class="string">vm.max_map_count = 262144</span></span><br><span class="line"><span class="string">EOF</span></span><br><span class="line"></span><br><span class="line">sysctl -p &gt; /dev/null</span><br><span class="line"><span class="built_in">source</span> /etc/profile</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">&quot;\033[33m</span></span><br><span class="line"><span class="string">        系统初始化完成,请重新连接终端!!!</span></span><br><span class="line"><span class="string"> \033[0m&quot;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="阿怪 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="阿怪 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿怪
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://aguai.fun/2020/11/13/%E5%88%9D%E5%A7%8B%E5%8C%96%E7%B3%BB%E7%BB%9F%E8%84%9A%E6%9C%AC/" title="初始化系统脚本">https://aguai.fun/2020/11/13/初始化系统脚本/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+  
+</div>
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%84%9A%E6%9C%AC/" rel="tag"># 脚本</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/13/%E5%AE%89%E8%A3%85mysql/" rel="prev" title="安装mysql">
+      <i class="fa fa-chevron-left"></i> 安装mysql
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/28/%E8%A7%A3%E5%86%B3Centos7.2raid%E8%AF%BB%E5%8F%96%E7%A1%AC%E7%9B%98%E4%B8%8D%E5%AE%8C%E5%85%A8%E9%97%AE%E9%A2%98/" rel="next" title="解决raid读取硬盘不完全问题">
+      解决raid读取硬盘不完全问题 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="阿怪"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">阿怪</p>
+  <div class="site-description" itemprop="description">直到这一刻微笑着说话为止，我至少留下了一公升眼泪</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">103</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/a_guai_" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;a_guai_" rel="noopener" target="_blank"><i class="crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="阿怪"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">博客</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">574k</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/clicklove.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
+

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"aguai.fun","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offalse":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="mysql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mysql自带工具介绍">
+<meta property="og:url" content="https://aguai.fun/2020/06/18/mysql%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D/index.html">
+<meta property="og:site_name" content="阿怪の博客">
+<meta property="og:description" content="mysql">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-06-17T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-06-18T10:08:12.019Z">
+<meta property="article:author" content="阿怪">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://aguai.fun/2020/06/18/mysql%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>mysql自带工具介绍 | 阿怪の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿怪の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">103</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://aguai.fun/2020/06/18/mysql%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="阿怪">
+      <meta itemprop="description" content="直到这一刻微笑着说话为止，我至少留下了一公升眼泪">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿怪の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          mysql自带工具介绍
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-06-18 00:00:00 / 修改时间：18:08:12" itemprop="dateCreated datePublished" datetime="2020-06-18T00:00:00+08:00">2020-06-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9.8k</span>
+            </span>
+            <div class="post-description">mysql</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="免登录执行mysql语句"><a href="#免登录执行mysql语句" class="headerlink" title="免登录执行mysql语句"></a>免登录执行mysql语句</h1><figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# mysql -hlocalhost -P3306 -uroot -p mysql -e &quot;select host,user from user&quot;</span><br><span class="line">Enter password: </span><br><span class="line"><span class="code">+-----------+</span>---------------+</span><br><span class="line">| host      | user          |</span><br><span class="line"><span class="code">+-----------+</span>---------------+</span><br><span class="line">| localhost | mysql.session |</span><br><span class="line">| localhost | mysql.sys     |</span><br><span class="line">| localhost | root          |</span><br><span class="line"><span class="code">+-----------+</span>---------------+</span><br></pre></td></tr></table></figure>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# mysql -uroot -p -e &quot;show status like <span class="emphasis">&#x27;binlog_cache%&#x27;</span>&quot;</span><br><span class="line">Enter password: </span><br><span class="line"><span class="code">+-----------------------+</span>-------+</span><br><span class="line">| Variable_name         | Value |</span><br><span class="line"><span class="code">+-----------------------+</span>-------+</span><br><span class="line">| Binlog_cache_disk_use | 0     |</span><br><span class="line">| Binlog_cache_use      | 0     |</span><br><span class="line"><span class="code">+-----------------------+</span>-------+</span><br></pre></td></tr></table></figure>
+<h1 id="mysql脚本"><a href="#mysql脚本" class="headerlink" title="mysql脚本"></a>mysql脚本</h1><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">vim</span> mysql1.<span class="keyword">sh</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/bin/bash</span></span><br><span class="line"><span class="attribute">HOSTNAME</span>=<span class="string">&quot;localhost&quot;</span></span><br><span class="line"><span class="attribute">PORT</span>=<span class="string">&quot;3306&quot;</span></span><br><span class="line"><span class="attribute">USERNAME</span>=<span class="string">&quot;root&quot;</span></span><br><span class="line"><span class="attribute">PASSWORD</span>=<span class="string">&quot;12345678&quot;</span></span><br><span class="line"><span class="attribute">DBNAME</span>=<span class="string">&quot;test_db&quot;</span></span><br><span class="line"><span class="attribute">TABLENAME</span>=<span class="string">&quot;tb1&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#create database</span></span><br><span class="line"><span class="attribute">create_db_sql</span>=<span class="string">&quot;create database if not exists <span class="variable">$&#123;DBNAME&#125;</span>&quot;</span></span><br><span class="line">mysql -h <span class="variable">$&#123;HOSTNAME&#125;</span> -P <span class="variable">$&#123;PORT&#125;</span> -u <span class="variable">$&#123;USERNAME&#125;</span> -p<span class="variable">$&#123;PASSWORD&#125;</span> -e <span class="string">&quot;<span class="variable">$&#123;create_db_sql&#125;</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#create table</span></span><br><span class="line"><span class="attribute">create_table_sql</span>=<span class="string">&quot;create table if not exists <span class="variable">$&#123;TABLENAME&#125;</span> (name varchar(20),id int</span></span><br><span class="line"><span class="string">default 0)&quot;</span></span><br><span class="line">mysql -h <span class="variable">$&#123;HOSTNAME&#125;</span> -P <span class="variable">$&#123;PORT&#125;</span> -u <span class="variable">$&#123;USERNAME&#125;</span> -p<span class="variable">$&#123;PASSWORD&#125;</span> <span class="variable">$&#123;DBNAME&#125;</span> -e <span class="string">&quot;<span class="variable">$&#123;create_table_sql&#125;</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#insert data to table</span></span><br><span class="line"><span class="attribute">insert_sql</span>=<span class="string">&quot;insert into <span class="variable">$&#123;TABLENAME&#125;</span> values (&#x27;tom&#x27;,1)&quot;</span></span><br><span class="line">mysql -h <span class="variable">$&#123;HOSTNAME&#125;</span> -P <span class="variable">$&#123;PORT&#125;</span> -u <span class="variable">$&#123;USERNAME&#125;</span> -p<span class="variable">$&#123;PASSWORD&#125;</span> <span class="variable">$&#123;DBNAME&#125;</span> -e <span class="string">&quot;<span class="variable">$&#123;insert_sql&#125;</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#select data</span></span><br><span class="line"><span class="attribute">select_sql</span>=<span class="string">&quot;select * from <span class="variable">$&#123;TABLENAME&#125;</span>&quot;</span></span><br><span class="line">mysql -h <span class="variable">$&#123;HOSTNAME&#125;</span> -P <span class="variable">$&#123;PORT&#125;</span> -u <span class="variable">$&#123;USERNAME&#125;</span> -p<span class="variable">$&#123;PASSWORD&#125;</span> <span class="variable">$&#123;DBNAME&#125;</span> -e <span class="string">&quot;<span class="variable">$&#123;select_sql&#125;</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#update data</span></span><br><span class="line"><span class="attribute">update_sql</span>=<span class="string">&quot;update <span class="variable">$&#123;TABLENAME&#125;</span> set id=3&quot;</span></span><br><span class="line">mysql -h <span class="variable">$&#123;HOSTNAME&#125;</span> -P <span class="variable">$&#123;PORT&#125;</span> -u <span class="variable">$&#123;USERNAME&#125;</span> -p<span class="variable">$&#123;PASSWORD&#125;</span> <span class="variable">$&#123;DBNAME&#125;</span> -e <span class="string">&quot;<span class="variable">$&#123;update_sql&#125;</span>&quot;</span></span><br><span class="line">mysql -h <span class="variable">$&#123;HOSTNAME&#125;</span> -P <span class="variable">$&#123;PORT&#125;</span> -u <span class="variable">$&#123;USERNAME&#125;</span> -p<span class="variable">$&#123;PASSWORD&#125;</span> <span class="variable">$&#123;DBNAME&#125;</span> -e <span class="string">&quot;<span class="variable">$&#123;select_sql&#125;</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#delete data</span></span><br><span class="line"><span class="attribute">delete_sql</span>=<span class="string">&quot;delete from <span class="variable">$&#123;TABLENAME&#125;</span>&quot;</span></span><br><span class="line">mysql -h <span class="variable">$&#123;HOSTNAME&#125;</span> -P <span class="variable">$&#123;PORT&#125;</span> -u <span class="variable">$&#123;USERNAME&#125;</span> -p<span class="variable">$&#123;PASSWORD&#125;</span> <span class="variable">$&#123;DBNAME&#125;</span> -e <span class="string">&quot;<span class="variable">$&#123;delete_sql&#125;</span>&quot;</span></span><br><span class="line">mysql -h <span class="variable">$&#123;HOSTNAME&#125;</span> -P <span class="variable">$&#123;PORT&#125;</span> -u <span class="variable">$&#123;USERNAME&#125;</span> -p<span class="variable">$&#123;PASSWORD&#125;</span> <span class="variable">$&#123;DBNAME&#125;</span> -e <span class="string">&quot;<span class="variable">$&#123;select_sql&#125;</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">sh </span>mysql1.<span class="keyword">sh </span></span><br></pre></td></tr></table></figure>
+<h1 id="创建用户并授权"><a href="#创建用户并授权" class="headerlink" title="创建用户并授权"></a>创建用户并授权</h1><figure class="highlight scilab"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p -e <span class="string">&quot;grant all on test_db.* to test@&#x27;</span><span class="number">192.168</span><span class="number">.1</span>.%<span class="string">&#x27; identified by &#x27;</span><span class="number">12345678</span><span class="string">&#x27;&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# mysql -hlocalhost -P3306 -uroot -p mysql -e &quot;select host,user from user&quot;</span><br><span class="line">Enter password: </span><br><span class="line"><span class="code">+-------------+</span>---------------+</span><br><span class="line">| host        | user          |</span><br><span class="line"><span class="code">+-------------+</span>---------------+</span><br><span class="line">|             | test          |</span><br><span class="line">| 192.168.1.% | test          |</span><br><span class="line">| localhost   | mysql.session |</span><br><span class="line">| localhost   | mysql.sys     |</span><br><span class="line">| localhost   | root          |</span><br><span class="line"><span class="code">+-------------+</span>---------------+</span><br></pre></td></tr></table></figure>
+<h1 id="测试test用户连接mysql服务器"><a href="#测试test用户连接mysql服务器" class="headerlink" title="测试test用户连接mysql服务器"></a>测试test用户连接mysql服务器</h1><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">mysql</span> -utest -p -h<span class="number">192.168.1.10</span></span><br></pre></td></tr></table></figure>
+<h1 id="将全部数据以表格显示"><a href="#将全部数据以表格显示" class="headerlink" title="将全部数据以表格显示"></a>将全部数据以表格显示</h1><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">mysql</span> -uroot -p<span class="number">12345678</span> -E</span><br></pre></td></tr></table></figure>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show databases;</span><br><span class="line"><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">**<span class="emphasis">* 1. row <span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">**<span class="emphasis">*</span></span></span></span></span><br><span class="line"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis">Database: information_schema</span></span></span></span></span><br><span class="line"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">**<span class="emphasis">* 2. row <span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">**<span class="emphasis">*</span></span></span></span></span></span></span></span></span><br><span class="line"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis">Database: mysql</span></span></span></span></span></span></span></span></span><br><span class="line"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">**<span class="emphasis">* 3. row <span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">**<span class="emphasis">*</span></span></span></span></span></span></span></span></span></span></span></span></span><br><span class="line"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis">Database: performance_schema</span></span></span></span></span></span></span></span></span></span></span></span></span><br><span class="line"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">**<span class="emphasis">* 4. row <span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">**<span class="emphasis">*</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><br><span class="line"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis">Database: sys</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><br><span class="line"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">**<span class="emphasis">* 5. row <span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">****</span><span class="strong">**<span class="emphasis">*</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><br><span class="line"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis">Database: test_db</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><br><span class="line"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis"><span class="strong"><span class="emphasis">5 rows in set (0.00 sec)</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><br></pre></td></tr></table></figure>
+<h1 id="以HTML文件显示数据"><a href="#以HTML文件显示数据" class="headerlink" title="以HTML文件显示数据"></a>以HTML文件显示数据</h1><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">mysql -uroot -p -H</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show databases;</span><br><span class="line"><span class="tag">&lt;<span class="name">TABLE</span> <span class="attr">BORDER</span>=<span class="string">1</span>&gt;</span><span class="tag">&lt;<span class="name">TR</span>&gt;</span><span class="tag">&lt;<span class="name">TH</span>&gt;</span>Database<span class="tag">&lt;/<span class="name">TH</span>&gt;</span><span class="tag">&lt;/<span class="name">TR</span>&gt;</span><span class="tag">&lt;<span class="name">TR</span>&gt;</span><span class="tag">&lt;<span class="name">TD</span>&gt;</span>information_schema<span class="tag">&lt;/<span class="name">TD</span>&gt;</span><span class="tag">&lt;/<span class="name">TR</span>&gt;</span><span class="tag">&lt;<span class="name">TR</span>&gt;</span><span class="tag">&lt;<span class="name">TD</span>&gt;</span>mysql<span class="tag">&lt;/<span class="name">TD</span>&gt;</span><span class="tag">&lt;/<span class="name">TR</span>&gt;</span><span class="tag">&lt;<span class="name">TR</span>&gt;</span><span class="tag">&lt;<span class="name">TD</span>&gt;</span>performance_schema<span class="tag">&lt;/<span class="name">TD</span>&gt;</span><span class="tag">&lt;/<span class="name">TR</span>&gt;</span><span class="tag">&lt;<span class="name">TR</span>&gt;</span><span class="tag">&lt;<span class="name">TD</span>&gt;</span>sys<span class="tag">&lt;/<span class="name">TD</span>&gt;</span><span class="tag">&lt;/<span class="name">TR</span>&gt;</span><span class="tag">&lt;<span class="name">TR</span>&gt;</span><span class="tag">&lt;<span class="name">TD</span>&gt;</span>test_db<span class="tag">&lt;/<span class="name">TD</span>&gt;</span><span class="tag">&lt;/<span class="name">TR</span>&gt;</span><span class="tag">&lt;/<span class="name">TABLE</span>&gt;</span>5 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<h1 id="以index文件显示数据"><a href="#以index文件显示数据" class="headerlink" title="以index文件显示数据"></a>以index文件显示数据</h1><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">mysql -uroot -p -X</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show databases;</span><br><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot;?&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">resultset</span> <span class="attr">statement</span>=<span class="string">&quot;show databases;&quot;</span> <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">row</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">field</span> <span class="attr">name</span>=<span class="string">&quot;Database&quot;</span>&gt;</span>information_schema<span class="tag">&lt;/<span class="name">field</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">row</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">row</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">field</span> <span class="attr">name</span>=<span class="string">&quot;Database&quot;</span>&gt;</span>mysql<span class="tag">&lt;/<span class="name">field</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">row</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">row</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">field</span> <span class="attr">name</span>=<span class="string">&quot;Database&quot;</span>&gt;</span>performance_schema<span class="tag">&lt;/<span class="name">field</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">row</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">row</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">field</span> <span class="attr">name</span>=<span class="string">&quot;Database&quot;</span>&gt;</span>sys<span class="tag">&lt;/<span class="name">field</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">row</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">row</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">field</span> <span class="attr">name</span>=<span class="string">&quot;Database&quot;</span>&gt;</span>test_db<span class="tag">&lt;/<span class="name">field</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">row</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">resultset</span>&gt;</span></span><br><span class="line">5 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>显示执行命令时间</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># mysql -uroot -p --prompt=&quot;\\u@\\h: \\d \\r:\\m:\\s&gt; &quot;</span></span><br><span class="line">Enter password: </span><br><span class="line">Welcome to the MySQ<span class="class">L monitor.  Commands end with ;</span><span class="built_in"> or </span>\g.</span><br><span class="line">Your MySQL connection id is 70</span><br><span class="line">Server version: 5.7.30 MySQL Community Server (GPL)</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2020, Oracle<span class="built_in"> and/or </span>its affiliates. All rights reserved.</span><br><span class="line"></span><br><span class="line">Oracle is a registered trademark of Oracle Corporation<span class="built_in"> and/or </span>its</span><br><span class="line">affiliates. Other names may be trademarks of their respective</span><br><span class="line">owners.</span><br><span class="line"></span><br><span class="line">Type &#x27;help;&#x27;<span class="built_in"> or </span>&#x27;\h&#x27; for help. Type &#x27;\c&#x27; to clear the current input statement.</span><br><span class="line"></span><br><span class="line">root@localhost: (none) 04:53:02&gt; </span><br></pre></td></tr></table></figure>
+<h1 id="将所有输入和输出内容都记录进文件"><a href="#将所有输入和输出内容都记录进文件" class="headerlink" title="将所有输入和输出内容都记录进文件"></a>将所有输入和输出内容都记录进文件</h1><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p tee  <span class="regexp">/opt/</span>tmp.log</span><br></pre></td></tr></table></figure>
+<p>查看</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># cat /opt/tmp.log </span></span><br><span class="line">root@localhost: test_db <span class="number">05</span>:<span class="number">03</span>:<span class="number">18</span>&gt; <span class="keyword">exit</span></span><br></pre></td></tr></table></figure>
+<h2 id="不进数据库的用法"><a href="#不进数据库的用法" class="headerlink" title="不进数据库的用法"></a>不进数据库的用法</h2><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># mysql -uroot -p --tee=/tmp/mysql.log</span></span><br></pre></td></tr></table></figure>
+<h1 id="mysqladmin命令"><a href="#mysqladmin命令" class="headerlink" title="mysqladmin命令"></a>mysqladmin命令</h1><h2 id="ping-检测服务是否正常"><a href="#ping-检测服务是否正常" class="headerlink" title="ping(检测服务是否正常)"></a>ping(检测服务是否正常)</h2><figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># mysqladmin -uroot -p ping</span></span><br><span class="line">Enter password: </span><br><span class="line">mysqld <span class="keyword">is</span> alive</span><br></pre></td></tr></table></figure>
+<h2 id="status-获取当前mysql状态值"><a href="#status-获取当前mysql状态值" class="headerlink" title="status(获取当前mysql状态值)"></a>status(获取当前mysql状态值)</h2><figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># mysqladmin -uroot -p status</span></span><br><span class="line">Enter password: </span><br><span class="line">Uptime:<span class="number"> 157834 </span> Threads:<span class="number"> 3 </span> Questions:<span class="number"> 170 </span> Slow queries:<span class="number"> 45 </span> Opens:<span class="number"> 165 </span> Flush tables:<span class="number"> 1 </span> Open tables:<span class="number"> 158 </span> Queries per second avg: 0.001</span><br></pre></td></tr></table></figure>
+<h2 id="processlist-获取当前连接的信息"><a href="#processlist-获取当前连接的信息" class="headerlink" title="processlist(获取当前连接的信息)"></a>processlist(获取当前连接的信息)</h2><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="meta">@localhost</span> ~]<span class="comment"># mysqladmin -uroot -p processlist</span></span><br><span class="line">Enter password: </span><br><span class="line">+----+------+-----------+----+---------+--------+----------+------------------+</span><br><span class="line">|<span class="string"> Id </span>|<span class="string"> User </span>|<span class="string"> Host      </span>|<span class="string"> db </span>|<span class="string"> Command </span>|<span class="string"> Time   </span>|<span class="string"> State    </span>|<span class="string"> Info             </span>|</span><br><span class="line">+----+------+-----------+----+---------+--------+----------+------------------+</span><br><span class="line">|<span class="string"> 5  </span>|<span class="string"> root </span>|<span class="string"> localhost </span>|<span class="string">    </span>|<span class="string"> Sleep   </span>|<span class="string"> 157280 </span>|<span class="string">          </span>|<span class="string">                  </span>|</span><br><span class="line">|<span class="string"> 71 </span>|<span class="string"> root </span>|<span class="string"> localhost </span>|<span class="string">    </span>|<span class="string"> Sleep   </span>|<span class="string"> 564    </span>|<span class="string">          </span>|<span class="string">                  </span>|</span><br><span class="line">|<span class="string"> 76 </span>|<span class="string"> root </span>|<span class="string"> localhost </span>|<span class="string">    </span>|<span class="string"> Query   </span>|<span class="string"> 0      </span>|<span class="string"> starting </span>|<span class="string"> show processlist </span>|</span><br><span class="line">+----+------+-----------+----+---------+--------+----------+------------------+</span><br></pre></td></tr></table></figure>
+<h2 id="BNe-获取数据库当前的连接数"><a href="#BNe-获取数据库当前的连接数" class="headerlink" title="BNe(获取数据库当前的连接数)"></a>BNe(获取数据库当前的连接数)</h2><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# mysql -uroot -p -BNe &quot;<span class="keyword">select</span> host,<span class="built_in">count</span>(host) <span class="keyword">from</span> processlist <span class="keyword">group</span> <span class="keyword">by</span> host<span class="string">&quot; information_schema</span></span><br><span class="line"><span class="string">Enter password: </span></span><br><span class="line"><span class="string">localhost	3</span></span><br></pre></td></tr></table></figure>
+<h1 id="Mysqlslap性能测试"><a href="#Mysqlslap性能测试" class="headerlink" title="Mysqlslap性能测试"></a>Mysqlslap性能测试</h1><h2 id="查看最大连接数"><a href="#查看最大连接数" class="headerlink" title="查看最大连接数"></a>查看最大连接数</h2><figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like <span class="emphasis">&#x27;%max_connections%&#x27;</span>;</span><br><span class="line"><span class="code">+-----------------+</span>-------+</span><br><span class="line">| Variable_name   | Value |</span><br><span class="line"><span class="code">+-----------------+</span>-------+</span><br><span class="line">| max_connections | 151   |</span><br><span class="line"><span class="code">+-----------------+</span>-------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<h2 id="修改最大连接数"><a href="#修改最大连接数" class="headerlink" title="修改最大连接数"></a>修改最大连接数</h2><h3 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h3><figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">ysql&gt; set GLOBAL max_connections = 1024;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; show variables like <span class="emphasis">&#x27;%max_connections%&#x27;</span>;</span><br><span class="line"><span class="code">+-----------------+</span>-------+</span><br><span class="line">| Variable_name   | Value |</span><br><span class="line"><span class="code">+-----------------+</span>-------+</span><br><span class="line">| max_connections | 1024  |</span><br><span class="line"><span class="code">+-----------------+</span>-------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<h3 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h3><p>在my. cnf[mysq1d]下添加</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">max_ .connect <span class="attribute">ions</span>=1024</span><br></pre></td></tr></table></figure>
+<p>重启Mysq1。<br>查看修改后的最大连接数。</p>
+<h2 id="查看mysql默认使用的存储引擎"><a href="#查看mysql默认使用的存储引擎" class="headerlink" title="查看mysql默认使用的存储引擎"></a>查看mysql默认使用的存储引擎</h2><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show engines;</span><br><span class="line">+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+</span><br><span class="line">|<span class="string"> Engine             </span>|<span class="string"> Support </span>|<span class="string"> Comment                                                        </span>|<span class="string"> Transactions </span>|<span class="string"> XA   </span>|<span class="string"> Savepoints </span>|</span><br><span class="line">+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+</span><br><span class="line">|<span class="string"> InnoDB             </span>|<span class="string"> DEFAULT </span>|<span class="string"> Supports transactions, row-level locking, and foreign keys     </span>|<span class="string"> YES          </span>|<span class="string"> YES  </span>|<span class="string"> YES        </span>|</span><br><span class="line">|<span class="string"> MRG_MYISAM         </span>|<span class="string"> YES     </span>|<span class="string"> Collection of identical MyISAM tables                          </span>|<span class="string"> NO           </span>|<span class="string"> NO   </span>|<span class="string"> NO         </span>|</span><br><span class="line">|<span class="string"> MEMORY             </span>|<span class="string"> YES     </span>|<span class="string"> Hash based, stored in memory, useful for temporary tables      </span>|<span class="string"> NO           </span>|<span class="string"> NO   </span>|<span class="string"> NO         </span>|</span><br><span class="line">|<span class="string"> BLACKHOLE          </span>|<span class="string"> YES     </span>|<span class="string"> /dev/null storage engine (anything you write to it disappears) </span>|<span class="string"> NO           </span>|<span class="string"> NO   </span>|<span class="string"> NO         </span>|</span><br><span class="line">|<span class="string"> MyISAM             </span>|<span class="string"> YES     </span>|<span class="string"> MyISAM storage engine                                          </span>|<span class="string"> NO           </span>|<span class="string"> NO   </span>|<span class="string"> NO         </span>|</span><br><span class="line">|<span class="string"> CSV                </span>|<span class="string"> YES     </span>|<span class="string"> CSV storage engine                                             </span>|<span class="string"> NO           </span>|<span class="string"> NO   </span>|<span class="string"> NO         </span>|</span><br><span class="line">|<span class="string"> ARCHIVE            </span>|<span class="string"> YES     </span>|<span class="string"> Archive storage engine                                         </span>|<span class="string"> NO           </span>|<span class="string"> NO   </span>|<span class="string"> NO         </span>|</span><br><span class="line">|<span class="string"> PERFORMANCE_SCHEMA </span>|<span class="string"> YES     </span>|<span class="string"> Performance Schema                                             </span>|<span class="string"> NO           </span>|<span class="string"> NO   </span>|<span class="string"> NO         </span>|</span><br><span class="line">|<span class="string"> FEDERATED          </span>|<span class="string"> NO      </span>|<span class="string"> Federated MySQL storage engine                                 </span>|<span class="string"> NULL         </span>|<span class="string"> NULL </span>|<span class="string"> NULL       </span>|</span><br><span class="line">+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+</span><br><span class="line">9 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<h3 id="使用脚本测试"><a href="#使用脚本测试" class="headerlink" title="使用脚本测试"></a>使用脚本测试</h3><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# mysqlslap --defaults-<span class="keyword">file</span>=/etc/my.<span class="keyword">cnf</span> --concurrency=<span class="number">100</span>,<span class="number">200</span> --iterations=<span class="number">1</span> --<span class="keyword">number</span>-<span class="keyword">int</span>-cols=<span class="number">20</span> --<span class="keyword">number</span>-char-cols=<span class="number">30</span> --auto-generate-sql --auto-generate-sql-<span class="built_in">add</span>-autoincrement --auto-generate-sql-load-<span class="built_in">type</span>=mixed --engine=myisam,innodb --<span class="keyword">number</span>-of-queries=<span class="number">2000</span> -uroot -p12345678 --<span class="keyword">verbose</span></span><br><span class="line">mysqlslap: [Warning] Using <span class="keyword">a</span> password <span class="keyword">on</span> the <span class="keyword">command</span> <span class="built_in">line</span> interface can <span class="keyword">be</span> insecure.</span><br><span class="line">Benchmark</span><br><span class="line">	Running <span class="keyword">for</span> engine myisam</span><br><span class="line">	Average <span class="keyword">number</span> of seconds <span class="keyword">to</span> run <span class="keyword">all</span> querie<span class="variable">s:</span> <span class="number">0.183</span> seconds</span><br><span class="line">	Minimum <span class="keyword">number</span> of seconds <span class="keyword">to</span> run <span class="keyword">all</span> querie<span class="variable">s:</span> <span class="number">0.183</span> seconds</span><br><span class="line">	Maximum <span class="keyword">number</span> of seconds <span class="keyword">to</span> run <span class="keyword">all</span> querie<span class="variable">s:</span> <span class="number">0.183</span> seconds</span><br><span class="line">	Number of clients running querie<span class="variable">s:</span> <span class="number">100</span></span><br><span class="line">	Average <span class="keyword">number</span> of queries per clien<span class="variable">t:</span> <span class="number">20</span></span><br><span class="line"></span><br><span class="line">Benchmark</span><br><span class="line">	Running <span class="keyword">for</span> engine myisam</span><br><span class="line">	Average <span class="keyword">number</span> of seconds <span class="keyword">to</span> run <span class="keyword">all</span> querie<span class="variable">s:</span> <span class="number">0.165</span> seconds</span><br><span class="line">	Minimum <span class="keyword">number</span> of seconds <span class="keyword">to</span> run <span class="keyword">all</span> querie<span class="variable">s:</span> <span class="number">0.165</span> seconds</span><br><span class="line">	Maximum <span class="keyword">number</span> of seconds <span class="keyword">to</span> run <span class="keyword">all</span> querie<span class="variable">s:</span> <span class="number">0.165</span> seconds</span><br><span class="line">	Number of clients running querie<span class="variable">s:</span> <span class="number">200</span></span><br><span class="line">	Average <span class="keyword">number</span> of queries per clien<span class="variable">t:</span> <span class="number">10</span></span><br><span class="line"></span><br><span class="line">Benchmark</span><br><span class="line">	Running <span class="keyword">for</span> engine innodb</span><br><span class="line">	Average <span class="keyword">number</span> of seconds <span class="keyword">to</span> run <span class="keyword">all</span> querie<span class="variable">s:</span> <span class="number">0.182</span> seconds</span><br><span class="line">	Minimum <span class="keyword">number</span> of seconds <span class="keyword">to</span> run <span class="keyword">all</span> querie<span class="variable">s:</span> <span class="number">0.182</span> seconds</span><br><span class="line">	Maximum <span class="keyword">number</span> of seconds <span class="keyword">to</span> run <span class="keyword">all</span> querie<span class="variable">s:</span> <span class="number">0.182</span> seconds</span><br><span class="line">	Number of clients running querie<span class="variable">s:</span> <span class="number">100</span></span><br><span class="line">	Average <span class="keyword">number</span> of queries per clien<span class="variable">t:</span> <span class="number">20</span></span><br><span class="line"></span><br><span class="line">Benchmark</span><br><span class="line">	Running <span class="keyword">for</span> engine innodb</span><br><span class="line">	Average <span class="keyword">number</span> of seconds <span class="keyword">to</span> run <span class="keyword">all</span> querie<span class="variable">s:</span> <span class="number">0.250</span> seconds</span><br><span class="line">	Minimum <span class="keyword">number</span> of seconds <span class="keyword">to</span> run <span class="keyword">all</span> querie<span class="variable">s:</span> <span class="number">0.250</span> seconds</span><br><span class="line">	Maximum <span class="keyword">number</span> of seconds <span class="keyword">to</span> run <span class="keyword">all</span> querie<span class="variable">s:</span> <span class="number">0.250</span> seconds</span><br><span class="line">	Number of clients running querie<span class="variable">s:</span> <span class="number">200</span></span><br><span class="line">	Average <span class="keyword">number</span> of queries per clien<span class="variable">t:</span> <span class="number">10</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# mysqlslap <span class="attribute">--defaults-file</span>=/etc/my.cnf <span class="attribute">--concurrency</span>=100,200 <span class="attribute">--iterations</span>=1 <span class="attribute">--number-int-cols</span>=20 <span class="attribute">--number-char-cols</span>=30 --auto-generate-sql --auto-generate-sql-add-autoincrement <span class="attribute">--auto-generate-sql-load-type</span>=mixed <span class="attribute">--engine</span>=myisam,innodb <span class="attribute">--number-of-queries</span>=2000 -uroot -p12345678 <span class="attribute">--csv</span>=/opt/mysql.csv</span><br></pre></td></tr></table></figure>
+<p>查看</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# cat /opt/mysql.csv </span><br><span class="line">myisam,mixed,<span class="number">0.131,0.131</span>,<span class="number">0.131,100,20</span></span><br><span class="line">myisam,mixed,<span class="number">0.129,0.129</span>,<span class="number">0.129,200,10</span></span><br><span class="line">innodb,mixed,<span class="number">0.155,0.155</span>,<span class="number">0.155,100,20</span></span><br><span class="line">innodb,mixed,<span class="number">0.194,0.194</span>,<span class="number">0.194,200,10</span></span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="阿怪 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="阿怪 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿怪
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://aguai.fun/2020/06/18/mysql%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D/" title="mysql自带工具介绍">https://aguai.fun/2020/06/18/mysql自带工具介绍/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+  
+</div>
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/mysql/" rel="tag"># mysql</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/06/18/%E4%BA%8B%E5%8A%A1%E6%97%A5%E5%BF%97/" rel="prev" title="事务日志">
+      <i class="fa fa-chevron-left"></i> 事务日志
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/06/22/mysql%E4%BC%98%E5%8C%96/" rel="next" title="mysql优化">
+      mysql优化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%8D%E7%99%BB%E5%BD%95%E6%89%A7%E8%A1%8Cmysql%E8%AF%AD%E5%8F%A5"><span class="nav-text">免登录执行mysql语句</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#mysql%E8%84%9A%E6%9C%AC"><span class="nav-text">mysql脚本</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E7%94%A8%E6%88%B7%E5%B9%B6%E6%8E%88%E6%9D%83"><span class="nav-text">创建用户并授权</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95test%E7%94%A8%E6%88%B7%E8%BF%9E%E6%8E%A5mysql%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-text">测试test用户连接mysql服务器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%86%E5%85%A8%E9%83%A8%E6%95%B0%E6%8D%AE%E4%BB%A5%E8%A1%A8%E6%A0%BC%E6%98%BE%E7%A4%BA"><span class="nav-text">将全部数据以表格显示</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A5HTML%E6%96%87%E4%BB%B6%E6%98%BE%E7%A4%BA%E6%95%B0%E6%8D%AE"><span class="nav-text">以HTML文件显示数据</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A5index%E6%96%87%E4%BB%B6%E6%98%BE%E7%A4%BA%E6%95%B0%E6%8D%AE"><span class="nav-text">以index文件显示数据</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%86%E6%89%80%E6%9C%89%E8%BE%93%E5%85%A5%E5%92%8C%E8%BE%93%E5%87%BA%E5%86%85%E5%AE%B9%E9%83%BD%E8%AE%B0%E5%BD%95%E8%BF%9B%E6%96%87%E4%BB%B6"><span class="nav-text">将所有输入和输出内容都记录进文件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8D%E8%BF%9B%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E7%94%A8%E6%B3%95"><span class="nav-text">不进数据库的用法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#mysqladmin%E5%91%BD%E4%BB%A4"><span class="nav-text">mysqladmin命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ping-%E6%A3%80%E6%B5%8B%E6%9C%8D%E5%8A%A1%E6%98%AF%E5%90%A6%E6%AD%A3%E5%B8%B8"><span class="nav-text">ping(检测服务是否正常)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#status-%E8%8E%B7%E5%8F%96%E5%BD%93%E5%89%8Dmysql%E7%8A%B6%E6%80%81%E5%80%BC"><span class="nav-text">status(获取当前mysql状态值)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#processlist-%E8%8E%B7%E5%8F%96%E5%BD%93%E5%89%8D%E8%BF%9E%E6%8E%A5%E7%9A%84%E4%BF%A1%E6%81%AF"><span class="nav-text">processlist(获取当前连接的信息)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BNe-%E8%8E%B7%E5%8F%96%E6%95%B0%E6%8D%AE%E5%BA%93%E5%BD%93%E5%89%8D%E7%9A%84%E8%BF%9E%E6%8E%A5%E6%95%B0"><span class="nav-text">BNe(获取数据库当前的连接数)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Mysqlslap%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95"><span class="nav-text">Mysqlslap性能测试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E6%9C%80%E5%A4%A7%E8%BF%9E%E6%8E%A5%E6%95%B0"><span class="nav-text">查看最大连接数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E6%9C%80%E5%A4%A7%E8%BF%9E%E6%8E%A5%E6%95%B0"><span class="nav-text">修改最大连接数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E5%BC%8F%E4%B8%80"><span class="nav-text">方式一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E5%BC%8F%E4%BA%8C"><span class="nav-text">方式二</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8Bmysql%E9%BB%98%E8%AE%A4%E4%BD%BF%E7%94%A8%E7%9A%84%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-text">查看mysql默认使用的存储引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC%E6%B5%8B%E8%AF%95"><span class="nav-text">使用脚本测试</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="阿怪"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">阿怪</p>
+  <div class="site-description" itemprop="description">直到这一刻微笑着说话为止，我至少留下了一公升眼泪</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">103</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/a_guai_" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;a_guai_" rel="noopener" target="_blank"><i class="crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="阿怪"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">博客</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">574k</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/clicklove.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
+

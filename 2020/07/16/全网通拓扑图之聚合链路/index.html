@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"aguai.fun","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offalse":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="华为">
+<meta property="og:type" content="article">
+<meta property="og:title" content="全网通拓扑图之聚合链路">
+<meta property="og:url" content="https://aguai.fun/2020/07/16/%E5%85%A8%E7%BD%91%E9%80%9A%E6%8B%93%E6%89%91%E5%9B%BE%E4%B9%8B%E8%81%9A%E5%90%88%E9%93%BE%E8%B7%AF/index.html">
+<meta property="og:site_name" content="阿怪の博客">
+<meta property="og:description" content="华为">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200716212932129.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="article:published_time" content="2020-07-15T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-07-16T13:33:02.383Z">
+<meta property="article:author" content="阿怪">
+<meta property="article:tag" content="华为">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200716212932129.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+
+<link rel="canonical" href="https://aguai.fun/2020/07/16/%E5%85%A8%E7%BD%91%E9%80%9A%E6%8B%93%E6%89%91%E5%9B%BE%E4%B9%8B%E8%81%9A%E5%90%88%E9%93%BE%E8%B7%AF/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>全网通拓扑图之聚合链路 | 阿怪の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿怪の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">103</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://aguai.fun/2020/07/16/%E5%85%A8%E7%BD%91%E9%80%9A%E6%8B%93%E6%89%91%E5%9B%BE%E4%B9%8B%E8%81%9A%E5%90%88%E9%93%BE%E8%B7%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="阿怪">
+      <meta itemprop="description" content="直到这一刻微笑着说话为止，我至少留下了一公升眼泪">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿怪の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          全网通拓扑图之聚合链路
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-07-16 00:00:00 / 修改时间：21:33:02" itemprop="dateCreated datePublished" datetime="2020-07-16T00:00:00+08:00">2020-07-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%8D%8E%E4%B8%BA/" itemprop="url" rel="index"><span itemprop="name">华为</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8.2k</span>
+            </span>
+            <div class="post-description">华为</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="华为综合案例"><a href="#华为综合案例" class="headerlink" title="华为综合案例"></a>华为综合案例</h1><h2 id="S1和S2配置链路聚合："><a href="#S1和S2配置链路聚合：" class="headerlink" title="S1和S2配置链路聚合："></a>S1和S2配置链路聚合：</h2><blockquote>
+<ol>
+<li>链路聚合(LACP):等同于思科的以太网通道<br>把多个（最多8个）物理接口合并成一个逻辑接口(eth-trunk)，增加带宽和增强线路冗余性，<br>适用于汇聚网络或核心网络.</li>
+<li>链路聚合接口注意事项<br>最多8个<pre><code>    成员接口不能单独配置其他功能
+    单个接口只能加入一个eth-trunk 
+    成员接口类型必须一致（全为F，或全G，或全T）</code></pre>
+</li>
+<li>链路聚合模式<br>手工负载分担<pre><code>    静态LACP</code></pre>
+</li>
+<li>活动接口和非活动接口<br>手工模式：所有接口都为活动，正常转发数据<pre><code>    静态LACP：设置M:N值，M为活动接口数--转发数据，N为非活动接口数--容错备份</code></pre>
+</li>
+<li>主动端与被动端<br>静态LACP模式下，双方交换机优先级高者（值小者优先）占据主动，低者顺从主动设备的配置</li>
+<li>负载均衡模式：<br>dst-ip <pre><code>    dst-mac
+    src-ip
+    src-mac
+    src-dst-ip
+    src-dst-mac</code></pre>
+</li>
+</ol>
+</blockquote>
+<h1 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h1><p><img src="https://img-blog.csdnimg.cn/20200716212932129.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="关闭消息提示"><a href="#关闭消息提示" class="headerlink" title="关闭消息提示"></a>关闭消息提示</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sys</span><br><span class="line"><span class="attribute">undo</span> <span class="literal">info</span> enable</span><br></pre></td></tr></table></figure>
+<h2 id="配置S1和S2的链路聚合"><a href="#配置S1和S2的链路聚合" class="headerlink" title="配置S1和S2的链路聚合"></a>配置S1和S2的链路聚合</h2><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[S1]lacp priority <span class="number">1000</span>		<span class="regexp">//</span>配置S1设备的系统LACP优先级</span><br><span class="line">[S1]int Eth-Trunk <span class="number">12</span>		<span class="regexp">//</span>创建链路聚合逻辑接口，名称为Eth-Trunk <span class="number">12</span></span><br><span class="line">[S1-Eth-Trunk12]mode lacp-static		<span class="regexp">//</span>配置静态LACP模式</span><br><span class="line">[S1-Eth-Trunk12]load-balance dst-mac		<span class="regexp">//</span>配置负载均衡模式为MAC地址</span><br><span class="line">[S1-Eth-Trunk12]trunkport g0<span class="regexp">/0/</span><span class="number">11</span>		<span class="regexp">//</span>添加成员接口g<span class="regexp">/0/</span><span class="number">0</span>/<span class="number">11</span></span><br><span class="line">Info: This operation may take a few seconds. Please wait <span class="keyword">for</span> a moment...done.</span><br><span class="line">[S1-Eth-Trunk12]trunkport g0<span class="regexp">/0/</span><span class="number">12</span>		<span class="regexp">//</span>添加成员接口g<span class="regexp">/0/</span><span class="number">0</span>/<span class="number">12</span></span><br><span class="line">Info: This operation may take a few seconds. Please wait <span class="keyword">for</span> a moment...done.</span><br><span class="line">[S1-Eth-Trunk12]quit</span><br></pre></td></tr></table></figure>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[S2]<span class="keyword">int</span> Eth-Trunk <span class="number">12</span></span><br><span class="line">[S2-Eth-Trunk12]mode lacp-<span class="keyword">static</span></span><br><span class="line">[S2-Eth-Trunk12]trunkport g0<span class="regexp">/0/</span><span class="number">11</span></span><br><span class="line">Info: <span class="keyword">This</span> operation may take a few seconds. Please wait <span class="keyword">for</span> a moment...done.</span><br><span class="line">[S2-Eth-Trunk12]trunkport g0<span class="regexp">/0/</span><span class="number">12</span></span><br><span class="line">Info: <span class="keyword">This</span> operation may take a few seconds. Please wait <span class="keyword">for</span> a moment...done.</span><br><span class="line">[S2-Eth-Trunk12]quit</span><br></pre></td></tr></table></figure>
+<h2 id="配置VLAN间路由"><a href="#配置VLAN间路由" class="headerlink" title="配置VLAN间路由"></a>配置VLAN间路由</h2><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[S1]vlan batch <span class="number">11</span> to <span class="number">14</span> <span class="number">1000</span> to <span class="number">1002</span>		<span class="regexp">//</span>批量创建VLAN <span class="number">11</span>-<span class="number">14</span>、VLAN <span class="number">1000</span>-<span class="number">1002</span></span><br><span class="line">Info: This operation may take a few seconds. Please wait <span class="keyword">for</span> a moment...done.</span><br><span class="line">[S1]int Eth-Trunk <span class="number">12</span>		<span class="regexp">//</span>进入链路聚合接口</span><br><span class="line">[S1-Eth-Trunk12]port link-type trunk		<span class="regexp">//</span>配置链路聚合接口模式为Trunk</span><br><span class="line">[S1-Eth-Trunk12]port trunk allow-pass vlan <span class="number">11</span> to <span class="number">14</span> <span class="number">1000</span> to <span class="number">1002</span></span><br><span class="line">[S1-Eth-Trunk12]int g0<span class="regexp">/0/</span><span class="number">21</span></span><br><span class="line">[S1-GigabitEthernet0<span class="regexp">/0/</span><span class="number">21</span>]port link-type trunk 		<span class="regexp">//</span>链路聚合接口为Trunk</span><br><span class="line">[S1-GigabitEthernet0<span class="regexp">/0/</span><span class="number">21</span>]port trunk allow-pass vlan all 		<span class="regexp">//</span>允许所有VLAN</span><br><span class="line">[S1-GigabitEthernet0<span class="regexp">/0/</span><span class="number">21</span>]int g0<span class="regexp">/0/</span><span class="number">22</span></span><br><span class="line">[S1-GigabitEthernet0<span class="regexp">/0/</span><span class="number">22</span>]port link-type trunk</span><br><span class="line">[S1-GigabitEthernet0<span class="regexp">/0/</span><span class="number">22</span>]port trunk allow-pass vlan all </span><br><span class="line"></span><br><span class="line"><span class="comment">#给vlan设ip</span></span><br><span class="line">[S1-GigabitEthernet0<span class="regexp">/0/</span><span class="number">22</span>]int vlanif <span class="number">11</span>		<span class="regexp">//</span>进入VLAN <span class="number">11</span>的虚接口</span><br><span class="line">[S1-Vlanif11]ip add <span class="number">10.1</span>.<span class="number">11.1</span> <span class="number">24</span></span><br><span class="line">[S1-Vlanif11]int vlanif <span class="number">12</span></span><br><span class="line">[S1-Vlanif12]ip add <span class="number">10.1</span>.<span class="number">12.1</span> <span class="number">24</span></span><br><span class="line">[S1-Vlanif12]quit</span><br></pre></td></tr></table></figure>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&lt;S2&gt;sys</span><br><span class="line">[S2]vlan batch <span class="number">11</span> to <span class="number">14</span> <span class="number">1000</span> to <span class="number">1002</span></span><br><span class="line">Info: <span class="keyword">This</span> operation may take a few seconds. Please wait <span class="keyword">for</span> a moment...done.</span><br><span class="line">[S2]<span class="keyword">int</span> Eth-Trunk <span class="number">12</span></span><br><span class="line">[S2-Eth-Trunk12]port link-type trunk</span><br><span class="line">[S2-Eth-Trunk12]port trunk allow-pass vlan all </span><br><span class="line">[S2-Eth-Trunk12]<span class="keyword">int</span> g0<span class="regexp">/0/</span><span class="number">23</span></span><br><span class="line">[S2-GigabitEthernet0<span class="regexp">/0/</span><span class="number">23</span>]port link-type trunk</span><br><span class="line">[S2-GigabitEthernet0<span class="regexp">/0/</span><span class="number">23</span>]port trunk allow-pass vlan all</span><br><span class="line">[S2-GigabitEthernet0<span class="regexp">/0/</span><span class="number">23</span>]<span class="keyword">int</span> g0<span class="regexp">/0/</span><span class="number">24</span></span><br><span class="line">[S2-GigabitEthernet0<span class="regexp">/0/</span><span class="number">24</span>]port link-type trunk</span><br><span class="line">[S2-GigabitEthernet0<span class="regexp">/0/</span><span class="number">24</span>]port trunk allow-pass vlan all</span><br><span class="line">[S2-GigabitEthernet0<span class="regexp">/0/</span><span class="number">24</span>]<span class="keyword">int</span> vlanif <span class="number">13</span></span><br><span class="line">[S2-Vlanif13]ip address <span class="number">10.1</span>.<span class="number">13.1</span> <span class="number">24</span></span><br><span class="line">[S2-Vlanif13]<span class="keyword">int</span> vlanif <span class="number">14</span></span><br><span class="line">[S2-Vlanif14]ip address <span class="number">10.1</span>.<span class="number">14.1</span> <span class="number">24</span></span><br></pre></td></tr></table></figure>
+<h2 id="S3、S4、S5、S6做Trunk口，加入VLAN"><a href="#S3、S4、S5、S6做Trunk口，加入VLAN" class="headerlink" title="S3、S4、S5、S6做Trunk口，加入VLAN"></a>S3、S4、S5、S6做Trunk口，加入VLAN</h2><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[S3]vlan batch <span class="number">11</span> to <span class="number">14</span></span><br><span class="line">Info: <span class="keyword">This</span> operation may take a few seconds. Please wait <span class="keyword">for</span> a moment...done.</span><br><span class="line">[S3]<span class="keyword">int</span> g0<span class="regexp">/0/</span><span class="number">1</span></span><br><span class="line">[S3-GigabitEthernet0<span class="regexp">/0/</span><span class="number">1</span>]port link-type trunk</span><br><span class="line">[S3-GigabitEthernet0<span class="regexp">/0/</span><span class="number">1</span>]port trunk allow-pass vlan all </span><br><span class="line"></span><br><span class="line">#加入VLAN</span><br><span class="line">[S3-GigabitEthernet0<span class="regexp">/0/</span><span class="number">1</span>]<span class="keyword">int</span> g0<span class="regexp">/0/</span><span class="number">2</span></span><br><span class="line">[S3-GigabitEthernet0<span class="regexp">/0/</span><span class="number">2</span>]port link-type access 		<span class="comment">//配置端口模式为access</span></span><br><span class="line">[S3-GigabitEthernet0<span class="regexp">/0/</span><span class="number">2</span>]port <span class="keyword">default</span> vlan <span class="number">11</span>		<span class="comment">//接口加入VLAN 11</span></span><br><span class="line">[S3-GigabitEthernet0<span class="regexp">/0/</span><span class="number">2</span>]quit</span><br></pre></td></tr></table></figure>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[S4]vlan batch <span class="number">11</span> to <span class="number">14</span></span><br><span class="line">Info: <span class="keyword">This</span> operation may take a few seconds. Please wait <span class="keyword">for</span> a moment...done.</span><br><span class="line">[S4]<span class="keyword">int</span> g0<span class="regexp">/0/</span><span class="number">1</span></span><br><span class="line">[S4-GigabitEthernet0<span class="regexp">/0/</span><span class="number">1</span>]port link-type trunk </span><br><span class="line">[S4-GigabitEthernet0<span class="regexp">/0/</span><span class="number">1</span>]port trunk allow-pass vlan all</span><br><span class="line">[S4-GigabitEthernet0<span class="regexp">/0/</span><span class="number">1</span>]<span class="keyword">int</span> g0<span class="regexp">/0/</span><span class="number">2</span></span><br><span class="line">[S4-GigabitEthernet0<span class="regexp">/0/</span><span class="number">2</span>]port link-type access</span><br><span class="line">[S4-GigabitEthernet0<span class="regexp">/0/</span><span class="number">2</span>]port <span class="keyword">default</span> vlan <span class="number">12</span></span><br><span class="line">[S4-GigabitEthernet0<span class="regexp">/0/</span><span class="number">2</span>]quit</span><br></pre></td></tr></table></figure>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[S5]vlan batch <span class="number">11</span> to <span class="number">14</span></span><br><span class="line">Info: <span class="keyword">This</span> operation may take a few seconds. Please wait <span class="keyword">for</span> a moment...done.</span><br><span class="line">[S5]<span class="keyword">int</span> g0<span class="regexp">/0/</span><span class="number">1</span></span><br><span class="line">[S5-GigabitEthernet0<span class="regexp">/0/</span><span class="number">1</span>]port link-type trunk</span><br><span class="line">[S5-GigabitEthernet0<span class="regexp">/0/</span><span class="number">1</span>]port trunk allow-pass vlan all</span><br><span class="line">[S5-GigabitEthernet0<span class="regexp">/0/</span><span class="number">1</span>]<span class="keyword">int</span> g0<span class="regexp">/0/</span><span class="number">2</span></span><br><span class="line">[S5-GigabitEthernet0<span class="regexp">/0/</span><span class="number">2</span>]port link-type access</span><br><span class="line">[S5-GigabitEthernet0<span class="regexp">/0/</span><span class="number">2</span>]port <span class="keyword">default</span> vlan <span class="number">13</span></span><br><span class="line">[S5-GigabitEthernet0<span class="regexp">/0/</span><span class="number">2</span>]quit</span><br></pre></td></tr></table></figure>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[S6]vlan batch <span class="number">11</span> to <span class="number">14</span></span><br><span class="line">Info: <span class="keyword">This</span> operation may take a few seconds. Please wait <span class="keyword">for</span> a moment...done.</span><br><span class="line">[S6]<span class="keyword">int</span> g0<span class="regexp">/0/</span><span class="number">24</span></span><br><span class="line">[S6-GigabitEthernet0<span class="regexp">/0/</span><span class="number">24</span>]port link-type trunk </span><br><span class="line">[S6-GigabitEthernet0<span class="regexp">/0/</span><span class="number">24</span>]port trunk allow-pass vlan all </span><br><span class="line">[S6-GigabitEthernet0<span class="regexp">/0/</span><span class="number">24</span>]<span class="keyword">int</span> g0<span class="regexp">/0/</span><span class="number">1</span></span><br><span class="line">[S6-GigabitEthernet0<span class="regexp">/0/</span><span class="number">1</span>]port link-type access </span><br><span class="line">[S6-GigabitEthernet0<span class="regexp">/0/</span><span class="number">1</span>]port <span class="keyword">default</span> vlan <span class="number">14</span></span><br><span class="line">[S6-GigabitEthernet0<span class="regexp">/0/</span><span class="number">1</span>]quit</span><br></pre></td></tr></table></figure>
+<h2 id="配置R4的单臂路由"><a href="#配置R4的单臂路由" class="headerlink" title="配置R4的单臂路由"></a>配置R4的单臂路由</h2><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[R4]int g0<span class="regexp">/0/</span><span class="number">0.21</span>		<span class="regexp">//</span>进入子接口</span><br><span class="line">[R4-GigabitEthernet0<span class="regexp">/0/</span><span class="number">0.21</span>]ip add <span class="number">10.1</span>.<span class="number">21.1</span> <span class="number">24</span>		<span class="regexp">//</span>配置子接口IP地址</span><br><span class="line">[R4-GigabitEthernet0<span class="regexp">/0/</span><span class="number">0.21</span>]dot1q termination vid <span class="number">21</span>		<span class="regexp">//</span>子接口和VLAN <span class="number">21</span>关联</span><br><span class="line">[R4-GigabitEthernet0<span class="regexp">/0/</span><span class="number">0.21</span>]arp broadcast enable 		<span class="regexp">//</span>子接口打开ARP广播</span><br><span class="line">[R4-GigabitEthernet0<span class="regexp">/0/</span><span class="number">0.21</span>]int g0<span class="regexp">/0/</span><span class="number">0.22</span></span><br><span class="line">[R4-GigabitEthernet0<span class="regexp">/0/</span><span class="number">0.22</span>]ip add <span class="number">10.1</span>.<span class="number">22.1</span> <span class="number">24</span></span><br><span class="line">[R4-GigabitEthernet0<span class="regexp">/0/</span><span class="number">0.22</span>]dot1q termination vid <span class="number">22</span></span><br><span class="line">[R4-GigabitEthernet0<span class="regexp">/0/</span><span class="number">0.22</span>]arp broadcast enable</span><br><span class="line">[R4-GigabitEthernet0<span class="regexp">/0/</span><span class="number">0.22</span>]quit</span><br></pre></td></tr></table></figure>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[S7]vlan batch <span class="number">21</span> <span class="number">22</span></span><br><span class="line">Info: <span class="keyword">This</span> operation may take a few seconds. Please wait <span class="keyword">for</span> a moment...done.</span><br><span class="line">[S7]<span class="keyword">int</span> g0<span class="regexp">/0/</span><span class="number">10</span></span><br><span class="line">[S7-GigabitEthernet0<span class="regexp">/0/</span><span class="number">10</span>]port link-type trunk </span><br><span class="line">[S7-GigabitEthernet0<span class="regexp">/0/</span><span class="number">10</span>]port trunk allow-pass vlan all </span><br><span class="line">[S7-GigabitEthernet0<span class="regexp">/0/</span><span class="number">10</span>]<span class="keyword">int</span> g0<span class="regexp">/0/</span><span class="number">1</span></span><br><span class="line">[S7-GigabitEthernet0<span class="regexp">/0/</span><span class="number">1</span>]port link-type access </span><br><span class="line">[S7-GigabitEthernet0<span class="regexp">/0/</span><span class="number">1</span>]port <span class="keyword">default</span> vlan <span class="number">21</span></span><br><span class="line">[S7-GigabitEthernet0<span class="regexp">/0/</span><span class="number">1</span>]<span class="keyword">int</span> g0<span class="regexp">/0/</span><span class="number">2</span></span><br><span class="line">[S7-GigabitEthernet0<span class="regexp">/0/</span><span class="number">2</span>]port link-type access </span><br><span class="line">[S7-GigabitEthernet0<span class="regexp">/0/</span><span class="number">2</span>]port <span class="keyword">default</span> vlan <span class="number">22</span></span><br></pre></td></tr></table></figure>
+<h2 id="S1、S2做OSPF"><a href="#S1、S2做OSPF" class="headerlink" title="S1、S2做OSPF"></a>S1、S2做OSPF</h2><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">S1</span>]int g0/<span class="number">0</span>/<span class="number">1</span></span><br><span class="line">[<span class="built_in">S1</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">1</span>]port link-type access </span><br><span class="line">[<span class="built_in">S1</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">1</span>]port default vlan <span class="number">1001</span>		<span class="comment">//物理接口加入VLAN 1001</span></span><br><span class="line">[<span class="built_in">S1</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">1</span>]quit</span><br><span class="line">[<span class="built_in">S1</span>]int vlanif <span class="number">1000</span></span><br><span class="line">[<span class="built_in">S1</span>-Vlanif1000]<span class="built_in">ip</span> <span class="keyword">add</span> <span class="number">10</span>.<span class="number">1</span>.<span class="number">122</span>.<span class="number">11</span> <span class="number">24</span></span><br><span class="line">[<span class="built_in">S1</span>-Vlanif1000]int vlanif <span class="number">1001</span>		<span class="comment">//配置VLAN 1001的虚接口</span></span><br><span class="line">[<span class="built_in">S1</span>-Vlanif1001]<span class="built_in">ip</span> <span class="keyword">add</span> <span class="number">10</span>.<span class="number">1</span>.<span class="number">111</span>.<span class="number">11</span> <span class="number">24</span></span><br><span class="line">[<span class="built_in">S1</span>-Vlanif1001]quit</span><br><span class="line"></span><br><span class="line"><span class="comment">#做OSPF</span></span><br><span class="line">[<span class="built_in">S1</span>]ospf <span class="number">110</span>		<span class="comment">//进入OSPF进程模式，其中110代表进程ID号</span></span><br><span class="line">[<span class="built_in">S1</span>-ospf-<span class="number">110</span>]<span class="meta">area</span> <span class="number">0</span>		<span class="comment">//和Cisco不同，华为要先进入某个区域，再network宣告网络</span></span><br><span class="line">[<span class="built_in">S1</span>-ospf-<span class="number">110</span>-<span class="meta">area</span>-<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>]network <span class="number">10</span>.<span class="number">1</span>.<span class="number">11</span>.<span class="number">0</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">255</span>		<span class="comment">//宣告网络</span></span><br><span class="line">[<span class="built_in">S1</span>-ospf-<span class="number">110</span>-<span class="meta">area</span>-<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>]network <span class="number">10</span>.<span class="number">1</span>.<span class="number">12</span>.<span class="number">0</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">255</span>		<span class="comment">//不需要跟区域</span></span><br><span class="line">[<span class="built_in">S1</span>-ospf-<span class="number">110</span>-<span class="meta">area</span>-<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>]network <span class="number">10</span>.<span class="number">1</span>.<span class="number">111</span>.<span class="number">0</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">255</span></span><br><span class="line">[<span class="built_in">S1</span>-ospf-<span class="number">110</span>-<span class="meta">area</span>-<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>]network <span class="number">10</span>.<span class="number">1</span>.<span class="number">122</span>.<span class="number">0</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">255</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">S2</span>]int g0/<span class="number">0</span>/<span class="number">2</span></span><br><span class="line">[<span class="built_in">S2</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">2</span>]port link-type access </span><br><span class="line">[<span class="built_in">S2</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">2</span>]port default vlan <span class="number">1002</span></span><br><span class="line">[<span class="built_in">S2</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">2</span>]int vlanif <span class="number">1000</span></span><br><span class="line">[<span class="built_in">S2</span>-Vlanif1000]<span class="built_in">ip</span> <span class="keyword">add</span> <span class="number">10</span>.<span class="number">1</span>.<span class="number">122</span>.<span class="number">12</span> <span class="number">24</span></span><br><span class="line">[<span class="built_in">S2</span>-Vlanif1000]int vlanif <span class="number">1002</span></span><br><span class="line">[<span class="built_in">S2</span>-Vlanif1002]<span class="built_in">ip</span> <span class="keyword">add</span> <span class="number">10</span>.<span class="number">1</span>.<span class="number">112</span>.<span class="number">12</span> <span class="number">24</span></span><br><span class="line">[<span class="built_in">S2</span>-Vlanif1002]quit</span><br><span class="line">[<span class="built_in">S2</span>]ospf <span class="number">110</span></span><br><span class="line">[<span class="built_in">S2</span>-ospf-<span class="number">110</span>]<span class="meta">area</span> <span class="number">0</span></span><br><span class="line">[<span class="built_in">S2</span>-ospf-<span class="number">110</span>-<span class="meta">area</span>-<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>]network <span class="number">10</span>.<span class="number">1</span>.<span class="number">13</span>.<span class="number">0</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">255</span></span><br><span class="line">[<span class="built_in">S2</span>-ospf-<span class="number">110</span>-<span class="meta">area</span>-<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>]network <span class="number">10</span>.<span class="number">1</span>.<span class="number">14</span>.<span class="number">0</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">255</span></span><br><span class="line">[<span class="built_in">S2</span>-ospf-<span class="number">110</span>-<span class="meta">area</span>-<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>]network <span class="number">10</span>.<span class="number">1</span>.<span class="number">112</span>.<span class="number">0</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">255</span></span><br><span class="line">[<span class="built_in">S2</span>-ospf-<span class="number">110</span>-<span class="meta">area</span>-<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>]network <span class="number">10</span>.<span class="number">1</span>.<span class="number">122</span>.<span class="number">0</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">255</span></span><br><span class="line">[<span class="built_in">S2</span>-ospf-<span class="number">110</span>-<span class="meta">area</span>-<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>]quit</span><br></pre></td></tr></table></figure>
+<h2 id="R2、R3、R4、R5"><a href="#R2、R3、R4、R5" class="headerlink" title="R2、R3、R4、R5"></a>R2、R3、R4、R5</h2><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">R2</span>]int g0/<span class="number">0</span>/<span class="number">0</span></span><br><span class="line">[<span class="built_in">R2</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">0</span>]<span class="built_in">ip</span> <span class="keyword">add</span> <span class="number">10</span>.<span class="number">1</span>.<span class="number">113</span>.<span class="number">1</span> <span class="number">24</span></span><br><span class="line">[<span class="built_in">R2</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">0</span>]int g0/<span class="number">0</span>/<span class="number">1</span></span><br><span class="line">[<span class="built_in">R2</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">1</span>]<span class="built_in">ip</span> <span class="keyword">add</span> <span class="number">10</span>.<span class="number">1</span>.<span class="number">111</span>.<span class="number">1</span> <span class="number">24</span></span><br><span class="line">[<span class="built_in">R2</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">1</span>]int g0/<span class="number">0</span>/<span class="number">2</span></span><br><span class="line">[<span class="built_in">R2</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">2</span>]<span class="built_in">ip</span> <span class="keyword">add</span> <span class="number">10</span>.<span class="number">1</span>.<span class="number">112</span>.<span class="number">1</span> <span class="number">24</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#OSPF</span></span><br><span class="line">[<span class="built_in">R2</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">2</span>]ospf <span class="number">110</span></span><br><span class="line">[<span class="built_in">R2</span>-ospf-<span class="number">110</span>]<span class="meta">area</span> <span class="number">0</span></span><br><span class="line">[<span class="built_in">R2</span>-ospf-<span class="number">110</span>-<span class="meta">area</span>-<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>]network <span class="number">10</span>.<span class="number">1</span>.<span class="number">111</span>.<span class="number">0</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">255</span></span><br><span class="line">[<span class="built_in">R2</span>-ospf-<span class="number">110</span>-<span class="meta">area</span>-<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>]network <span class="number">10</span>.<span class="number">1</span>.<span class="number">112</span>.<span class="number">0</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">255</span></span><br><span class="line">[<span class="built_in">R2</span>-ospf-<span class="number">110</span>-<span class="meta">area</span>-<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>]network <span class="number">10</span>.<span class="number">1</span>.<span class="number">113</span>.<span class="number">0</span> <span class="number">0</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">255</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">R3</span>]<span class="keyword">int</span> g0/<span class="number">0</span>/<span class="number">0</span></span><br><span class="line">[<span class="built_in">R3</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">0</span>]<span class="built_in">ip</span> <span class="keyword">add</span> <span class="number">10.1</span><span class="number">.113</span><span class="number">.3</span> <span class="number">24</span></span><br><span class="line">[<span class="built_in">R3</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">0</span>]<span class="keyword">int</span> g0/<span class="number">0</span>/<span class="number">1</span></span><br><span class="line">[<span class="built_in">R3</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">1</span>]<span class="built_in">ip</span> <span class="keyword">add</span> <span class="number">10.1</span><span class="number">.134</span><span class="number">.3</span> <span class="number">24</span></span><br><span class="line">[<span class="built_in">R3</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">1</span>]ospf <span class="number">110</span></span><br><span class="line">[<span class="built_in">R3</span>-ospf-<span class="number">110</span>]area <span class="number">0</span></span><br><span class="line">[<span class="built_in">R3</span>-ospf-<span class="number">110</span>-area-<span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>]network <span class="number">10.1</span><span class="number">.113</span><span class="number">.0</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.255</span></span><br><span class="line">[<span class="built_in">R3</span>-ospf-<span class="number">110</span>-area-<span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>]quit</span><br><span class="line">[<span class="built_in">R3</span>-ospf-<span class="number">110</span>]quit</span><br><span class="line">[<span class="built_in">R3</span>]<span class="built_in">rip</span></span><br><span class="line">[<span class="built_in">R3</span>-<span class="built_in">rip</span>-<span class="number">1</span>]ver <span class="number">2</span></span><br><span class="line">[<span class="built_in">R3</span>-<span class="built_in">rip</span>-<span class="number">1</span>]undo su</span><br><span class="line">[<span class="built_in">R3</span>-<span class="built_in">rip</span>-<span class="number">1</span>]network <span class="number">10.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line">[<span class="built_in">R3</span>-<span class="built_in">rip</span>-<span class="number">1</span>]quit</span><br></pre></td></tr></table></figure>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">R4</span>]<span class="keyword">int</span> g0/<span class="number">0</span>/<span class="number">1</span></span><br><span class="line">[<span class="built_in">R4</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">1</span>]<span class="built_in">ip</span> <span class="keyword">add</span> <span class="number">10.1</span><span class="number">.134</span><span class="number">.4</span> <span class="number">24</span></span><br><span class="line">[<span class="built_in">R4</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">1</span>]<span class="keyword">int</span> g0/<span class="number">0</span>/<span class="number">2</span></span><br><span class="line">[<span class="built_in">R4</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">2</span>]<span class="built_in">ip</span> <span class="keyword">add</span> <span class="number">10.1</span><span class="number">.145</span><span class="number">.4</span> <span class="number">24</span></span><br><span class="line">[<span class="built_in">R4</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">2</span>]quit</span><br><span class="line">[<span class="built_in">R4</span>]<span class="built_in">rip</span></span><br><span class="line">[<span class="built_in">R4</span>-<span class="built_in">rip</span>-<span class="number">1</span>]ver <span class="number">2</span></span><br><span class="line">[<span class="built_in">R4</span>-<span class="built_in">rip</span>-<span class="number">1</span>]undo su</span><br><span class="line">[<span class="built_in">R4</span>-<span class="built_in">rip</span>-<span class="number">1</span>]network <span class="number">10.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line">[<span class="built_in">R4</span>-<span class="built_in">rip</span>-<span class="number">1</span>]quit</span><br></pre></td></tr></table></figure>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">R5</span>]<span class="keyword">int</span> g0/<span class="number">0</span>/<span class="number">2</span></span><br><span class="line">[<span class="built_in">R5</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">2</span>]<span class="built_in">ip</span> <span class="keyword">add</span> <span class="number">10.1</span><span class="number">.145</span><span class="number">.5</span> <span class="number">24</span></span><br><span class="line">[<span class="built_in">R5</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">2</span>]<span class="keyword">int</span> g0/<span class="number">0</span>/<span class="number">0</span></span><br><span class="line">[<span class="built_in">R5</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">0</span>]<span class="built_in">ip</span> <span class="keyword">add</span> <span class="number">10.1</span><span class="number">.100</span><span class="number">.1</span> <span class="number">24</span></span><br><span class="line">[<span class="built_in">R5</span>-GigabitEthernet0/<span class="number">0</span>/<span class="number">0</span>]quit</span><br><span class="line">[<span class="built_in">R5</span>]<span class="built_in">rip</span></span><br><span class="line">[<span class="built_in">R5</span>-<span class="built_in">rip</span>-<span class="number">1</span>]ver <span class="number">2</span></span><br><span class="line">[<span class="built_in">R5</span>-<span class="built_in">rip</span>-<span class="number">1</span>]undo su</span><br><span class="line">[<span class="built_in">R5</span>-<span class="built_in">rip</span>-<span class="number">1</span>]network <span class="number">10.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line">[<span class="built_in">R5</span>-<span class="built_in">rip</span>-<span class="number">1</span>]quit</span><br></pre></td></tr></table></figure>
+<h2 id="R3做路由重分发"><a href="#R3做路由重分发" class="headerlink" title="R3做路由重分发"></a>R3做路由重分发</h2><figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">R3</span>]ospf <span class="number">110</span>		//进入OSPF进程模式</span><br><span class="line">[<span class="built_in">R3</span>-ospf-<span class="number">110</span>]import-route <span class="built_in">rip</span> <span class="number">1</span>		//将<span class="built_in">RIP</span>协议重分发到OSPF中</span><br><span class="line">[<span class="built_in">R3</span>-ospf-<span class="number">110</span>]<span class="built_in">rip</span>		//进入<span class="built_in">RIP</span>进程模式</span><br><span class="line">[<span class="built_in">R3</span>-<span class="built_in">rip</span>-<span class="number">1</span>]import ospf <span class="number">110</span>		//将OSPF协议重分发到<span class="built_in">RIP</span>中</span><br><span class="line">[<span class="built_in">R3</span>-<span class="built_in">rip</span>-<span class="number">1</span>]quit</span><br></pre></td></tr></table></figure>
+<h2 id="配置企业边界路由器R2"><a href="#配置企业边界路由器R2" class="headerlink" title="配置企业边界路由器R2"></a>配置企业边界路由器R2</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">R2</span>]<span class="built_in">int</span> s4/<span class="number">0</span>/<span class="number">0</span>			<span class="comment">//进入serial口</span></span><br><span class="line">[<span class="meta">R2-Serial4/0/0</span>]ip <span class="keyword">add</span> <span class="number">202.2</span><span class="number">.12</span><span class="number">.1</span> <span class="number">24</span></span><br><span class="line">[<span class="meta">R2-Serial4/0/0</span>]quit</span><br><span class="line">[<span class="meta">R2</span>]ip route-<span class="keyword">static</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span> <span class="number">202.2</span><span class="number">.12</span><span class="number">.2</span>		<span class="comment">//配置静态路由</span></span><br><span class="line">[<span class="meta">R2</span>]ospf <span class="number">110</span></span><br><span class="line">[<span class="meta">R2-ospf-110</span>]<span class="literal">default</span>-route-advertise 		<span class="comment">//向OSPF注入默认路由（前提是自己有默认）</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#nat地址转换</span></span><br><span class="line">[<span class="meta">R2</span>]nat address-<span class="keyword">group</span> <span class="number">1</span> <span class="number">202.2</span><span class="number">.12</span><span class="number">.100</span> <span class="number">202.2</span><span class="number">.12</span><span class="number">.100</span>		<span class="comment">//配置NAT组（池）</span></span><br><span class="line">[<span class="meta">R2</span>]acl <span class="number">2000</span>		<span class="comment">//编写编号为2000的ACL</span></span><br><span class="line">[<span class="meta">R2-acl-basic-2000</span>]rule <span class="number">0</span> permit source <span class="number">10.1</span><span class="number">.0</span><span class="number">.0</span> <span class="number">0.0</span><span class="number">.15</span><span class="number">.255</span>		<span class="comment">//规则为0</span></span><br><span class="line">[<span class="meta">R2-acl-basic-2000</span>]rule <span class="number">10</span> permit source <span class="number">10.1</span><span class="number">.100</span><span class="number">.0</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.255</span>		<span class="comment">//规则为10</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#配置公网地址</span></span><br><span class="line">[<span class="meta">R2</span>]<span class="built_in">int</span> s4/<span class="number">0</span>/<span class="number">0</span>		</span><br><span class="line">[<span class="meta">R2-Serial4/0/0</span>]nat outbound <span class="number">2000</span> address-<span class="keyword">group</span> <span class="number">1</span>		<span class="comment">//NAT转换，2000为ACL;配置NAT映射，将服务器映射为公网地址202.2.12.200</span></span><br><span class="line">[<span class="meta">R2-Serial4/0/0</span>]nat server <span class="keyword">global</span> <span class="number">202.2</span><span class="number">.12</span><span class="number">.200</span> inside <span class="number">10.1</span><span class="number">.100</span><span class="number">.100</span></span><br></pre></td></tr></table></figure>
+<h2 id="R1"><a href="#R1" class="headerlink" title="R1"></a>R1</h2><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[R1]<span class="keyword">int</span> s4<span class="regexp">/0/</span><span class="number">0</span></span><br><span class="line">[R1-Serial4<span class="regexp">/0/</span><span class="number">0</span>]ip add <span class="number">202.2</span>.<span class="number">12.2</span> <span class="number">24</span></span><br><span class="line">[R1-Serial4<span class="regexp">/0/</span><span class="number">0</span>]<span class="keyword">int</span> g0<span class="regexp">/0/</span><span class="number">0</span></span><br><span class="line">[R1-GigabitEthernet0<span class="regexp">/0/</span><span class="number">0</span>]ip add <span class="number">202.2</span>.<span class="number">2.1</span> <span class="number">24</span></span><br></pre></td></tr></table></figure>
+<h2 id="R3"><a href="#R3" class="headerlink" title="R3"></a>R3</h2><figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">R3</span>]<span class="built_in">rip</span></span><br><span class="line">[<span class="built_in">R3</span>-<span class="built_in">rip</span>-<span class="number">1</span>]<span class="meta">default</span>-route originate </span><br></pre></td></tr></table></figure>
+<p>到此，网络拓扑图就完成了全网通</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="阿怪 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="阿怪 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿怪
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://aguai.fun/2020/07/16/%E5%85%A8%E7%BD%91%E9%80%9A%E6%8B%93%E6%89%91%E5%9B%BE%E4%B9%8B%E8%81%9A%E5%90%88%E9%93%BE%E8%B7%AF/" title="全网通拓扑图之聚合链路">https://aguai.fun/2020/07/16/全网通拓扑图之聚合链路/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+  
+</div>
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8D%8E%E4%B8%BA/" rel="tag"># 华为</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/15/eNSP%E4%BD%BF%E7%94%A8/" rel="prev" title="eNSP使用">
+      <i class="fa fa-chevron-left"></i> eNSP使用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/07/18/Hybrid%E6%8E%A5%E5%8F%A3%E3%80%81MSTP%E5%8D%8F%E8%AE%AE/" rel="next" title="Hybrid接口、MSTP协议">
+      Hybrid接口、MSTP协议 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%8E%E4%B8%BA%E7%BB%BC%E5%90%88%E6%A1%88%E4%BE%8B"><span class="nav-text">华为综合案例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#S1%E5%92%8CS2%E9%85%8D%E7%BD%AE%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88%EF%BC%9A"><span class="nav-text">S1和S2配置链路聚合：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C"><span class="nav-text">实验</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E9%97%AD%E6%B6%88%E6%81%AF%E6%8F%90%E7%A4%BA"><span class="nav-text">关闭消息提示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AES1%E5%92%8CS2%E7%9A%84%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88"><span class="nav-text">配置S1和S2的链路聚合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEVLAN%E9%97%B4%E8%B7%AF%E7%94%B1"><span class="nav-text">配置VLAN间路由</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#S3%E3%80%81S4%E3%80%81S5%E3%80%81S6%E5%81%9ATrunk%E5%8F%A3%EF%BC%8C%E5%8A%A0%E5%85%A5VLAN"><span class="nav-text">S3、S4、S5、S6做Trunk口，加入VLAN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AER4%E7%9A%84%E5%8D%95%E8%87%82%E8%B7%AF%E7%94%B1"><span class="nav-text">配置R4的单臂路由</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#S1%E3%80%81S2%E5%81%9AOSPF"><span class="nav-text">S1、S2做OSPF</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#R2%E3%80%81R3%E3%80%81R4%E3%80%81R5"><span class="nav-text">R2、R3、R4、R5</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#R3%E5%81%9A%E8%B7%AF%E7%94%B1%E9%87%8D%E5%88%86%E5%8F%91"><span class="nav-text">R3做路由重分发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%BC%81%E4%B8%9A%E8%BE%B9%E7%95%8C%E8%B7%AF%E7%94%B1%E5%99%A8R2"><span class="nav-text">配置企业边界路由器R2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#R1"><span class="nav-text">R1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#R3"><span class="nav-text">R3</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="阿怪"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">阿怪</p>
+  <div class="site-description" itemprop="description">直到这一刻微笑着说话为止，我至少留下了一公升眼泪</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">103</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/a_guai_" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;a_guai_" rel="noopener" target="_blank"><i class="crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="阿怪"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">博客</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">574k</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/clicklove.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
+

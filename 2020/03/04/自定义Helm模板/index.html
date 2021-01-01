@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"aguai.fun","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offalse":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="K8s">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自定义Helm模板">
+<meta property="og:url" content="https://aguai.fun/2020/03/04/%E8%87%AA%E5%AE%9A%E4%B9%89Helm%E6%A8%A1%E6%9D%BF/index.html">
+<meta property="og:site_name" content="阿怪の博客">
+<meta property="og:description" content="K8s">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200304203805337.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200304203825287.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200304203839942.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200304203852506.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200304203913976.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200304203925994.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200304203936315.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200304203946274.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200304204025859.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200304204050317.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200304204104912.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200304204122746.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="article:published_time" content="2020-03-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-03-04T12:49:06.562Z">
+<meta property="article:author" content="阿怪">
+<meta property="article:tag" content="k8s">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200304203805337.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+
+<link rel="canonical" href="https://aguai.fun/2020/03/04/%E8%87%AA%E5%AE%9A%E4%B9%89Helm%E6%A8%A1%E6%9D%BF/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>自定义Helm模板 | 阿怪の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿怪の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">103</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://aguai.fun/2020/03/04/%E8%87%AA%E5%AE%9A%E4%B9%89Helm%E6%A8%A1%E6%9D%BF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="阿怪">
+      <meta itemprop="description" content="直到这一刻微笑着说话为止，我至少留下了一公升眼泪">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿怪の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          自定义Helm模板
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-03-04 00:00:00 / 修改时间：20:49:06" itemprop="dateCreated datePublished" datetime="2020-03-04T00:00:00+08:00">2020-03-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.8k</span>
+            </span>
+            <div class="post-description">K8s</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="开发自己的chart"><a href="#开发自己的chart" class="headerlink" title="开发自己的chart"></a>开发自己的chart</h1><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# helm</span> create mychart</span><br><span class="line">Creating mychart</span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# tree</span> -C mychart</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200304203805337.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h1 id="调试chart"><a href="#调试chart" class="headerlink" title="调试chart"></a>调试chart</h1><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]# helm install --dry-<span class="builtin-name">run</span> --<span class="builtin-name">debug</span> mychart</span><br></pre></td></tr></table></figure>
+<h1 id="安装chart"><a href="#安装chart" class="headerlink" title="安装chart"></a>安装chart</h1><p>node节点下载镜像：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@node01</span> ~]<span class="meta"># docker pull nginx:stable</span></span><br><span class="line">[root<span class="symbol">@node02</span> ~]<span class="meta"># docker pull nginx:stable</span></span><br></pre></td></tr></table></figure>
+<h2 id="1、通过仓库"><a href="#1、通过仓库" class="headerlink" title="1、通过仓库"></a>1、通过仓库</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# helm</span> install stable/redis</span><br></pre></td></tr></table></figure>
+<h2 id="2、通过tar包安装"><a href="#2、通过tar包安装" class="headerlink" title="2、通过tar包安装"></a>2、通过tar包安装</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# helm</span> fetch stable/redis</span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# helm</span> install ./redis-<span class="number">1.1</span>.<span class="number">15</span>.tgz</span><br></pre></td></tr></table></figure>
+<h2 id="3、通过chart本地目录"><a href="#3、通过chart本地目录" class="headerlink" title="3、通过chart本地目录"></a>3、通过chart本地目录</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# tar</span> -zxvf redis-<span class="number">1.1</span>.<span class="number">15</span>.tgz </span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# helm</span> install ./redis</span><br></pre></td></tr></table></figure>
+<h2 id="4、通过URL安装"><a href="#4、通过URL安装" class="headerlink" title="4、通过URL安装"></a>4、通过URL安装</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">myrepo</span>]<span class="comment"># helm install http://192.168.1.20:8080/charts/bdqn-0.1.0.tgz -n t1</span></span><br></pre></td></tr></table></figure>
+<h1 id="使用本地目录安装"><a href="#使用本地目录安装" class="headerlink" title="使用本地目录安装"></a>使用本地目录安装</h1><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# cd</span> mychart/</span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">mychart</span>]<span class="comment"># vim values.yaml </span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200304203825287.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# cd</span> mychart/templates/</span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">templates</span>]<span class="comment"># vim service.yaml</span></span><br><span class="line">				nodePort: &#123;&#123; .Values.service.nodePort &#125;&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200304203839942.png" alt="在这里插入图片描述"></p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mychart</span>]<span class="comment"># helm install -n test ../mychart/</span></span><br></pre></td></tr></table></figure>
+<p>查看一下：</p>
+<p><img src="https://img-blog.csdnimg.cn/20200304203852506.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h1 id="使用私有仓库安装"><a href="#使用私有仓库安装" class="headerlink" title="使用私有仓库安装"></a>使用私有仓库安装</h1><p>先搭建私有仓库</p>
+<p>详细见笔记</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="regexp">//</span>aguai.fun/Docker的私有仓库.html</span><br></pre></td></tr></table></figure>
+<p>导入版本镜像并上传到私有仓库</p>
+<h2 id="使用mychart部署一个实例：bdqn。使用镜像为私有镜像v1版本"><a href="#使用mychart部署一个实例：bdqn。使用镜像为私有镜像v1版本" class="headerlink" title="使用mychart部署一个实例：bdqn。使用镜像为私有镜像v1版本"></a>使用mychart部署一个实例：bdqn。使用镜像为私有镜像v1版本</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# cd</span> mychart/</span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">mychart</span>]<span class="comment"># vim values.yaml </span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200304203913976.png" alt="在这里插入图片描述"></p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">templates</span>]<span class="comment"># pwd</span></span><br><span class="line">/root/mychart/templates</span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">templates</span>]<span class="comment"># vim service.yaml </span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200304203925994.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mychart</span>]<span class="comment"># helm install -n bdqn ../mychart/</span></span><br></pre></td></tr></table></figure>
+<p>查看一下：</p>
+<p><img src="https://img-blog.csdnimg.cn/20200304203936315.png" alt="在这里插入图片描述"></p>
+<h2 id="全部完成之后，将实例做一个升级，将镜像改为V2版本。"><a href="#全部完成之后，将实例做一个升级，将镜像改为V2版本。" class="headerlink" title="全部完成之后，将实例做一个升级，将镜像改为V2版本。"></a>全部完成之后，将实例做一个升级，将镜像改为V2版本。</h2><h3 id="第一种方法："><a href="#第一种方法：" class="headerlink" title="第一种方法："></a>第一种方法：</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@master mychart]# helm<span class="built_in"> upgrade </span>bdqn <span class="built_in">..</span>/mychart/ --<span class="builtin-name">set</span> <span class="attribute">imageTag</span>=v2.0</span><br></pre></td></tr></table></figure>
+<h3 id="第二种方法："><a href="#第二种方法：" class="headerlink" title="第二种方法："></a>第二种方法：</h3><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mychart</span>]<span class="comment"># vim values.yaml </span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200304203946274.png" alt="在这里插入图片描述"></p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mychart</span>]<span class="comment"># helm upgrade bdqn ../mychart/ -f values.yaml</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200304204025859.png" alt="在这里插入图片描述"></p>
+<h3 id="第三种方法："><a href="#第三种方法：" class="headerlink" title="第三种方法："></a>第三种方法：</h3><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mychart</span>]<span class="comment"># kubectl edit deployments. bdqn-mychart </span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20200304204050317.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h1 id="创建自己的Repo仓库"><a href="#创建自己的Repo仓库" class="headerlink" title="创建自己的Repo仓库"></a>创建自己的Repo仓库</h1><h2 id="1、在node01上启动一个httpd容器"><a href="#1、在node01上启动一个httpd容器" class="headerlink" title="1、在node01上启动一个httpd容器"></a>1、在node01上启动一个httpd容器</h2><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@node01</span> ~]<span class="meta"># mkdir /var/www</span></span><br><span class="line">[root<span class="symbol">@node01</span> ~]<span class="meta"># docker pull httpd</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@node01 ~]# docker run -d -p <span class="number">8080</span>:<span class="number">80</span> -v <span class="regexp">/var/</span>www<span class="regexp">/:/u</span>sr<span class="regexp">/local/</span>apache2/htdocs httpd</span><br><span class="line"><span class="number">707</span>fa7b77b6fb72a05a2d2be9604ebb47aede11acb462929b8db90ccdc0298a7</span><br></pre></td></tr></table></figure>
+<h2 id="2、master节点上，将mychart目录打包。"><a href="#2、master节点上，将mychart目录打包。" class="headerlink" title="2、master节点上，将mychart目录打包。"></a>2、master节点上，将mychart目录打包。</h2><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]<span class="comment"># helm package mychart/</span></span><br><span class="line">Successfully packaged chart <span class="keyword">and</span> saved <span class="keyword">it</span> <span class="keyword">to</span>: /root/mychart<span class="number">-0.1</span><span class="number">.0</span>.tgz</span><br></pre></td></tr></table></figure>
+<h2 id="3、生产仓库的index文件"><a href="#3、生产仓库的index文件" class="headerlink" title="3、生产仓库的index文件"></a>3、生产仓库的index文件</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# mkdir</span> myrepo</span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# mv</span> mychart-<span class="number">0.1</span>.<span class="number">0</span>.tgz myrepo/</span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# ls</span> myrepo/</span><br><span class="line">mychart-<span class="number">0.1</span>.<span class="number">0</span>.tgz</span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# helm</span> repo index myrepo/ --url http://<span class="number">192.168</span>.<span class="number">1.20</span>:<span class="number">8080</span>/charts</span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# cat</span> myrepo/index.yaml </span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200304204104912.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="4、将生成的tar包和index-yaml上传到node01的var-www-charts目录下"><a href="#4、将生成的tar包和index-yaml上传到node01的var-www-charts目录下" class="headerlink" title="4、将生成的tar包和index.yaml上传到node01的var/www/charts目录下"></a>4、将生成的tar包和index.yaml上传到node01的var/www/charts目录下</h2><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[root@node01 ~]</span># <span class="selector-tag">mkdir</span> /<span class="selector-tag">var</span>/<span class="selector-tag">www</span>/<span class="selector-tag">charts</span></span><br><span class="line"><span class="selector-attr">[root@master myrepo]</span># <span class="selector-tag">scp</span> <span class="selector-tag">index</span><span class="selector-class">.yaml</span> <span class="selector-tag">mychart-0</span>.1.0<span class="selector-class">.tgz</span> <span class="selector-tag">node01</span>:/<span class="selector-tag">var</span>/<span class="selector-tag">www</span>/<span class="selector-tag">charts</span></span><br><span class="line"><span class="selector-tag">index</span><span class="selector-class">.yaml</span>                                                                                 100%  401   316.7<span class="selector-tag">KB</span>/<span class="selector-tag">s</span>   00<span class="selector-pseudo">:00</span>    </span><br><span class="line"><span class="selector-tag">mychart-0</span>.1.0<span class="selector-class">.tgz</span>                                                                          100% 2847     2.3<span class="selector-tag">MB</span>/<span class="selector-tag">s</span>   00<span class="selector-pseudo">:00</span></span><br></pre></td></tr></table></figure>
+<h2 id="5、添加新的repo仓库"><a href="#5、添加新的repo仓库" class="headerlink" title="5、添加新的repo仓库"></a>5、添加新的repo仓库</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">myrepo</span>]<span class="comment"># helm repo add newrepo http://192.168.1.20:8080/charts</span></span><br><span class="line"><span class="string">&quot;newrepo&quot;</span> has been added to your repositories</span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@master myrepo]<span class="comment"># helm repo list</span></span><br><span class="line">NAME   	URL                                                   </span><br><span class="line">stable 	https:<span class="regexp">//</span>kubernetes.oss-cn-hangzhou.aliyuncs.com/charts</span><br><span class="line">local  	http:<span class="regexp">//</span><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">8879</span>/charts                          </span><br><span class="line">newrepo	http:<span class="regexp">//</span><span class="number">192.168</span>.<span class="number">1.20</span>:<span class="number">8080</span>/charts  </span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">myrepo</span>]<span class="comment"># helm search mychart</span></span><br><span class="line">NAME           	CHART <span class="keyword">VERSION</span>	APP <span class="keyword">VERSION</span>	DESCRIPTION                </span><br><span class="line">local/mychart  	<span class="number">0.1</span>.<span class="number">0</span>        	<span class="number">1.0</span>        	A Helm chart for Kubernetes</span><br><span class="line">newrepo/mychart	<span class="number">0.1</span>.<span class="number">0</span>        	<span class="number">1.0</span>        	A Helm chart for Kubernetes</span><br></pre></td></tr></table></figure>
+<h2 id="6、我们就可以直接使用新的repo仓库部署实例了"><a href="#6、我们就可以直接使用新的repo仓库部署实例了" class="headerlink" title="6、我们就可以直接使用新的repo仓库部署实例了"></a>6、我们就可以直接使用新的repo仓库部署实例了</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">myrepo</span>]<span class="comment"># helm install newrepo/mychart -n test</span></span><br></pre></td></tr></table></figure>
+<h2 id="7、如果以后仓库中新添加了chart包，需要helm-repo-updata命令更新本地的index文件"><a href="#7、如果以后仓库中新添加了chart包，需要helm-repo-updata命令更新本地的index文件" class="headerlink" title="7、如果以后仓库中新添加了chart包，需要helm repo updata命令更新本地的index文件"></a>7、如果以后仓库中新添加了chart包，需要helm repo updata命令更新本地的index文件</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">myrepo</span>]<span class="comment"># helm repo update </span></span><br></pre></td></tr></table></figure>
+<h1 id="练习："><a href="#练习：" class="headerlink" title="练习："></a>练习：</h1><h2 id="新创建一个bdqn的chart包。然后将chart包上传到上述repo源中。"><a href="#新创建一个bdqn的chart包。然后将chart包上传到上述repo源中。" class="headerlink" title="新创建一个bdqn的chart包。然后将chart包上传到上述repo源中。"></a>新创建一个bdqn的chart包。然后将chart包上传到上述repo源中。</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# helm</span> create bdqn</span><br><span class="line">Creating bdqn</span><br></pre></td></tr></table></figure>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]<span class="comment"># helm package bdqn/</span></span><br><span class="line">Successfully packaged chart <span class="keyword">and</span> saved <span class="keyword">it</span> <span class="keyword">to</span>: /root/bdqn<span class="number">-0.1</span><span class="number">.0</span>.tgz</span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# mv</span> bdqn-<span class="number">0.1</span>.<span class="number">0</span>.tgz myrepo/</span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# helm</span> repo index myrepo/ --url http://<span class="number">192.168</span>.<span class="number">1.20</span>:<span class="number">8080</span>/mycharts</span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">myrepo</span>]<span class="comment"># vim index.yaml </span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200304204122746.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[root@master myrepo]</span># <span class="selector-tag">scp</span> <span class="selector-tag">bdqn-0</span>.1.0<span class="selector-class">.tgz</span> <span class="selector-tag">index</span><span class="selector-class">.yaml</span> <span class="selector-tag">node01</span>:/<span class="selector-tag">var</span>/<span class="selector-tag">www</span>/<span class="selector-tag">charts</span></span><br><span class="line"><span class="selector-tag">bdqn-0</span>.1.0<span class="selector-class">.tgz</span>                                                                             100% 2825     2.5<span class="selector-tag">MB</span>/<span class="selector-tag">s</span>   00<span class="selector-pseudo">:00</span>    </span><br><span class="line"><span class="selector-tag">index</span><span class="selector-class">.yaml</span>                                                                                 100%  723   547.0<span class="selector-tag">KB</span>/<span class="selector-tag">s</span>   00<span class="selector-pseudo">:00</span> </span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="variable">@master</span> myrepo]# helm repo <span class="keyword">update</span> </span><br><span class="line">Hang tight while we grab the latest <span class="keyword">from</span> your chart repositories...</span><br><span class="line">...<span class="keyword">Skip</span> <span class="keyword">local</span> chart repository</span><br><span class="line">...Successfully got an <span class="keyword">update</span> <span class="keyword">from</span> the &quot;newrepo&quot; chart repository</span><br><span class="line">...Successfully got an <span class="keyword">update</span> <span class="keyword">from</span> the &quot;stable&quot; chart repository</span><br><span class="line"><span class="keyword">Update</span> Complete.</span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">myrepo</span>]<span class="comment"># helm search bdqn</span></span><br><span class="line">NAME        	CHART <span class="keyword">VERSION</span>	APP <span class="keyword">VERSION</span>	DESCRIPTION                </span><br><span class="line">local/bdqn  	<span class="number">0.1</span>.<span class="number">0</span>        	<span class="number">1.0</span>        	A Helm chart for Kubernetes</span><br><span class="line">newrepo/bdqn	<span class="number">0.1</span>.<span class="number">0</span>        	<span class="number">1.0</span>        	A Helm chart for Kubernetes</span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">myrepo</span>]<span class="comment"># helm install http://192.168.1.20:8080/charts/bdqn-0.1.0.tgz -n t1</span></span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="阿怪 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="阿怪 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿怪
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://aguai.fun/2020/03/04/%E8%87%AA%E5%AE%9A%E4%B9%89Helm%E6%A8%A1%E6%9D%BF/" title="自定义Helm模板">https://aguai.fun/2020/03/04/自定义Helm模板/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+  
+</div>
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/k8s/" rel="tag"># k8s</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/03/Helm%E5%85%A5%E9%97%A8/" rel="prev" title="Helm入门">
+      <i class="fa fa-chevron-left"></i> Helm入门
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/09/%E5%88%9D%E5%A7%8BPython/" rel="next" title="初始Python">
+      初始Python <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%80%E5%8F%91%E8%87%AA%E5%B7%B1%E7%9A%84chart"><span class="nav-text">开发自己的chart</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B0%83%E8%AF%95chart"><span class="nav-text">调试chart</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85chart"><span class="nav-text">安装chart</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E9%80%9A%E8%BF%87%E4%BB%93%E5%BA%93"><span class="nav-text">1、通过仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81%E9%80%9A%E8%BF%87tar%E5%8C%85%E5%AE%89%E8%A3%85"><span class="nav-text">2、通过tar包安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%E3%80%81%E9%80%9A%E8%BF%87chart%E6%9C%AC%E5%9C%B0%E7%9B%AE%E5%BD%95"><span class="nav-text">3、通过chart本地目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4%E3%80%81%E9%80%9A%E8%BF%87URL%E5%AE%89%E8%A3%85"><span class="nav-text">4、通过URL安装</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%9C%AC%E5%9C%B0%E7%9B%AE%E5%BD%95%E5%AE%89%E8%A3%85"><span class="nav-text">使用本地目录安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93%E5%AE%89%E8%A3%85"><span class="nav-text">使用私有仓库安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8mychart%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AA%E5%AE%9E%E4%BE%8B%EF%BC%9Abdqn%E3%80%82%E4%BD%BF%E7%94%A8%E9%95%9C%E5%83%8F%E4%B8%BA%E7%A7%81%E6%9C%89%E9%95%9C%E5%83%8Fv1%E7%89%88%E6%9C%AC"><span class="nav-text">使用mychart部署一个实例：bdqn。使用镜像为私有镜像v1版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E9%83%A8%E5%AE%8C%E6%88%90%E4%B9%8B%E5%90%8E%EF%BC%8C%E5%B0%86%E5%AE%9E%E4%BE%8B%E5%81%9A%E4%B8%80%E4%B8%AA%E5%8D%87%E7%BA%A7%EF%BC%8C%E5%B0%86%E9%95%9C%E5%83%8F%E6%94%B9%E4%B8%BAV2%E7%89%88%E6%9C%AC%E3%80%82"><span class="nav-text">全部完成之后，将实例做一个升级，将镜像改为V2版本。</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%A7%8D%E6%96%B9%E6%B3%95%EF%BC%9A"><span class="nav-text">第一种方法：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%A7%8D%E6%96%B9%E6%B3%95%EF%BC%9A"><span class="nav-text">第二种方法：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95%EF%BC%9A"><span class="nav-text">第三种方法：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84Repo%E4%BB%93%E5%BA%93"><span class="nav-text">创建自己的Repo仓库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E5%9C%A8node01%E4%B8%8A%E5%90%AF%E5%8A%A8%E4%B8%80%E4%B8%AAhttpd%E5%AE%B9%E5%99%A8"><span class="nav-text">1、在node01上启动一个httpd容器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81master%E8%8A%82%E7%82%B9%E4%B8%8A%EF%BC%8C%E5%B0%86mychart%E7%9B%AE%E5%BD%95%E6%89%93%E5%8C%85%E3%80%82"><span class="nav-text">2、master节点上，将mychart目录打包。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%E3%80%81%E7%94%9F%E4%BA%A7%E4%BB%93%E5%BA%93%E7%9A%84index%E6%96%87%E4%BB%B6"><span class="nav-text">3、生产仓库的index文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4%E3%80%81%E5%B0%86%E7%94%9F%E6%88%90%E7%9A%84tar%E5%8C%85%E5%92%8Cindex-yaml%E4%B8%8A%E4%BC%A0%E5%88%B0node01%E7%9A%84var-www-charts%E7%9B%AE%E5%BD%95%E4%B8%8B"><span class="nav-text">4、将生成的tar包和index.yaml上传到node01的var&#x2F;www&#x2F;charts目录下</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5%E3%80%81%E6%B7%BB%E5%8A%A0%E6%96%B0%E7%9A%84repo%E4%BB%93%E5%BA%93"><span class="nav-text">5、添加新的repo仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6%E3%80%81%E6%88%91%E4%BB%AC%E5%B0%B1%E5%8F%AF%E4%BB%A5%E7%9B%B4%E6%8E%A5%E4%BD%BF%E7%94%A8%E6%96%B0%E7%9A%84repo%E4%BB%93%E5%BA%93%E9%83%A8%E7%BD%B2%E5%AE%9E%E4%BE%8B%E4%BA%86"><span class="nav-text">6、我们就可以直接使用新的repo仓库部署实例了</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7%E3%80%81%E5%A6%82%E6%9E%9C%E4%BB%A5%E5%90%8E%E4%BB%93%E5%BA%93%E4%B8%AD%E6%96%B0%E6%B7%BB%E5%8A%A0%E4%BA%86chart%E5%8C%85%EF%BC%8C%E9%9C%80%E8%A6%81helm-repo-updata%E5%91%BD%E4%BB%A4%E6%9B%B4%E6%96%B0%E6%9C%AC%E5%9C%B0%E7%9A%84index%E6%96%87%E4%BB%B6"><span class="nav-text">7、如果以后仓库中新添加了chart包，需要helm repo updata命令更新本地的index文件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A"><span class="nav-text">练习：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AAbdqn%E7%9A%84chart%E5%8C%85%E3%80%82%E7%84%B6%E5%90%8E%E5%B0%86chart%E5%8C%85%E4%B8%8A%E4%BC%A0%E5%88%B0%E4%B8%8A%E8%BF%B0repo%E6%BA%90%E4%B8%AD%E3%80%82"><span class="nav-text">新创建一个bdqn的chart包。然后将chart包上传到上述repo源中。</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="阿怪"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">阿怪</p>
+  <div class="site-description" itemprop="description">直到这一刻微笑着说话为止，我至少留下了一公升眼泪</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">103</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/a_guai_" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;a_guai_" rel="noopener" target="_blank"><i class="crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="阿怪"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">博客</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">574k</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/clicklove.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
+

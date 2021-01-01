@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"aguai.fun","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offalse":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux系统管理">
+<meta property="og:url" content="https://aguai.fun/2020/04/26/Linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="阿怪の博客">
+<meta property="og:description" content="Python">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-25T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-04-26T10:06:40.691Z">
+<meta property="article:author" content="阿怪">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://aguai.fun/2020/04/26/Linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Linux系统管理 | 阿怪の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿怪の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">103</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://aguai.fun/2020/04/26/Linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="阿怪">
+      <meta itemprop="description" content="直到这一刻微笑着说话为止，我至少留下了一公升眼泪">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿怪の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux系统管理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-04-26 00:00:00 / 修改时间：18:06:40" itemprop="dateCreated datePublished" datetime="2020-04-26T00:00:00+08:00">2020-04-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>15k</span>
+            </span>
+            <div class="post-description">Python</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Linux系统管理"><a href="#Linux系统管理" class="headerlink" title="Linux系统管理"></a>Linux系统管理</h2><h3 id="一、OS模块常用功能"><a href="#一、OS模块常用功能" class="headerlink" title="一、OS模块常用功能"></a>一、OS模块常用功能</h3><h4 id="1、os模块打开文件"><a href="#1、os模块打开文件" class="headerlink" title="1、os模块打开文件"></a>1、os模块打开文件</h4><p>方法如下：</p>
+<blockquote>
+<p>os.open(filename, flag, [,mode])</p>
+</blockquote>
+<p>flag参数说明：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">os.O_CREAT	# 创建文件</span><br><span class="line">os.O_RDONLY	# 只读方式打开</span><br><span class="line">os.O_WRONLY	# 只写方式打开</span><br><span class="line">os.O_RDWR	# 读写方式打开</span><br></pre></td></tr></table></figure>
+<h4 id="2、os模块对文件进行操作"><a href="#2、os模块对文件进行操作" class="headerlink" title="2、os模块对文件进行操作"></a>2、os模块对文件进行操作</h4><p>常用方法如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 读取文件</span></span><br><span class="line">os.read(fd, buffersize)</span><br><span class="line"><span class="comment"># 写入文件</span></span><br><span class="line">os.write(fd, string)</span><br><span class="line"><span class="comment"># 文件指针操作</span></span><br><span class="line">os.lseek(fd, pos, how)</span><br><span class="line"><span class="comment"># 关闭文件</span></span><br><span class="line">os.close(fd)</span><br></pre></td></tr></table></figure>
+<p>代码演示：</p>
+<blockquote>
+<p>文件创建和写入</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打开文件</span></span><br><span class="line">fd = os.<span class="built_in">open</span>(<span class="string">&quot;abc.txt&quot;</span>, os.O_RDWR | os.O_CREAT)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 写入字符串</span></span><br><span class="line"><span class="built_in">str</span> = <span class="string">&quot;Hello Python!&quot;</span></span><br><span class="line">ret = os.write(fd, <span class="built_in">bytes</span>(<span class="built_in">str</span>, <span class="string">&#x27;UTF-8&#x27;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输入返回值</span></span><br><span class="line">print(<span class="string">&quot;写入的位数为: &quot;</span>)</span><br><span class="line">print(ret)</span><br><span class="line"></span><br><span class="line">print(<span class="string">&quot;写入成功&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 关闭文件</span></span><br><span class="line">os.close(fd)</span><br><span class="line">print(<span class="string">&quot;关闭文件成功!!&quot;</span>)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>文件读取</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打开文件</span></span><br><span class="line">fd = os.<span class="built_in">open</span>(<span class="string">&quot;abc.txt&quot;</span>, os.O_RDWR)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读取文本</span></span><br><span class="line">ret = os.read(fd, <span class="number">6</span>)</span><br><span class="line">print(ret)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 关闭文件</span></span><br><span class="line">os.close(fd)</span><br><span class="line">print(<span class="string">&quot;关闭文件成功!!&quot;</span>)</span><br></pre></td></tr></table></figure>
+<h4 id="3、os模块管理文件和目录"><a href="#3、os模块管理文件和目录" class="headerlink" title="3、os模块管理文件和目录"></a>3、os模块管理文件和目录</h4><p>常用方法如下：</p>
+<table>
+<thead>
+<tr>
+<th>os方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>getcwd()</td>
+<td>获取当前目录</td>
+</tr>
+<tr>
+<td>listdir(path)</td>
+<td>返回当前目录下所有文件组成的列表</td>
+</tr>
+<tr>
+<td>chdir(path)</td>
+<td>切换目录</td>
+</tr>
+<tr>
+<td>rename(old, new)</td>
+<td>修改文件或者目录名</td>
+</tr>
+<tr>
+<td>mkdir(path [,mode])</td>
+<td>创建目录</td>
+</tr>
+<tr>
+<td>makedirs(path [,mode])</td>
+<td>创建多级目录</td>
+</tr>
+<tr>
+<td>rmdir(path)</td>
+<td>删除目录（目录必须为空目录）</td>
+</tr>
+<tr>
+<td>removedirs(path)</td>
+<td>删除多级目录（目录必须为空目录）</td>
+</tr>
+<tr>
+<td>remove(path)</td>
+<td>删除文件</td>
+</tr>
+</tbody></table>
+<p>代码演示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding=utf-8</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">print(os.getcwd())  <span class="comment"># pwd</span></span><br><span class="line">print(os.listdir()) <span class="comment"># ls</span></span><br><span class="line">os.chdir(<span class="string">&#x27;/opt&#x27;</span>)	<span class="comment"># cd /opt</span></span><br><span class="line">os.rename(<span class="string">&#x27;abc.txt&#x27;</span>,<span class="string">&#x27;test.txt&#x27;</span>) <span class="comment"># mv abc.txt test.txt</span></span><br><span class="line">os.remove(<span class="string">&#x27;read.py&#x27;</span>)    <span class="comment"># rm -f abc.txt</span></span><br><span class="line"></span><br><span class="line">os.mkdir(<span class="string">&#x27;test&#x27;</span>)    <span class="comment"># mkdir dir1</span></span><br><span class="line">os.makedirs(<span class="string">&#x27;demo/abc&#x27;</span>) <span class="comment"># mkdir -p dir2/dir22</span></span><br><span class="line">os.rmdir(<span class="string">&#x27;test&#x27;</span>)    <span class="comment"># 目录必须为空</span></span><br><span class="line">os.removedirs(<span class="string">&#x27;demo&#x27;</span>)   <span class="comment"># 目录必须为空</span></span><br></pre></td></tr></table></figure>
+<h4 id="4、os模块管理文件权限"><a href="#4、os模块管理文件权限" class="headerlink" title="4、os模块管理文件权限"></a>4、os模块管理文件权限</h4><table>
+<thead>
+<tr>
+<th>os方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>access(path, mode)</td>
+<td>判断该文件权限：F_OK表示该路径存在；<br>权限：R_OK，W_OK，X_OK</td>
+</tr>
+<tr>
+<td>chmod(path, mode)</td>
+<td>修改文件权限：0o755</td>
+</tr>
+<tr>
+<td>chown(path, uid, gid)</td>
+<td>更改文件所有者，如果不修改可以设置为 -1</td>
+</tr>
+</tbody></table>
+<p>代码演示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 测试路径是否存在：os.F_OK</span></span><br><span class="line">res = os.access(&#x27;test.txt&#x27;,os.F_OK)</span><br><span class="line">print(res)</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 测试当前用户对该文件是否有读的权限</span></span><br><span class="line">res = os.access(&#x27;test.txt&#x27;,os.R_OK)</span><br><span class="line">print(res)</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 测试当前用户对该文件是否有写的权限</span></span><br><span class="line">res = os.access(&#x27;test.txt&#x27;,os.W_OK)</span><br><span class="line">print(res)</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 测试当前用户对该文件是否有执行的权限</span></span><br><span class="line">res = os.access(&#x27;test.txt&#x27;,os.X_OK)</span><br><span class="line">print(res)</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 更改当前用户的权限</span></span><br><span class="line">os.chmod(&#x27;test.txt&#x27;,0o755)</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 更改文件的所有者</span></span><br><span class="line">os.chown(&#x27;test.txt&#x27;, 1001, 1002)  </span><br></pre></td></tr></table></figure>
+<h4 id="5、os-path模块管理文件与路径"><a href="#5、os-path模块管理文件与路径" class="headerlink" title="5、os.path模块管理文件与路径"></a>5、os.path模块管理文件与路径</h4><h5 id="（1）拆分路径"><a href="#（1）拆分路径" class="headerlink" title="（1）拆分路径"></a>（1）拆分路径</h5><table>
+<thead>
+<tr>
+<th>os.path方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>os.path.split(path)</td>
+<td>返回一个二元组，包含文件的路径和文件名</td>
+</tr>
+<tr>
+<td>os.path.dirname(path)</td>
+<td>返回文件的路径</td>
+</tr>
+<tr>
+<td>os.path.basename(path)</td>
+<td>返回文件名</td>
+</tr>
+<tr>
+<td>os.path.splitext(path)</td>
+<td>返回一个去掉文件扩展名的部分和扩展名的二元组</td>
+</tr>
+</tbody></table>
+<p>代码演示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">10</span>]: os.getcwd()</span><br><span class="line">Out[<span class="number">10</span>]: <span class="string">&#x27;/opt/os_demo&#x27;</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">11</span>]: os.listdir()</span><br><span class="line">Out[<span class="number">11</span>]: [<span class="string">&#x27;os_access.py&#x27;</span>, <span class="string">&#x27;test.txt&#x27;</span>]</span><br><span class="line"></span><br><span class="line">In [<span class="number">12</span>]: path = <span class="string">&#x27;/opt/os_demo/test.txt&#x27;</span></span><br><span class="line">    </span><br><span class="line">In [<span class="number">13</span>]: os.path.split(path)</span><br><span class="line">Out[<span class="number">13</span>]: (<span class="string">&#x27;/opt/os_demo&#x27;</span>, <span class="string">&#x27;test.txt&#x27;</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">14</span>]: os.path.dirname(path)</span><br><span class="line">Out[<span class="number">14</span>]: <span class="string">&#x27;/opt/os_demo&#x27;</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">15</span>]: os.path.basename(path)</span><br><span class="line">Out[<span class="number">15</span>]: <span class="string">&#x27;test.txt&#x27;</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">16</span>]: os.path.splitext(path) </span><br><span class="line">Out[<span class="number">16</span>]: (<span class="string">&#x27;/opt/os_demo/test&#x27;</span>, <span class="string">&#x27;.txt&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h5 id="（2）构建路径"><a href="#（2）构建路径" class="headerlink" title="（2）构建路径"></a>（2）构建路径</h5><table>
+<thead>
+<tr>
+<th>os.path方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>os.path.expanduser(path)</td>
+<td>展开用户的HOME目录，如<del>，</del>oracle</td>
+</tr>
+<tr>
+<td>os.path.abspath(path)</td>
+<td>得到文件或路径的绝对路径</td>
+</tr>
+<tr>
+<td>os.path.join(path)</td>
+<td>根据不同的操作系统平台，使用不同的路径分隔符拼接路径</td>
+</tr>
+<tr>
+<td>os.path.isabs(path)</td>
+<td>检查一个路径是不是一个绝对路径</td>
+</tr>
+</tbody></table>
+<p>代码演示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">19</span>]: os.path.expanduser(<span class="string">&#x27;~&#x27;</span>) </span><br><span class="line">Out[<span class="number">19</span>]: <span class="string">&#x27;/root&#x27;</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">20</span>]: os.path.expanduser(<span class="string">&#x27;~oracle&#x27;</span>) </span><br><span class="line">Out[<span class="number">20</span>]: <span class="string">&#x27;/home/oracle&#x27;</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">21</span>]: os.path.expanduser(<span class="string">&#x27;~accp&#x27;</span>)</span><br><span class="line">Out[<span class="number">21</span>]: <span class="string">&#x27;/home/accp&#x27;</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">22</span>]: os.path.expanduser(<span class="string">&#x27;~acp&#x27;</span>) </span><br><span class="line">Out[<span class="number">22</span>]: <span class="string">&#x27;~acp&#x27;</span>	<span class="comment"># 错误演示</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">23</span>]: os.path.abspath(<span class="string">&#x27;.&#x27;</span>)</span><br><span class="line">Out[<span class="number">23</span>]: <span class="string">&#x27;/opt/os_demo&#x27;</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">24</span>]: os.path.abspath(<span class="string">&#x27;..&#x27;</span>)</span><br><span class="line">Out[<span class="number">24</span>]: <span class="string">&#x27;/opt&#x27;</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">25</span>]: os.path.join(<span class="string">&#x27;/opt/os_demo&#x27;</span>,<span class="string">&#x27;test.txt&#x27;</span>)</span><br><span class="line">Out[<span class="number">25</span>]: <span class="string">&#x27;/opt/os_demo/test.txt&#x27;</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">26</span>]: os.path.isabs(<span class="string">&#x27;/opt/os_demo/&#x27;</span>) </span><br><span class="line">Out[<span class="number">26</span>]: <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">27</span>]: os.path.isabs(<span class="string">&#x27;.&#x27;</span>) </span><br><span class="line">Out[<span class="number">27</span>]: <span class="literal">False</span></span><br></pre></td></tr></table></figure>
+<h5 id="（3）获取文件属性"><a href="#（3）获取文件属性" class="headerlink" title="（3）获取文件属性"></a>（3）获取文件属性</h5><table>
+<thead>
+<tr>
+<th>os.path方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>os.path.getatime(path)</td>
+<td>返回最近访问时间（浮点型秒数）</td>
+</tr>
+<tr>
+<td>os.path.getmtime(path)</td>
+<td>返回最近文件修改时间</td>
+</tr>
+<tr>
+<td>os.path.getctime(path)</td>
+<td>返回文件 path 创建时间</td>
+</tr>
+<tr>
+<td>os.path.getsize(path)</td>
+<td>返回文件大小，如果文件不存在就返回错误</td>
+</tr>
+</tbody></table>
+<p>代码演示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">33</span>]: os.path.getatime(path)</span><br><span class="line">Out[<span class="number">33</span>]: <span class="number">1587547270.7306058</span>	<span class="comment"># 时间戳</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">34</span>]: os.path.getmtime(path)</span><br><span class="line">Out[<span class="number">34</span>]: <span class="number">1587547270.7306058</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">35</span>]: os.path.getctime(path)</span><br><span class="line">Out[<span class="number">35</span>]: <span class="number">1587548055.4721448</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">36</span>]: os.path.getsize(path)</span><br><span class="line">Out[<span class="number">36</span>]: <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<h5 id="（4）判断文件类型"><a href="#（4）判断文件类型" class="headerlink" title="（4）判断文件类型"></a>（4）判断文件类型</h5><table>
+<thead>
+<tr>
+<th>os.path方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>os.path.isfile(path)</td>
+<td>判断路径是否为文件</td>
+</tr>
+<tr>
+<td>os.path.isdir(path)</td>
+<td>判断路径是否为目录</td>
+</tr>
+<tr>
+<td>os.path.islink(path)</td>
+<td>判断路径是否为链接</td>
+</tr>
+<tr>
+<td>os.path.ismount(path)</td>
+<td>判断路径是否为挂载点</td>
+</tr>
+</tbody></table>
+<p>代码演示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">37</span>]: os.path.isfile(path)</span><br><span class="line">Out[<span class="number">37</span>]: <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">38</span>]: os.path.isdir(path)</span><br><span class="line">Out[<span class="number">38</span>]: <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">39</span>]: os.path.islink(path)</span><br><span class="line">Out[<span class="number">39</span>]: <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">40</span>]: os.path.ismount(path)</span><br><span class="line">Out[<span class="number">40</span>]: <span class="literal">False</span></span><br></pre></td></tr></table></figure>
+<h4 id="6、os模块执行shell命令"><a href="#6、os模块执行shell命令" class="headerlink" title="6、os模块执行shell命令"></a>6、os模块执行shell命令</h4><p>os.system()的作用：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">执行shell命令</span><br><span class="line">返回shell命令的返回值</span><br><span class="line">命令的输出会输出到标准输出</span><br></pre></td></tr></table></figure>
+<p>代码演示：</p>
+<blockquote>
+<p>os.system(‘cls’)</p>
+</blockquote>
+<h4 id="案例1：编写自动安装Python的脚本"><a href="#案例1：编写自动安装Python的脚本" class="headerlink" title="案例1：编写自动安装Python的脚本"></a>案例1：编写自动安装Python的脚本</h4><p>实现步骤：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">下载Python版本源码</span><br><span class="line">安装Python需要的依赖库</span><br><span class="line">编译安装Python</span><br></pre></td></tr></table></figure>
+<p>伪代码：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. 判断用户是不是root</span><br><span class="line">2. 如果是，等待用户输入Python版本</span><br><span class="line">3. 执行shell命令下载源码包</span><br><span class="line">4. 安装依赖开发包</span><br><span class="line">5. 编译安装Python</span><br></pre></td></tr></table></figure>
+<p>脚本内容如下（基于Python2）：</p>
+<blockquote>
+<p>auto_install_python.py</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> coding=utf-8</span></span><br><span class="line">import os</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 判断用户是否是root用户</span></span><br><span class="line">if os.getuid() == 0:</span><br><span class="line">    pass</span><br><span class="line">else:</span><br><span class="line">    print</span><br><span class="line">    &#x27;当前用户不是root用户！&#x27;</span><br><span class="line">    SystemExit(1)</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 安装Python依赖库</span></span><br><span class="line">cmd_module = &#x27;yum -y install wget gcc zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel libffi-devel&#x27;</span><br><span class="line">res = os.system(cmd_module)</span><br><span class="line">if res != 0:</span><br><span class="line">    print</span><br><span class="line">    &#x27;Python依赖库安装失败，请重新执行该脚本。&#x27;</span><br><span class="line">    SystemExit(1)</span><br><span class="line">else:</span><br><span class="line">    print</span><br><span class="line">    &#x27;python依赖库安装成功！&#x27;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 输入Python版本，下载Python源码包到本地目录</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> wget url</span></span><br><span class="line">version = raw_input(&#x27;请输入Python版本：（3.6/3.8）&#x27;)</span><br><span class="line">if version == &#x27;3.6&#x27;:</span><br><span class="line">    url = &#x27;https://www.python.org/ftp/python/3.6.10/Python-3.6.10.tgz&#x27;</span><br><span class="line">else:</span><br><span class="line">    url = &#x27;https://www.python.org/ftp/python/3.8.1/Python-3.8.1.tgz&#x27;</span><br><span class="line">cmd = &#x27;wget &#x27; + url</span><br><span class="line">res = os.system(cmd)</span><br><span class="line">if res != 0:</span><br><span class="line">    print &#x27;Python源码包下载失败！&#x27;</span><br><span class="line">    SystemExit(1)</span><br><span class="line">else:</span><br><span class="line">    print(&#x27;======================&gt;&gt;&gt;Python源码包下载成功！&#x27;)</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 解压Python源码包</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> tar zxvf Python-3.6.10.tgz</span></span><br><span class="line">if version == &#x27;3.6&#x27;:</span><br><span class="line">    package_name = &#x27;Python-3.6.10&#x27;</span><br><span class="line">else:</span><br><span class="line">    package_name = &#x27;Python-3.8.1&#x27;</span><br><span class="line">res = os.system(&#x27;tar zxvf &#x27; + package_name + &#x27;.tgz&#x27;)</span><br><span class="line">if res != 0:</span><br><span class="line">    print &#x27;解压失败。。。&#x27;</span><br><span class="line">    SystemExit(1)</span><br><span class="line">else:</span><br><span class="line">    print(&#x27;#########################解压成功！#########################&#x27;)</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 配置语言</span></span><br><span class="line">os.system(&#x27;export LANG=zh_CN.UTF-8&#x27;)</span><br><span class="line">os.system(&#x27;export LANGUAGE=zh_CN.UTF-8&#x27;)</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 切换到Python目录</span></span><br><span class="line">os.chdir(package_name)</span><br><span class="line">os.system(&#x27;./configure --prefix=/usr/local/python3&#x27;)</span><br><span class="line">res = os.system(&#x27;make &amp;&amp; make install&#x27;)</span><br><span class="line">if res !=0:</span><br><span class="line">    print &#x27;源码编译失败。。。&#x27;</span><br><span class="line">    SystemExit(1)</span><br><span class="line">else:</span><br><span class="line">    print(&#x27;####################Python安装成功，请进行验证！####################&#x27;)</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 修改用户环境变量</span></span><br><span class="line">os.system(&#x27;echo &quot;export PYTHON3=/usr/local/python3&quot; &gt;&gt;~/.bash_profile&#x27;)</span><br><span class="line">os.system(&#x27;echo &quot;export PATH=$PYTHON3/bin:$PATH&quot; &gt;&gt;~/.bash_profile&#x27;)</span><br><span class="line">os.system(&quot;source ~/.bash_profile&quot;)</span><br><span class="line">os.system(&#x27;cat ~/.bash_profile&#x27;)</span><br><span class="line">print(&#x27;####################用户环境变量已修改，请进行验证！####################&#x27;)</span><br><span class="line">os.system(&#x27;python3 --version&#x27;)</span><br></pre></td></tr></table></figure>
+<h4 id="7、os-walk函数遍历目录树"><a href="#7、os-walk函数遍历目录树" class="headerlink" title="7、os.walk函数遍历目录树"></a>7、os.walk函数遍历目录树</h4><p>os.walk() 方法遍历某个目录及其子目录，对于每一个目录，walk()函数返回一个三元组（dirpath、dirnames、filenames）。其中dirpath保存的是当前目录，dirnames是当前目录下的子目录列表，filenames是当前目录下的文件列表。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding=utf-8</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> root, dirs, files <span class="keyword">in</span> os.walk(<span class="string">&quot;.&quot;</span>, topdown=<span class="literal">False</span>):</span><br><span class="line">    <span class="keyword">for</span> name <span class="keyword">in</span> files:</span><br><span class="line">        print(os.path.join(root, name))</span><br><span class="line">    <span class="keyword">for</span> name <span class="keyword">in</span> dirs:</span><br><span class="line">        print(os.path.join(root, name))</span><br></pre></td></tr></table></figure>
+<p>os.walk() 方法是一个简单易用的文件、目录遍历器，可以帮助我们高效的处理文件、目录方面的事情。</p>
+<h4 id="案例2：打印最常用的10条Linux命令"><a href="#案例2：打印最常用的10条Linux命令" class="headerlink" title="案例2：打印最常用的10条Linux命令"></a>案例2：打印最常用的10条Linux命令</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">from collections import Counter</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">count &#x3D; Counter()</span><br><span class="line">with open(os.path.expanduser(&#39;~&#x2F;.bash_history&#39;)) as f:</span><br><span class="line">    for line in f:</span><br><span class="line">        cmd &#x3D; line.strip().split()</span><br><span class="line">        if cmd:</span><br><span class="line">            count[cmd[0]] +&#x3D;1</span><br><span class="line"></span><br><span class="line">print(count.most_common(10))</span><br></pre></td></tr></table></figure>
+<h3 id="二、使用ConfigParser类解析配置文件"><a href="#二、使用ConfigParser类解析配置文件" class="headerlink" title="二、使用ConfigParser类解析配置文件"></a>二、使用ConfigParser类解析配置文件</h3><p>Python中有ConfigParser类，可以很方便的从配置文件中读取数据（如DB的配置，路径的配置），所以可以自己写一个函数，实现读取config配置。</p>
+<h4 id="1、配置文件的格式"><a href="#1、配置文件的格式" class="headerlink" title="1、配置文件的格式"></a>1、配置文件的格式</h4><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">节：				[session]</span><br><span class="line">参数(键=值)			name=value</span><br></pre></td></tr></table></figure>
+<p>mysql配置文件部分内容如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[client]</span></span><br><span class="line"><span class="attr">port</span>		= <span class="number">3306</span></span><br><span class="line"><span class="attr">user</span>		= mysql</span><br><span class="line"><span class="attr">password</span>	= mysql</span><br><span class="line"><span class="attr">host</span>		= <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"></span><br><span class="line"><span class="section">[mysqld]</span></span><br><span class="line"><span class="attr">basedir</span>		= /usr</span><br><span class="line"><span class="attr">datadir</span>		= /var/lib/mysql</span><br><span class="line"><span class="attr">tmpdir</span>		= /tmp</span><br><span class="line">skip-external-locking</span><br></pre></td></tr></table></figure>
+<h4 id="2、ConfigParser类的使用方法"><a href="#2、ConfigParser类的使用方法" class="headerlink" title="2、ConfigParser类的使用方法"></a>2、ConfigParser类的使用方法</h4><h5 id="（1）创建configParser对象"><a href="#（1）创建configParser对象" class="headerlink" title="（1）创建configParser对象"></a>（1）创建configParser对象</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: <span class="keyword">import</span> configparser</span><br><span class="line">    </span><br><span class="line">In [<span class="number">2</span>]: cf = configparser.ConfigParser(allow_no_value=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<h5 id="（2）读取配置文件内容"><a href="#（2）读取配置文件内容" class="headerlink" title="（2）读取配置文件内容"></a>（2）读取配置文件内容</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">3</span>]: cf.read(<span class="string">&#x27;my.inf&#x27;</span>)</span><br><span class="line">Out[<span class="number">3</span>]: [<span class="string">&#x27;my.ini&#x27;</span>]   </span><br></pre></td></tr></table></figure>
+<h5 id="（3）获取配置文件信息"><a href="#（3）获取配置文件信息" class="headerlink" title="（3）获取配置文件信息"></a>（3）获取配置文件信息</h5><figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sections: 返回一个包含所有章节的列表</span><br><span class="line">options：返回一个包含章节下所有选项的列表</span><br><span class="line"></span><br><span class="line">has_section：判断章节是否存在</span><br><span class="line">has_options：判断某个选项是否存在</span><br><span class="line"></span><br><span class="line">items：以元组的形式返回所有的选项</span><br><span class="line">get、getboolean、getint、getfloat：获取选项的值</span><br></pre></td></tr></table></figure>
+<p>方法测试：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">4</span>]: cf.sections()</span><br><span class="line">Out[<span class="number">4</span>]: [<span class="string">&#x27;client&#x27;</span>, <span class="string">&#x27;mysqld&#x27;</span>]</span><br><span class="line"></span><br><span class="line">In [<span class="number">5</span>]: cf.has_section(<span class="string">&#x27;client&#x27;</span>)</span><br><span class="line">Out[<span class="number">5</span>]: <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">6</span>]cf.options(<span class="string">&#x27;client&#x27;</span>)</span><br><span class="line">Out[<span class="number">6</span>]: [<span class="string">&#x27;port&#x27;</span>, <span class="string">&#x27;user&#x27;</span>, <span class="string">&#x27;password&#x27;</span>, <span class="string">&#x27;host&#x27;</span>]</span><br><span class="line"></span><br><span class="line">In [<span class="number">7</span>]: cf.has_option(<span class="string">&#x27;client&#x27;</span>,<span class="string">&#x27;user&#x27;</span>)</span><br><span class="line">Out[<span class="number">7</span>]: <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">8</span>]: cf.get(<span class="string">&#x27;client&#x27;</span>,<span class="string">&#x27;port&#x27;</span>)</span><br><span class="line">Out[<span class="number">8</span>]: <span class="string">&#x27;3306&#x27;</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">9</span>]: cf.getint(<span class="string">&#x27;client&#x27;</span>,<span class="string">&#x27;port&#x27;</span>)</span><br><span class="line">Out[<span class="number">9</span>]: <span class="number">3306</span></span><br></pre></td></tr></table></figure>
+<h5 id="（4）修改配置文件"><a href="#（4）修改配置文件" class="headerlink" title="（4）修改配置文件"></a>（4）修改配置文件</h5><p>常用方法：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">remove_section：删除一个章节</span><br><span class="line">add_section：添加一个章节</span><br><span class="line">remove_option：删除一个选项</span><br><span class="line">set：添加一个选项</span><br><span class="line">write：将ConfigParser兑现中的数据保存到文件中</span><br></pre></td></tr></table></figure>
+<p>方法测试：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">11</span>]: cf.remove_section(<span class="string">&#x27;client&#x27;</span>)</span><br><span class="line">Out[<span class="number">11</span>]: <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">12</span>]: cf.write(<span class="built_in">open</span>(<span class="string">&#x27;my.ini&#x27;</span>, <span class="string">&#x27;w&#x27;</span>))</span><br><span class="line"></span><br><span class="line">In [<span class="number">13</span>]: cf.add_section(<span class="string">&#x27;client&#x27;</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">14</span>]: cf.<span class="built_in">set</span>(<span class="string">&#x27;client&#x27;</span>,<span class="string">&#x27;port&#x27;</span>,<span class="string">&#x27;3306&#x27;</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">15</span>]: cf.<span class="built_in">set</span>(<span class="string">&#x27;client&#x27;</span>,<span class="string">&#x27;user&#x27;</span>,<span class="string">&#x27;mysql&#x27;</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">16</span>]: cf.<span class="built_in">set</span>(<span class="string">&#x27;client&#x27;</span>,<span class="string">&#x27;password&#x27;</span>,<span class="string">&#x27;mysql&#x27;</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">17</span>]: cf.<span class="built_in">set</span>(<span class="string">&#x27;client&#x27;</span>,<span class="string">&#x27;host&#x27;</span>,<span class="string">&#x27;127.0.0.1&#x27;</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">18</span>]: cf.write(<span class="built_in">open</span>(<span class="string">&#x27;my.ini&#x27;</span>,<span class="string">&#x27;w&#x27;</span>))</span><br><span class="line"></span><br><span class="line">In [<span class="number">19</span>]: cf.remove_option(<span class="string">&#x27;client&#x27;</span>,<span class="string">&#x27;host&#x27;</span>)</span><br><span class="line">Out[<span class="number">19</span>: <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">20</span>]: cf.write(<span class="built_in">open</span>(<span class="string">&#x27;my.ini&#x27;</span>,<span class="string">&#x27;w&#x27;</span>))</span><br></pre></td></tr></table></figure>
+<h3 id="三、查找文件"><a href="#三、查找文件" class="headerlink" title="三、查找文件"></a>三、查找文件</h3><h4 id="1、使用fnmatch找到特定文件"><a href="#1、使用fnmatch找到特定文件" class="headerlink" title="1、使用fnmatch找到特定文件"></a>1、使用fnmatch找到特定文件</h4><p>fnmatch.fnmatch()函数一次只能处理一个文件</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> fnmatch</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> item <span class="keyword">in</span> os.listdir(<span class="string">&#x27;.&#x27;</span>):</span><br><span class="line">    <span class="keyword">if</span> os.path.isfile(item):</span><br><span class="line">        <span class="comment"># if fnmatch.fnmatch(item, &#x27;*.jpg&#x27;):</span></span><br><span class="line">        <span class="keyword">if</span> fnmatch.fnmatch(item, <span class="string">&#x27;[a-e]*&#x27;</span>):</span><br><span class="line">        <span class="comment"># if fnmatch.fnmatch(item, &#x27;[a-g]?.txt&#x27;):</span></span><br><span class="line">        <span class="comment"># if fnmatch.fnmatch(item, &#x27;[!a-c]*&#x27;):</span></span><br><span class="line">            print(item)</span><br></pre></td></tr></table></figure>
+<p>fnmatch.filter()函数一次可以处理多个文件</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> fnmatch</span><br><span class="line"></span><br><span class="line">items = os.listdir(<span class="string">&#x27;.&#x27;</span>)</span><br><span class="line">files = fnmatch.<span class="built_in">filter</span>(items, <span class="string">&#x27;[a-c]*&#x27;</span>)</span><br><span class="line">print(files)</span><br></pre></td></tr></table></figure>
+<h4 id="2、使用glob找到特定文件"><a href="#2、使用glob找到特定文件" class="headerlink" title="2、使用glob找到特定文件"></a>2、使用glob找到特定文件</h4><p>标准库glob的作用相当于os.listdir()加上fnmatch。使用glob以后，不需要调用os.listdir()获取文件列表，直接通过模式匹配即可。如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> glob</span><br><span class="line"></span><br><span class="line">files = glob.glob(<span class="string">&#x27;*.jpg&#x27;</span>)</span><br><span class="line">print(files)</span><br></pre></td></tr></table></figure>
+<h4 id="案例3：找到目录下最大（或最老）的10个文件"><a href="#案例3：找到目录下最大（或最老）的10个文件" class="headerlink" title="案例3：找到目录下最大（或最老）的10个文件"></a>案例3：找到目录下最大（或最老）的10个文件</h4><h3 id="四、高级文件处理接口shutil"><a href="#四、高级文件处理接口shutil" class="headerlink" title="四、高级文件处理接口shutil"></a>四、高级文件处理接口shutil</h3><h4 id="1、复制文件和文件夹"><a href="#1、复制文件和文件夹" class="headerlink" title="1、复制文件和文件夹"></a>1、复制文件和文件夹</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shutil.copy(file1,file2)</span><br><span class="line">shuti.copytree(dir1, dir2)</span><br></pre></td></tr></table></figure>
+<h4 id="2、文件和文件夹的移动与重命名"><a href="#2、文件和文件夹的移动与重命名" class="headerlink" title="2、文件和文件夹的移动与重命名"></a>2、文件和文件夹的移动与重命名</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shutil.move(file1, file2)</span><br><span class="line">shutil.move(file, <span class="built_in">dir</span>)</span><br></pre></td></tr></table></figure>
+<h4 id="3、删除目录"><a href="#3、删除目录" class="headerlink" title="3、删除目录"></a>3、删除目录</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shutil.rmtree(<span class="built_in">dir</span>)</span><br><span class="line">os.unlink(file)</span><br></pre></td></tr></table></figure>
+<h3 id="五、文件内容管理"><a href="#五、文件内容管理" class="headerlink" title="五、文件内容管理"></a>五、文件内容管理</h3><h4 id="1、目录和文件对比"><a href="#1、目录和文件对比" class="headerlink" title="1、目录和文件对比"></a>1、目录和文件对比</h4><p>filecmp模块包含了比较目录和文件的操作。</p>
+<p>目录结构如下，其中，a.txt和c.txt内容是一样的，a_copy.txt是a.txt的拷贝。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">├─dir1</span><br><span class="line">│  │  a.txt</span><br><span class="line">│  │  a_copy.txt</span><br><span class="line">│  │  b.txt</span><br><span class="line">│  │  c.txt</span><br><span class="line">│  └─subdir1</span><br><span class="line">│          sa.txt</span><br><span class="line">└─dir2</span><br><span class="line">    │  a.txt</span><br><span class="line">    │  b.txt</span><br><span class="line">    │  c.txt</span><br><span class="line">    ├─subdir1</span><br><span class="line">    │      sb.txt</span><br><span class="line">    └─subdir2</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h4 id="（1）比较两个文件"><a href="#（1）比较两个文件" class="headerlink" title="（1）比较两个文件"></a>（1）比较两个文件</h4><p>使用filecmp模块的cmp函数比较两个文件是否相同，如果文件相同则返回True，否则返回False。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: <span class="keyword">import</span> filecmp</span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: cd dir1</span><br><span class="line">E:\git-project\python_project\cloud33\Python常用模块\compare\dir1</span><br><span class="line"></span><br><span class="line">In [<span class="number">3</span>]: filecmp.cmp(<span class="string">&#x27;a.txt&#x27;</span>,<span class="string">&#x27;b.txt&#x27;</span>)</span><br><span class="line">Out[<span class="number">3</span>]: <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">4</span>]: filecmp.cmp(<span class="string">&#x27;a.txt&#x27;</span>,<span class="string">&#x27;c.txt&#x27;</span>)</span><br><span class="line">Out[<span class="number">4</span>]: <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">5</span>]: filecmp.cmp(<span class="string">&#x27;a.txt&#x27;</span>,<span class="string">&#x27;a_copy.txt&#x27;</span>)</span><br><span class="line">Out[<span class="number">5</span>]: <span class="literal">True</span></span><br></pre></td></tr></table></figure>
+<h4 id="（2）比较多个文件"><a href="#（2）比较多个文件" class="headerlink" title="（2）比较多个文件"></a>（2）比较多个文件</h4><p>filecmp目录下还有一个名为cmpfiles的函数，该函数用来同时比较两个不同的目录下的多个文件，并且返回一个三元组，分别包含相同的文件、不同的文件和无法比较的文件。示例如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">6</span>]: filecmp.cmpfiles(<span class="string">&#x27;dir1&#x27;</span>,<span class="string">&#x27;dir2&#x27;</span>,[<span class="string">&#x27;a.txt&#x27;</span>,<span class="string">&#x27;b.txt&#x27;</span>,<span class="string">&#x27;c.txt&#x27;</span>,<span class="string">&#x27;a_copy.txt&#x27;</span>])</span><br><span class="line">Out[<span class="number">6</span>]: ([<span class="string">&#x27;a.txt&#x27;</span>, <span class="string">&#x27;b.txt&#x27;</span>, <span class="string">&#x27;c.txt&#x27;</span>], [], [<span class="string">&#x27;a_copy.txt&#x27;</span>])</span><br></pre></td></tr></table></figure>
+<p>cmpfiles函数同时用来比较两个目录下的文件，也可以使用该函数比较两个目录。但是，在比较两个目录时，需要通过参数指定可能的文件，因此比较繁琐。</p>
+<h4 id="（3）比较目录"><a href="#（3）比较目录" class="headerlink" title="（3）比较目录"></a>（3）比较目录</h4><p>filecmp中还有一个名为dircmp的函数，用来比较两个目录。调用dircmp函数以后，会返回一个dircmp类的对象，该对象保存了诸多属性，我们可以通过查看这些属性获取目录之间的差异。如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">7</span>]: d = filecmp.dircmp(<span class="string">&#x27;dir1&#x27;</span>,<span class="string">&#x27;dir2&#x27;</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">8</span>]: d.report()</span><br><span class="line">diff dir1 dir2</span><br><span class="line">Only <span class="keyword">in</span> dir1 : [<span class="string">&#x27;a_copy.txt&#x27;</span>]</span><br><span class="line">Only <span class="keyword">in</span> dir2 : [<span class="string">&#x27;subdir2&#x27;</span>]</span><br><span class="line">Identical files : [<span class="string">&#x27;c.txt&#x27;</span>]</span><br><span class="line">Differing files : [<span class="string">&#x27;a.txt&#x27;</span>, <span class="string">&#x27;b.txt&#x27;</span>]</span><br><span class="line">Common subdirectories : [<span class="string">&#x27;subdir1&#x27;</span>]</span><br><span class="line"></span><br><span class="line">In [<span class="number">9</span>]: d.left_list</span><br><span class="line">Out[<span class="number">9</span>]: [<span class="string">&#x27;a.txt&#x27;</span>, <span class="string">&#x27;a_copy.txt&#x27;</span>, <span class="string">&#x27;b.txt&#x27;</span>, <span class="string">&#x27;c.txt&#x27;</span>, <span class="string">&#x27;subdir1&#x27;</span>]</span><br><span class="line"></span><br><span class="line">In [<span class="number">10</span>]: d.right_list</span><br><span class="line">Out[<span class="number">10</span>]: [<span class="string">&#x27;a.txt&#x27;</span>, <span class="string">&#x27;b.txt&#x27;</span>, <span class="string">&#x27;c.txt&#x27;</span>, <span class="string">&#x27;subdir1&#x27;</span>, <span class="string">&#x27;subdir2&#x27;</span>]</span><br><span class="line"></span><br><span class="line">In [<span class="number">11</span>]: d.left_only</span><br><span class="line">Out[<span class="number">11</span>]: [<span class="string">&#x27;a_copy.txt&#x27;</span>]</span><br><span class="line"></span><br><span class="line">In [<span class="number">12</span>]: d.right_only</span><br><span class="line">Out[<span class="number">12</span>]: [<span class="string">&#x27;subdir2&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<h4 id="2、MD5校验和比较"><a href="#2、MD5校验和比较" class="headerlink" title="2、MD5校验和比较"></a>2、MD5校验和比较</h4><p>校验码是通过散列函数计算而成，是一种从任何数据中创建小的数字“指纹”的方法。散列函数把消息或数据压缩成摘要，使得数据量变小，便于进行比较。MD5是目前使用最广泛的散列算法。</p>
+<p>MD5哈希一般用于检查文件的完整性，尤其常用于检查文件传输、磁盘错误或其他情况下文件的正确性。</p>
+<p>Linux下计算一个文件的MD5校验码，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@192 demo]# md5sum a.txt</span><br><span class="line">d41d8cd98f00b204e9800998ecf8427e  a.txt</span><br></pre></td></tr></table></figure>
+<p>在Python中计算文件的MD5校验码也非常简单，使用标准库hashlib模块即可。如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> hashlib</span><br><span class="line"></span><br><span class="line">d = hashlib.md5()</span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;b.txt&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">        d.update(line.encode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br><span class="line">print(d.hexdigest())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 或者可以这样（最常见的写法，常用于图片的命名）</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>hashlib.md5(<span class="string">b&#x27;123&#x27;</span>).hexdigest()</span><br><span class="line"><span class="string">&#x27;202cb962ac59075b964b07152d234b70&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 也可以使用hash.new()这个一般方法，hashlib.new(name[, data])，name传入的是哈希加密算法的名称，如md5</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>hashlib.new(<span class="string">&#x27;md5&#x27;</span>, <span class="string">b&#x27;123&#x27;</span>).hexdigest()</span><br><span class="line"><span class="string">&#x27;202cb962ac59075b964b07152d234b70&#x27;</span></span><br></pre></td></tr></table></figure>
+<h3 id="六、使用Python管理压缩包"><a href="#六、使用Python管理压缩包" class="headerlink" title="六、使用Python管理压缩包"></a>六、使用Python管理压缩包</h3><h4 id="1、tarfile"><a href="#1、tarfile" class="headerlink" title="1、tarfile"></a>1、tarfile</h4><h5 id="（1）读取tar包"><a href="#（1）读取tar包" class="headerlink" title="（1）读取tar包"></a>（1）读取tar包</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tarfile</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tarfile.<span class="built_in">open</span>(<span class="string">&#x27;cmake-3.17.0.tar.gz&#x27;</span>) <span class="keyword">as</span> t:</span><br><span class="line">    <span class="keyword">for</span> member <span class="keyword">in</span> t.getmembers():</span><br><span class="line">        print(member.name)</span><br><span class="line">        </span><br><span class="line"><span class="keyword">with</span> tarfile.<span class="built_in">open</span>(<span class="string">&#x27;cmake-3.17.0.tar.gz&#x27;</span>) <span class="keyword">as</span> t:</span><br><span class="line">t.extractall()</span><br><span class="line">t.extract(<span class="string">&#x27;cmake-3.17.0/Help&#x27;</span>,<span class="string">&#x27;a&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>常用方法说明：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">getmembers():获取tar包中的文件列表</span><br><span class="line">member.name:获取tar包中文件的文件名</span><br><span class="line">extract(member, path):提取单个文件</span><br><span class="line">extractall(path, memebers):提取所有的文件</span><br></pre></td></tr></table></figure>
+<h5 id="（2）创建tar包"><a href="#（2）创建tar包" class="headerlink" title="（2）创建tar包"></a>（2）创建tar包</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tarfile</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tarfile.<span class="built_in">open</span>(<span class="string">&#x27;readme.tar&#x27;</span>, mode=<span class="string">&#x27;w&#x27;</span>) <span class="keyword">as</span> out:</span><br><span class="line">    out.add(<span class="string">&#x27;read.txt&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h5 id="（3）读取与创建压缩包"><a href="#（3）读取与创建压缩包" class="headerlink" title="（3）读取与创建压缩包"></a>（3）读取与创建压缩包</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tarfile</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tarfile.<span class="built_in">open</span>(<span class="string">&#x27;tarfile_add.tar&#x27;</span>,mode=<span class="string">&#x27;r:gz&#x27;</span>) <span class="keyword">as</span> out:</span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tarfile.<span class="built_in">open</span>(<span class="string">&#x27;tarfile_add.tar&#x27;</span>,mode=<span class="string">&#x27;r:bz2&#x27;</span>) <span class="keyword">as</span> out:</span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+<h4 id="案例4：备份指定文件到压缩包中"><a href="#案例4：备份指定文件到压缩包中" class="headerlink" title="案例4：备份指定文件到压缩包中"></a>案例4：备份指定文件到压缩包中</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> fnmatch</span><br><span class="line"><span class="keyword">import</span> tarfile</span><br><span class="line"><span class="keyword">import</span> datetime</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">is_file_math</span>(<span class="params">filename, patterns</span>):</span></span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;查找特定类型的文件&#x27;&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">for</span> pattern <span class="keyword">in</span> patterns:</span><br><span class="line">        <span class="keyword">if</span> fnmatch.fnmatch(filename, pattern):</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">find_files</span>(<span class="params">root, patterns=[<span class="string">&#x27;*&#x27;</span>]</span>):</span></span><br><span class="line">    <span class="keyword">for</span> root, dirnames, filenames <span class="keyword">in</span> os.walk(root):</span><br><span class="line">        <span class="keyword">for</span> filename <span class="keyword">in</span> filenames:</span><br><span class="line">            <span class="keyword">if</span> is_file_math(filename, patterns):</span><br><span class="line">                <span class="keyword">yield</span> os.path.join(root, filename)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">patterns = [<span class="string">&#x27;*.txt&#x27;</span>,<span class="string">&#x27;*.md&#x27;</span>]</span><br><span class="line">now = datetime.datetime.now().strftime(<span class="string">&#x27;%Y_%m_%d_%H_%M_%S&#x27;</span>)</span><br><span class="line">filename = <span class="string">&#x27;backup_all_file_&#123;0&#125;.tar.gz&#x27;</span>.<span class="built_in">format</span>(now)</span><br><span class="line"><span class="keyword">with</span> tarfile.<span class="built_in">open</span>(filename, <span class="string">&#x27;w&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> item <span class="keyword">in</span> find_files(<span class="string">&#x27;.&#x27;</span>, patterns):</span><br><span class="line">        f.add(item)</span><br></pre></td></tr></table></figure>
+<h4 id="2、zipfile"><a href="#2、zipfile" class="headerlink" title="2、zipfile"></a>2、zipfile</h4><h5 id="（1）读取zip文件"><a href="#（1）读取zip文件" class="headerlink" title="（1）读取zip文件"></a>（1）读取zip文件</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> zipfile</span><br><span class="line"></span><br><span class="line">demo_zip = zipfile.ZipFile(<span class="string">&#x27;read.zip&#x27;</span>)</span><br><span class="line">print(demo_zip.namelist())</span><br><span class="line">demo_zip.extractall(<span class="string">&#x27;1&#x27;</span>)</span><br><span class="line">demo_zip.extract(<span class="string">&#x27;a.jpg&#x27;</span>,<span class="string">&#x27;2&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>常用方法说明：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">namelist():返回zip文件中包含的所有文件和文件夹的字符串列表</span><br><span class="line">extract(filename, path)：从zip文件中提取单个文件</span><br><span class="line">extractall(path)：从zip文件中提取所有文件</span><br></pre></td></tr></table></figure>
+<h5 id="（2）创建zip文件"><a href="#（2）创建zip文件" class="headerlink" title="（2）创建zip文件"></a>（2）创建zip文件</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> zipfile</span><br><span class="line"></span><br><span class="line">newZip = zipfile.ZipFile(<span class="string">&#x27;new.zip&#x27;</span>,mode=<span class="string">&#x27;w&#x27;</span>)</span><br><span class="line">newZip.write(<span class="string">&#x27;a.jpg&#x27;</span>)</span><br><span class="line">newZip.close()</span><br></pre></td></tr></table></figure>
+<h5 id="（3）Python命令行调用zipfile"><a href="#（3）Python命令行调用zipfile" class="headerlink" title="（3）Python命令行调用zipfile"></a>（3）Python命令行调用zipfile</h5><p>zipfile模块提供的命令行接口包含的选项：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-l:显示zip格式压缩包中的文件列表</span><br><span class="line">-e:提取zip格式的压缩包</span><br><span class="line">-c:创建zip格式的压缩包</span><br><span class="line">-t:验证文件是不是一个有效的zip格式压缩包</span><br></pre></td></tr></table></figure>
+<p>示例如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建zip文件</span></span><br><span class="line">python -m zipfile -c new1.<span class="built_in">zip</span> archive_tar.py</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看zip文件列表</span></span><br><span class="line">python -m zipfile -l new1.<span class="built_in">zip</span></span><br><span class="line">File Name                                             Modified             Size</span><br><span class="line">archive_tar.py                                 <span class="number">2020</span>-04-<span class="number">26</span> <span class="number">16</span>:<span class="number">32</span>:<span class="number">54</span>          <span class="number">239</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 提取zip文件到指定目录</span></span><br><span class="line">python -m zipfile -e new1.<span class="built_in">zip</span> new_dir</span><br></pre></td></tr></table></figure>
+<h4 id="3、shutil创建和读取压缩包"><a href="#3、shutil创建和读取压缩包" class="headerlink" title="3、shutil创建和读取压缩包"></a>3、shutil创建和读取压缩包</h4><p>shutil支持的格式如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> shutil</span><br><span class="line"></span><br><span class="line">print(shutil.get_archive_formats())</span><br><span class="line"></span><br><span class="line">[(<span class="string">&#x27;bztar&#x27;</span>, <span class="string">&quot;bzip2&#x27;ed tar-file&quot;</span>), (<span class="string">&#x27;gztar&#x27;</span>, <span class="string">&quot;gzip&#x27;ed tar-file&quot;</span>), (<span class="string">&#x27;tar&#x27;</span>, <span class="string">&#x27;uncompressed tar file&#x27;</span>), (<span class="string">&#x27;xztar&#x27;</span>, <span class="string">&quot;xz&#x27;ed tar-file&quot;</span>), (<span class="string">&#x27;zip&#x27;</span>, <span class="string">&#x27;ZIP file&#x27;</span>)]</span><br></pre></td></tr></table></figure>
+<h5 id="（1）创建压缩包"><a href="#（1）创建压缩包" class="headerlink" title="（1）创建压缩包"></a>（1）创建压缩包</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 参数1：生成的压缩包文件名</span></span><br><span class="line"><span class="comment"># 参数2：压缩包的格式</span></span><br><span class="line"><span class="comment"># 参数3：压缩的目录</span></span><br><span class="line">shutil.make_archive(<span class="string">&#x27;a.jpg&#x27;</span>,<span class="string">&#x27;gztar&#x27;</span>, <span class="string">&#x27;ddd&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h5 id="（2）解压"><a href="#（2）解压" class="headerlink" title="（2）解压"></a>（2）解压</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 参数1：需要解压的压缩包</span></span><br><span class="line"><span class="comment"># 参数2：解压的目录</span></span><br><span class="line">print(shutil.unpack_archive(<span class="string">&#x27;a.jpg.tar.gz&#x27;</span>,<span class="string">&#x27;jpg&#x27;</span>))</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="阿怪 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="阿怪 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿怪
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://aguai.fun/2020/04/26/Linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/" title="Linux系统管理">https://aguai.fun/2020/04/26/Linux系统管理/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+  
+</div>
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Python/" rel="tag"># Python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/22/OS%E6%A8%A1%E5%9D%97/" rel="prev" title="OS模块">
+      <i class="fa fa-chevron-left"></i> OS模块
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/26/%E6%89%93%E5%8D%B0%E6%9C%80%E5%B8%B8%E7%94%A8%E7%9A%8410%E6%9D%A1Linux%E5%91%BD%E4%BB%A4/" rel="next" title="打印最常用的10条Linux命令">
+      打印最常用的10条Linux命令 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86"><span class="nav-text">Linux系统管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81OS%E6%A8%A1%E5%9D%97%E5%B8%B8%E7%94%A8%E5%8A%9F%E8%83%BD"><span class="nav-text">一、OS模块常用功能</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81os%E6%A8%A1%E5%9D%97%E6%89%93%E5%BC%80%E6%96%87%E4%BB%B6"><span class="nav-text">1、os模块打开文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81os%E6%A8%A1%E5%9D%97%E5%AF%B9%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8C%E6%93%8D%E4%BD%9C"><span class="nav-text">2、os模块对文件进行操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3%E3%80%81os%E6%A8%A1%E5%9D%97%E7%AE%A1%E7%90%86%E6%96%87%E4%BB%B6%E5%92%8C%E7%9B%AE%E5%BD%95"><span class="nav-text">3、os模块管理文件和目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4%E3%80%81os%E6%A8%A1%E5%9D%97%E7%AE%A1%E7%90%86%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90"><span class="nav-text">4、os模块管理文件权限</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5%E3%80%81os-path%E6%A8%A1%E5%9D%97%E7%AE%A1%E7%90%86%E6%96%87%E4%BB%B6%E4%B8%8E%E8%B7%AF%E5%BE%84"><span class="nav-text">5、os.path模块管理文件与路径</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%881%EF%BC%89%E6%8B%86%E5%88%86%E8%B7%AF%E5%BE%84"><span class="nav-text">（1）拆分路径</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%882%EF%BC%89%E6%9E%84%E5%BB%BA%E8%B7%AF%E5%BE%84"><span class="nav-text">（2）构建路径</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%883%EF%BC%89%E8%8E%B7%E5%8F%96%E6%96%87%E4%BB%B6%E5%B1%9E%E6%80%A7"><span class="nav-text">（3）获取文件属性</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%884%EF%BC%89%E5%88%A4%E6%96%AD%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B"><span class="nav-text">（4）判断文件类型</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6%E3%80%81os%E6%A8%A1%E5%9D%97%E6%89%A7%E8%A1%8Cshell%E5%91%BD%E4%BB%A4"><span class="nav-text">6、os模块执行shell命令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A1%88%E4%BE%8B1%EF%BC%9A%E7%BC%96%E5%86%99%E8%87%AA%E5%8A%A8%E5%AE%89%E8%A3%85Python%E7%9A%84%E8%84%9A%E6%9C%AC"><span class="nav-text">案例1：编写自动安装Python的脚本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7%E3%80%81os-walk%E5%87%BD%E6%95%B0%E9%81%8D%E5%8E%86%E7%9B%AE%E5%BD%95%E6%A0%91"><span class="nav-text">7、os.walk函数遍历目录树</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A1%88%E4%BE%8B2%EF%BC%9A%E6%89%93%E5%8D%B0%E6%9C%80%E5%B8%B8%E7%94%A8%E7%9A%8410%E6%9D%A1Linux%E5%91%BD%E4%BB%A4"><span class="nav-text">案例2：打印最常用的10条Linux命令</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E4%BD%BF%E7%94%A8ConfigParser%E7%B1%BB%E8%A7%A3%E6%9E%90%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-text">二、使用ConfigParser类解析配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E6%A0%BC%E5%BC%8F"><span class="nav-text">1、配置文件的格式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81ConfigParser%E7%B1%BB%E7%9A%84%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-text">2、ConfigParser类的使用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%881%EF%BC%89%E5%88%9B%E5%BB%BAconfigParser%E5%AF%B9%E8%B1%A1"><span class="nav-text">（1）创建configParser对象</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%882%EF%BC%89%E8%AF%BB%E5%8F%96%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9"><span class="nav-text">（2）读取配置文件内容</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%883%EF%BC%89%E8%8E%B7%E5%8F%96%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E4%BF%A1%E6%81%AF"><span class="nav-text">（3）获取配置文件信息</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%884%EF%BC%89%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-text">（4）修改配置文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%9F%A5%E6%89%BE%E6%96%87%E4%BB%B6"><span class="nav-text">三、查找文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81%E4%BD%BF%E7%94%A8fnmatch%E6%89%BE%E5%88%B0%E7%89%B9%E5%AE%9A%E6%96%87%E4%BB%B6"><span class="nav-text">1、使用fnmatch找到特定文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81%E4%BD%BF%E7%94%A8glob%E6%89%BE%E5%88%B0%E7%89%B9%E5%AE%9A%E6%96%87%E4%BB%B6"><span class="nav-text">2、使用glob找到特定文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A1%88%E4%BE%8B3%EF%BC%9A%E6%89%BE%E5%88%B0%E7%9B%AE%E5%BD%95%E4%B8%8B%E6%9C%80%E5%A4%A7%EF%BC%88%E6%88%96%E6%9C%80%E8%80%81%EF%BC%89%E7%9A%8410%E4%B8%AA%E6%96%87%E4%BB%B6"><span class="nav-text">案例3：找到目录下最大（或最老）的10个文件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E9%AB%98%E7%BA%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86%E6%8E%A5%E5%8F%A3shutil"><span class="nav-text">四、高级文件处理接口shutil</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81%E5%A4%8D%E5%88%B6%E6%96%87%E4%BB%B6%E5%92%8C%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-text">1、复制文件和文件夹</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81%E6%96%87%E4%BB%B6%E5%92%8C%E6%96%87%E4%BB%B6%E5%A4%B9%E7%9A%84%E7%A7%BB%E5%8A%A8%E4%B8%8E%E9%87%8D%E5%91%BD%E5%90%8D"><span class="nav-text">2、文件和文件夹的移动与重命名</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3%E3%80%81%E5%88%A0%E9%99%A4%E7%9B%AE%E5%BD%95"><span class="nav-text">3、删除目录</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9%E7%AE%A1%E7%90%86"><span class="nav-text">五、文件内容管理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81%E7%9B%AE%E5%BD%95%E5%92%8C%E6%96%87%E4%BB%B6%E5%AF%B9%E6%AF%94"><span class="nav-text">1、目录和文件对比</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%EF%BC%881%EF%BC%89%E6%AF%94%E8%BE%83%E4%B8%A4%E4%B8%AA%E6%96%87%E4%BB%B6"><span class="nav-text">（1）比较两个文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%EF%BC%882%EF%BC%89%E6%AF%94%E8%BE%83%E5%A4%9A%E4%B8%AA%E6%96%87%E4%BB%B6"><span class="nav-text">（2）比较多个文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%EF%BC%883%EF%BC%89%E6%AF%94%E8%BE%83%E7%9B%AE%E5%BD%95"><span class="nav-text">（3）比较目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81MD5%E6%A0%A1%E9%AA%8C%E5%92%8C%E6%AF%94%E8%BE%83"><span class="nav-text">2、MD5校验和比较</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E4%BD%BF%E7%94%A8Python%E7%AE%A1%E7%90%86%E5%8E%8B%E7%BC%A9%E5%8C%85"><span class="nav-text">六、使用Python管理压缩包</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81tarfile"><span class="nav-text">1、tarfile</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%881%EF%BC%89%E8%AF%BB%E5%8F%96tar%E5%8C%85"><span class="nav-text">（1）读取tar包</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%882%EF%BC%89%E5%88%9B%E5%BB%BAtar%E5%8C%85"><span class="nav-text">（2）创建tar包</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%883%EF%BC%89%E8%AF%BB%E5%8F%96%E4%B8%8E%E5%88%9B%E5%BB%BA%E5%8E%8B%E7%BC%A9%E5%8C%85"><span class="nav-text">（3）读取与创建压缩包</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A1%88%E4%BE%8B4%EF%BC%9A%E5%A4%87%E4%BB%BD%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E5%88%B0%E5%8E%8B%E7%BC%A9%E5%8C%85%E4%B8%AD"><span class="nav-text">案例4：备份指定文件到压缩包中</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81zipfile"><span class="nav-text">2、zipfile</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%881%EF%BC%89%E8%AF%BB%E5%8F%96zip%E6%96%87%E4%BB%B6"><span class="nav-text">（1）读取zip文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%882%EF%BC%89%E5%88%9B%E5%BB%BAzip%E6%96%87%E4%BB%B6"><span class="nav-text">（2）创建zip文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%883%EF%BC%89Python%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%B0%83%E7%94%A8zipfile"><span class="nav-text">（3）Python命令行调用zipfile</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3%E3%80%81shutil%E5%88%9B%E5%BB%BA%E5%92%8C%E8%AF%BB%E5%8F%96%E5%8E%8B%E7%BC%A9%E5%8C%85"><span class="nav-text">3、shutil创建和读取压缩包</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%881%EF%BC%89%E5%88%9B%E5%BB%BA%E5%8E%8B%E7%BC%A9%E5%8C%85"><span class="nav-text">（1）创建压缩包</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%EF%BC%882%EF%BC%89%E8%A7%A3%E5%8E%8B"><span class="nav-text">（2）解压</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="阿怪"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">阿怪</p>
+  <div class="site-description" itemprop="description">直到这一刻微笑着说话为止，我至少留下了一公升眼泪</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">103</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/a_guai_" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;a_guai_" rel="noopener" target="_blank"><i class="crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="阿怪"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">博客</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">574k</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/clicklove.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
+

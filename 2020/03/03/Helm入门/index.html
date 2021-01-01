@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"aguai.fun","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offalse":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="K8s">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Helm入门">
+<meta property="og:url" content="https://aguai.fun/2020/03/03/Helm%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="阿怪の博客">
+<meta property="og:description" content="K8s">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200303170531894.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2020030317055142.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200303170612696.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200303170640894.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200303170710607.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200303170729858.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200303170742657.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200303170751885.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200303170808797.png">
+<meta property="article:published_time" content="2020-03-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-03-03T12:10:19.522Z">
+<meta property="article:author" content="阿怪">
+<meta property="article:tag" content="k8s">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200303170531894.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+
+<link rel="canonical" href="https://aguai.fun/2020/03/03/Helm%E5%85%A5%E9%97%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Helm入门 | 阿怪の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿怪の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">103</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://aguai.fun/2020/03/03/Helm%E5%85%A5%E9%97%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="阿怪">
+      <meta itemprop="description" content="直到这一刻微笑着说话为止，我至少留下了一公升眼泪">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿怪の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Helm入门
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-03-03 00:00:00 / 修改时间：20:10:19" itemprop="dateCreated datePublished" datetime="2020-03-03T00:00:00+08:00">2020-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <div class="post-description">K8s</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Helm搭建："><a href="#Helm搭建：" class="headerlink" title="Helm搭建："></a>Helm搭建：</h1><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@node01</span> ~]<span class="meta"># docker load &lt; tiller-v2.14.3.tar</span></span><br><span class="line">[root<span class="symbol">@node02</span> ~]<span class="meta"># docker load &lt; tiller-v2.14.3.tar</span></span><br><span class="line">[root<span class="symbol">@node01</span> ~]<span class="meta"># systemctl restart kubelet</span></span><br><span class="line">[root<span class="symbol">@node02</span> ~]<span class="meta"># systemctl restart kubelet</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# mkdir</span> helm</span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# cd</span> helm/</span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">helm</span>]<span class="comment"># wget https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">helm</span>]<span class="comment"># tar -zxvf helm-v2.14.3-linux-amd64.tar.gz </span></span><br><span class="line">linux-amd64/</span><br><span class="line">linux-amd64/helm</span><br><span class="line">linux-amd64/README.md</span><br><span class="line">linux-amd64/LICENSE</span><br><span class="line">linux-amd64/tiller</span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">helm</span>]<span class="comment"># ls</span></span><br><span class="line">helm-v2.<span class="number">14.3</span>-linux-amd64.tar.gz  linux-amd64</span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">helm</span>]<span class="comment"># mv linux-amd64/helm /usr/local/bin/</span></span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">helm</span>]<span class="comment"># chmod +x /usr/local/bin/helm </span></span><br></pre></td></tr></table></figure>
+<p>自动补全：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">helm</span>]<span class="comment"># source &lt;(helm completion bash)</span></span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# echo</span> <span class="string">&quot;source &lt;(helm completion bash)&quot;</span> &gt;&gt; ~/.bashrc</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200303170531894.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-qBDnrtmL-1583226188633)(C:\Users\skx20\AppData\Roaming\Typora\typora-user-images\image-20200228115243793.png)]"></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[root@master helm]</span># <span class="selector-tag">kubectl</span> <span class="selector-tag">apply</span> <span class="selector-tag">-f</span> <span class="selector-tag">tiller-rbac</span><span class="selector-class">.yaml</span> </span><br><span class="line"><span class="selector-tag">serviceaccount</span>/<span class="selector-tag">tiller</span> <span class="selector-tag">created</span></span><br><span class="line"><span class="selector-tag">clusterrolebinding</span><span class="selector-class">.rbac</span><span class="selector-class">.authorization</span><span class="selector-class">.k8s</span><span class="selector-class">.io</span>/<span class="selector-tag">tiller</span> <span class="selector-tag">created</span></span><br></pre></td></tr></table></figure>
+<p>初始化：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">helm</span>]<span class="comment"># helm init --service-account=tiller</span></span><br></pre></td></tr></table></figure>
+<p>查看一下:</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">helm</span>]<span class="comment"># kubectl get deployments. -n kube-system </span></span><br><span class="line">NAME            READY   UP-TO-<span class="keyword">DATE</span>   AVAILABLE   AGE</span><br><span class="line">coredns         <span class="number">2</span>/<span class="number">2</span>     <span class="number">2</span>            <span class="number">2</span>           <span class="number">21</span>d</span><br><span class="line">tiller-deploy   <span class="number">1</span>/<span class="number">1</span>     <span class="number">1</span>            <span class="number">1</span>           <span class="number">107s</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">helm</span>]<span class="comment"># kubectl get pod -n kube-system </span></span><br><span class="line">NAME                             READY   STATUS    RESTARTS   AGE</span><br><span class="line">coredns-<span class="number">5</span>c98db65d4-jnhjq         <span class="number">1</span>/<span class="number">1</span>     Running   <span class="number">1</span>          <span class="number">21</span>d</span><br><span class="line">coredns-<span class="number">5</span>c98db65d4-kqvsl         <span class="number">1</span>/<span class="number">1</span>     Running   <span class="number">1</span>          <span class="number">21</span>d</span><br><span class="line">etcd-<span class="keyword">master</span>                      <span class="title">1</span>/<span class="number">1</span>     Running   <span class="number">1</span>          <span class="number">21</span>d</span><br><span class="line">kube-apiserver-<span class="keyword">master</span>            <span class="title">1</span>/<span class="number">1</span>     Running   <span class="number">1</span>          <span class="number">21</span>d</span><br><span class="line">kube-controller-manager-<span class="keyword">master</span>   <span class="title">1</span>/<span class="number">1</span>     Running   <span class="number">1</span>          <span class="number">21</span>d</span><br><span class="line">kube-flannel-ds-amd64-pqbzl      <span class="number">1</span>/<span class="number">1</span>     Running   <span class="number">2</span>          <span class="number">21</span>d</span><br><span class="line">kube-flannel-ds-amd64-qg8s2      <span class="number">1</span>/<span class="number">1</span>     Running   <span class="number">1</span>          <span class="number">21</span>d</span><br><span class="line">kube-flannel-ds-amd64-z87t7      <span class="number">1</span>/<span class="number">1</span>     Running   <span class="number">1</span>          <span class="number">21</span>d</span><br><span class="line">kube-proxy-<span class="number">4998</span>w                 <span class="number">1</span>/<span class="number">1</span>     Running   <span class="number">1</span>          <span class="number">21</span>d</span><br><span class="line">kube-proxy-kppfb                 <span class="number">1</span>/<span class="number">1</span>     Running   <span class="number">1</span>          <span class="number">21</span>d</span><br><span class="line">kube-proxy-l4j82                 <span class="number">1</span>/<span class="number">1</span>     Running   <span class="number">1</span>          <span class="number">21</span>d</span><br><span class="line">kube-scheduler-<span class="keyword">master</span>            <span class="title">1</span>/<span class="number">1</span>     Running   <span class="number">1</span>          <span class="number">21</span>d</span><br><span class="line">tiller-deploy-<span class="number">8557598</span>fbc-vjmkk   <span class="number">1</span>/<span class="number">1</span>     Running   <span class="number">0</span>          <span class="number">5m</span>24s</span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@master helm]<span class="comment"># helm repo list</span></span><br><span class="line">NAME  	URL                                             </span><br><span class="line">stable	https:<span class="regexp">//</span>kubernetes-charts.storage.googleapis.com</span><br><span class="line">local 	http:<span class="regexp">//</span><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">8879</span>/charts       </span><br></pre></td></tr></table></figure>
+<p>添加阿里镜像源：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@master helm]# helm repo <span class="built_in">add</span> stable http<span class="variable">s:</span>//kubernetes.oss-<span class="keyword">cn</span>-hangzhou.aliyuncs.<span class="keyword">com</span>/charts</span><br><span class="line"><span class="string">&quot;stable&quot;</span> <span class="built_in">has</span> been added <span class="keyword">to</span> your repositories</span><br></pre></td></tr></table></figure>
+<p>再查看：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@master helm]<span class="comment"># helm repo list</span></span><br><span class="line">NAME  	URL                                                   </span><br><span class="line">stable	https:<span class="regexp">//</span>kubernetes.oss-cn-hangzhou.aliyuncs.com/charts</span><br><span class="line">local 	http:<span class="regexp">//</span><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">8879</span>/charts   </span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[root@master helm]</span># <span class="selector-tag">helm</span> <span class="selector-tag">repo</span> <span class="selector-tag">list</span></span><br><span class="line"><span class="selector-tag">NAME</span>  	<span class="selector-tag">URL</span>                                                   </span><br><span class="line"><span class="selector-tag">stable</span>	<span class="selector-tag">https</span>://<span class="selector-tag">kubernetes</span><span class="selector-class">.oss-cn-hangzhou</span><span class="selector-class">.aliyuncs</span><span class="selector-class">.com</span>/<span class="selector-tag">charts</span></span><br><span class="line"><span class="selector-tag">local</span> 	<span class="selector-tag">http</span>://127.0.0.1<span class="selector-pseudo">:8879</span>/<span class="selector-tag">charts</span>                          </span><br><span class="line"><span class="selector-attr">[root@master helm]</span># <span class="selector-tag">helm</span> <span class="selector-tag">version</span> </span><br><span class="line"><span class="selector-tag">Client</span>: &amp;<span class="selector-tag">version</span><span class="selector-class">.Version</span>&#123;<span class="attribute">SemVer</span>:<span class="string">&quot;v2.14.3&quot;</span>, GitCommit:<span class="string">&quot;0e7f3b6637f7af8fcfddb3d2941fcc7cbebb0085&quot;</span>, GitTreeState:<span class="string">&quot;clean&quot;</span>&#125;</span><br><span class="line"><span class="selector-tag">Server</span>: &amp;<span class="selector-tag">version</span><span class="selector-class">.Version</span>&#123;<span class="attribute">SemVer</span>:<span class="string">&quot;v2.14.3&quot;</span>, GitCommit:<span class="string">&quot;0e7f3b6637f7af8fcfddb3d2941fcc7cbebb0085&quot;</span>, GitTreeState:<span class="string">&quot;clean&quot;</span>&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>helm到此就搭建成功了</p>
+<hr>
+<h1 id="概念："><a href="#概念：" class="headerlink" title="概念："></a>概念：</h1><p><img src="https://img-blog.csdnimg.cn/2020030317055142.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-8TMw656K-1583226188635)(C:\Users\skx20\AppData\Roaming\Typora\typora-user-images\image-20200302084439394.png)]"></p>
+<h2 id="包管理工具："><a href="#包管理工具：" class="headerlink" title="包管理工具："></a>包管理工具：</h2><h3 id="Charts：是一个Helm的程序包，它包含了运行一个kubernets应用程序所需要的镜像、依赖关系和资源定义等。"><a href="#Charts：是一个Helm的程序包，它包含了运行一个kubernets应用程序所需要的镜像、依赖关系和资源定义等。" class="headerlink" title="Charts：是一个Helm的程序包，它包含了运行一个kubernets应用程序所需要的镜像、依赖关系和资源定义等。"></a>Charts：是一个Helm的程序包，它包含了运行一个kubernets应用程序所需要的镜像、依赖关系和资源定义等。</h3><h3 id="Release：应用程序运行Charts之后，得到的一个实例。"><a href="#Release：应用程序运行Charts之后，得到的一个实例。" class="headerlink" title="Release：应用程序运行Charts之后，得到的一个实例。"></a>Release：应用程序运行Charts之后，得到的一个实例。</h3><h1 id="命令："><a href="#命令：" class="headerlink" title="命令："></a>命令：</h1><p>1）查找Charts包：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# helm</span> search </span><br></pre></td></tr></table></figure>
+<p>应用：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]# helm <span class="keyword">search</span> redis</span><br><span class="line">NAME           	CHART <span class="keyword">VERSION</span>	<span class="keyword">APP</span> <span class="keyword">VERSION</span>	DESCRIPTION                                                 </span><br><span class="line">stable/redis   	1.1.15       	4.0.8      	<span class="keyword">Open</span> source, advanced key-value store. It is often referr...</span><br><span class="line">stable/redis-ha	2.0.1        	           	Highly available Redis <span class="keyword">cluster</span> with multiple sentinels <span class="keyword">an</span>...</span><br><span class="line">stable/sensu   	0.2.0        	           	Sensu monitoring framework backed <span class="keyword">by</span> the Redis transport  </span><br></pre></td></tr></table></figure>
+<p>2）查看stable/redis包的详细信息：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# helm</span> inspect stable/redis</span><br></pre></td></tr></table></figure>
+<p>3）根据一个包（stable/redis）运行一个实例（redis）：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# helm</span> install stable/redis -n redis --dry-run</span><br><span class="line">NAME:   redis</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>不在后台运行，去掉–dry-run：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# helm</span> install stable/redis -n redis</span><br></pre></td></tr></table></figure>
+<p>下载包：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># helm fetch stable/prometheus</span></span><br></pre></td></tr></table></figure>
+<h1 id="部署一个实例：helm-install-charts-n-Release名称。"><a href="#部署一个实例：helm-install-charts-n-Release名称。" class="headerlink" title="部署一个实例：helm install + charts -n Release名称。"></a>部署一个实例：helm install + charts -n Release名称。</h1><h2 id="1、关于Release的描述。"><a href="#1、关于Release的描述。" class="headerlink" title="1、关于Release的描述。"></a>1、关于Release的描述。</h2><h2 id="2、关于这个Release资源的描述。"><a href="#2、关于这个Release资源的描述。" class="headerlink" title="2、关于这个Release资源的描述。"></a>2、关于这个Release资源的描述。</h2><h2 id="3、怎么使用真个Release。"><a href="#3、怎么使用真个Release。" class="headerlink" title="3、怎么使用真个Release。"></a>3、怎么使用真个Release。</h2><h1 id="参考：Helm部署安装一个Mysql服务"><a href="#参考：Helm部署安装一个Mysql服务" class="headerlink" title="参考：Helm部署安装一个Mysql服务"></a>参考：Helm部署安装一个Mysql服务</h1><p>查找Charts包：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# helm</span> search mysql</span><br></pre></td></tr></table></figure>
+<p>安装</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# helm</span> install stable/mysql -n mysql</span><br></pre></td></tr></table></figure>
+
+
+
+
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># pwd</span></span><br><span class="line">/root/.helm/cache/archive</span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># ls</span></span><br><span class="line">mysql-<span class="number">0.3</span>.<span class="number">5</span>.tgz  redis-<span class="number">1.1</span>.<span class="number">15</span>.tgz</span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># tar -zxvf mysql-0.3.5.tgz </span></span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># ls</span></span><br><span class="line">mysql  mysql-<span class="number">0.3</span>.<span class="number">5</span>.tgz  redis-<span class="number">1.1</span>.<span class="number">15</span>.tgz</span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># yum -y install tree</span></span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># tree -C mysql</span></span><br><span class="line">mysql</span><br><span class="line">├── Chart.yaml</span><br><span class="line">├── README.md</span><br><span class="line">├── templates</span><br><span class="line">│   ├── configmap.yaml</span><br><span class="line">│   ├── deployment.yaml</span><br><span class="line">│   ├── _helpers.tpl</span><br><span class="line">│   ├── NOTES.txt</span><br><span class="line">│   ├── pvc.yaml</span><br><span class="line">│   ├── secrets.yaml</span><br><span class="line">│   └── svc.yaml</span><br><span class="line">└── values.yaml</span><br><span class="line"></span><br><span class="line"><span class="number">1</span> directory, <span class="number">10</span> files</span><br></pre></td></tr></table></figure>
+<p>Charts包解压过后的目录：</p>
+<p><img src="https://img-blog.csdnimg.cn/20200303170612696.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-FYU3aWfi-1583226188635)(C:\Users\skx20\AppData\Roaming\Typora\typora-user-images\image-20200302094014628.png)]"></p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@master mysql]<span class="comment"># pwd</span></span><br><span class="line"><span class="regexp">/root/</span>.helm<span class="regexp">/cache/</span>archive/mysql</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Chart.yaml：</p>
+<p>这个chart包的概要信息</p>
+<p>name 和  version 这两个是必填项，其他可选。</p>
+</blockquote>
+<blockquote>
+<p>README.md</p>
+<p>是这个chart包的一个使用帮助文档</p>
+</blockquote>
+<blockquote>
+<p>templates</p>
+<p>chart包内各种资源对象的模板。</p>
+</blockquote>
+<blockquote>
+<p>values.yaml</p>
+<p>是这个chart包的默认的值，可以被templet内的yaml文件使用。</p>
+</blockquote>
+<h1 id="Helm部署mysql服务："><a href="#Helm部署mysql服务：" class="headerlink" title="Helm部署mysql服务："></a>Helm部署mysql服务：</h1><h2 id="另外两台节点导入包："><a href="#另外两台节点导入包：" class="headerlink" title="另外两台节点导入包："></a>另外两台节点导入包：</h2><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@node01</span> ~]<span class="meta"># docker load &lt; mysql-5.7.14.tar </span></span><br><span class="line">[root<span class="symbol">@node01</span> ~]<span class="meta"># docker load &lt; mysql-5.7.15.tar </span></span><br><span class="line">[root<span class="symbol">@node02</span> ~]<span class="meta"># docker load &lt; mysql-5.7.14.tar</span></span><br><span class="line">[root<span class="symbol">@node02</span> ~]<span class="meta"># docker load &lt; mysql-5.7.15.tar </span></span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@node01 ~]<span class="comment"># docker images</span></span><br><span class="line">REPOSITORY                      <span class="keyword">TAG</span>                 <span class="title">IMAGE</span> ID            CREATED             SIZE</span><br><span class="line">mysql                           <span class="number">5.7</span>.<span class="number">15</span>              <span class="number">18</span>f13d72f7f0        <span class="number">3</span> years ago         <span class="number">383M</span>B</span><br><span class="line">mysql                           <span class="number">5.7</span>.<span class="number">14</span>              <span class="number">4</span>b3b6b994512        <span class="number">3</span> years ago         <span class="number">385M</span>B</span><br></pre></td></tr></table></figure>
+<h2 id="删除之前失败的："><a href="#删除之前失败的：" class="headerlink" title="删除之前失败的："></a>删除之前失败的：</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># helm delete mysql --purge </span></span><br><span class="line">release <span class="string">&quot;mysql&quot;</span> deleted</span><br></pre></td></tr></table></figure>
+<h2 id="安装nfs工具："><a href="#安装nfs工具：" class="headerlink" title="安装nfs工具："></a>安装nfs工具：</h2><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@master</span> archive]<span class="meta"># yum -y install rpcbind nfs-utils</span></span><br><span class="line">[root<span class="symbol">@node01</span> ~]<span class="meta"># yum -y install rpcbind nfs-utils</span></span><br><span class="line">[root<span class="symbol">@node02</span> ~]<span class="meta"># yum -y install rpcbind nfs-utils</span></span><br></pre></td></tr></table></figure>
+<h2 id="设置nfs："><a href="#设置nfs：" class="headerlink" title="设置nfs："></a>设置nfs：</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># mkdir /data</span></span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># vim /etc/exports</span></span><br><span class="line">/data *(rw,sync,no_root_squash)</span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># systemctl restart rpcbind</span></span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># systemctl restart nfs-server</span></span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># showmount -e</span></span><br><span class="line">Export list for <span class="literal">master</span>:</span><br><span class="line">/data *</span><br></pre></td></tr></table></figure>
+<h2 id="导入nfs-pv1-yml文件并更改："><a href="#导入nfs-pv1-yml文件并更改：" class="headerlink" title="导入nfs-pv1.yml文件并更改："></a>导入nfs-pv1.yml文件并更改：</h2><figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@master archive]<span class="meta"># vim nfs-pv1.yml </span></span><br><span class="line"><span class="symbol">apiVersion:</span> v1</span><br><span class="line"><span class="symbol">kind:</span> PersistentVolume</span><br><span class="line"><span class="symbol">metadata:</span></span><br><span class="line"><span class="symbol">  name:</span> mysqlpv</span><br><span class="line"><span class="symbol">spec:</span></span><br><span class="line"><span class="symbol">  capacity:</span></span><br><span class="line"><span class="symbol">    storage:</span> <span class="number">8</span>Gi</span><br><span class="line"><span class="symbol">  accessModes:</span></span><br><span class="line">    - ReadWriteOnce</span><br><span class="line"><span class="symbol">  persistentVolumeReclaimPolicy:</span> Recycle</span><br><span class="line"><span class="symbol">  nfs:</span></span><br><span class="line"><span class="symbol">    path:</span> <span class="meta-keyword">/data/</span>mysqlpv</span><br><span class="line"><span class="symbol">    server:</span> <span class="number">192.168</span><span class="number">.1</span><span class="number">.10</span></span><br></pre></td></tr></table></figure>
+<h2 id="生成PV"><a href="#生成PV" class="headerlink" title="生成PV:"></a>生成PV:</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># kubectl apply -f nfs-pv1.yml </span></span><br><span class="line">persistentvolume/mysqlpv created</span><br></pre></td></tr></table></figure>
+<h2 id="查看PV："><a href="#查看PV：" class="headerlink" title="查看PV："></a>查看PV：</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># kubectl get pv</span></span><br><span class="line">NAME      CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE</span><br><span class="line">mysqlpv   <span class="number">8</span>Gi        RWO            Recycle          Available                                   <span class="number">4s</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># mkdir /data/mysqlpv</span></span><br></pre></td></tr></table></figure>
+<h2 id="在Charts缓存目录下下载chart镜像"><a href="#在Charts缓存目录下下载chart镜像" class="headerlink" title="在Charts缓存目录下下载chart镜像:"></a>在Charts缓存目录下下载chart镜像:</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# cd</span> .helm/cache/archive/</span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># helm fetch stable/mysql</span></span><br></pre></td></tr></table></figure>
+<h2 id="解压一下："><a href="#解压一下：" class="headerlink" title="解压一下："></a>解压一下：</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># tar -zxvf mysql-0.3.5.tgz </span></span><br></pre></td></tr></table></figure>
+<h2 id="进到解压后的目录下生成："><a href="#进到解压后的目录下生成：" class="headerlink" title="进到解压后的目录下生成："></a>进到解压后的目录下生成：</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">archive</span>]<span class="comment"># cd mysql/</span></span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">mysql</span>]<span class="comment"># helm install stable/mysql -n bdqn-mysql --set mysqlRootPassword=123.com</span></span><br></pre></td></tr></table></figure>
+<h2 id="查看一下："><a href="#查看一下：" class="headerlink" title="查看一下："></a>查看一下：</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mysql</span>]<span class="comment"># kubectl get pod</span></span><br><span class="line">NAME                               READY   STATUS    RESTARTS   AGE</span><br><span class="line">bdqn-mysql-mysql-<span class="number">7</span>b89c7b99-vdsdh   <span class="number">1</span>/<span class="number">1</span>     Running   <span class="number">0</span>          <span class="number">37s</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mysql</span>]<span class="comment"># kubectl get pvc</span></span><br><span class="line">NAME               STATUS   VOLUME    CAPACITY   ACCESS MODES   STORAGECLASS   AGE</span><br><span class="line">bdqn-mysql-mysql   Bound    mysqlpv   <span class="number">8</span>Gi        RWO                           <span class="number">108s</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mysql</span>]<span class="comment"># kubectl get deployments.</span></span><br><span class="line">NAME               READY   UP-TO-<span class="keyword">DATE</span>   AVAILABLE   AGE</span><br><span class="line">bdqn-mysql-mysql   <span class="number">1</span>/<span class="number">1</span>     <span class="number">1</span>            <span class="number">1</span>           <span class="number">2m</span>8s</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@master mysql]# kubectl <span class="builtin-name">get</span><span class="built_in"> secret </span>--namespace<span class="built_in"> default </span>bdqn-mysql-mysql -o <span class="attribute">jsonpath</span>=<span class="string">&quot;&#123;.data.mysql-root-password&#125;&quot;</span> | base64 --decode; echo</span><br><span class="line">123.com</span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@master mysql]# kubectl <span class="keyword">get</span> svc</span><br><span class="line"><span class="type">NAME</span>               <span class="keyword">TYPE</span>        <span class="keyword">CLUSTER</span>-IP      <span class="keyword">EXTERNAL</span>-IP   PORT(S)    AGE</span><br><span class="line">bdqn-mysql-mysql   ClusterIP   <span class="number">10.96</span><span class="number">.144</span><span class="number">.166</span>   &lt;<span class="keyword">none</span>&gt;        <span class="number">3306</span>/TCP   <span class="number">12</span>m</span><br><span class="line">kubernetes         ClusterIP   <span class="number">10.96</span><span class="number">.0</span><span class="number">.1</span>       &lt;<span class="keyword">none</span>&gt;        <span class="number">443</span>/TCP    <span class="number">24</span>d</span><br></pre></td></tr></table></figure>
+<h2 id="进入mysql"><a href="#进入mysql" class="headerlink" title="进入mysql:"></a>进入mysql:</h2><figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@master mysql]# kubectl exec -it bdqn-mysql-mysql-7b89c7b99-vdsdh -- mysql -u root -p123.com</span><br><span class="line">mysql&gt; show databases;</span><br><span class="line"><span class="code">+--------------------+</span></span><br><span class="line">| Database           |</span><br><span class="line"><span class="code">+--------------------+</span></span><br><span class="line">| information_schema |</span><br><span class="line">| mysql              |</span><br><span class="line">| performance_schema |</span><br><span class="line">| sys                |</span><br><span class="line"><span class="code">+--------------------+</span></span><br><span class="line">4 rows in set (0.02 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; exit</span><br><span class="line">Bye</span><br></pre></td></tr></table></figure>
+<h1 id="再部署mysql的时候，如何开启storageclass，以及如何使用？"><a href="#再部署mysql的时候，如何开启storageclass，以及如何使用？" class="headerlink" title="再部署mysql的时候，如何开启storageclass，以及如何使用？"></a>再部署mysql的时候，如何开启storageclass，以及如何使用？</h1><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mysql</span>]<span class="comment"># vim values.yaml</span></span><br><span class="line">更改第<span class="number">55</span>行：</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200303170640894.png" alt="[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-u8Q3koOc-1583226188635)(C:\Users\skx20\AppData\Roaming\Typora\typora-user-images\image-20200302165308265.png)]"></p>
+<h2 id="基于nfs，创建sc。"><a href="#基于nfs，创建sc。" class="headerlink" title="基于nfs，创建sc。"></a>基于nfs，创建sc。</h2><h2 id="创建rbac权限："><a href="#创建rbac权限：" class="headerlink" title="创建rbac权限："></a>创建rbac权限：</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">root@master</span> <span class="string">mysql</span>]<span class="comment"># vim rbac-rolebind.yaml</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Namespace</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">bdqn-test</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nfs-provisioner</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">bdqn-test</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterRole</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nfs-provisioner-runner</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">bdqn-test</span></span><br><span class="line"><span class="attr">rules:</span></span><br><span class="line">   <span class="bullet">-</span>  <span class="attr">apiGroups:</span> [<span class="string">&quot;&quot;</span>]</span><br><span class="line">      <span class="attr">resources:</span> [<span class="string">&quot;persistentvolumes&quot;</span>]</span><br><span class="line">      <span class="attr">verbs:</span> [<span class="string">&quot;get&quot;</span>, <span class="string">&quot;list&quot;</span>, <span class="string">&quot;watch&quot;</span>, <span class="string">&quot;create&quot;</span>, <span class="string">&quot;delete&quot;</span>]</span><br><span class="line">   <span class="bullet">-</span>  <span class="attr">apiGroups:</span> [<span class="string">&quot;&quot;</span>]</span><br><span class="line">      <span class="attr">resources:</span> [<span class="string">&quot;persistentvolumeclaims&quot;</span>]</span><br><span class="line">      <span class="attr">verbs:</span> [<span class="string">&quot;get&quot;</span>, <span class="string">&quot;list&quot;</span>, <span class="string">&quot;watch&quot;</span>, <span class="string">&quot;update&quot;</span>]</span><br><span class="line">   <span class="bullet">-</span>  <span class="attr">apiGroups:</span> [<span class="string">&quot;storage.k8s.io&quot;</span>]</span><br><span class="line">      <span class="attr">resources:</span> [<span class="string">&quot;storageclasses&quot;</span>]</span><br><span class="line">      <span class="attr">verbs:</span> [<span class="string">&quot;get&quot;</span>, <span class="string">&quot;list&quot;</span>, <span class="string">&quot;watch&quot;</span>]</span><br><span class="line">   <span class="bullet">-</span>  <span class="attr">apiGroups:</span> [<span class="string">&quot;&quot;</span>]</span><br><span class="line">      <span class="attr">resources:</span> [<span class="string">&quot;events&quot;</span>]</span><br><span class="line">      <span class="attr">verbs:</span> [<span class="string">&quot;watch&quot;</span>, <span class="string">&quot;create&quot;</span>, <span class="string">&quot;update&quot;</span>, <span class="string">&quot;patch&quot;</span>]</span><br><span class="line">   <span class="bullet">-</span>  <span class="attr">apiGroups:</span> [<span class="string">&quot;&quot;</span>]</span><br><span class="line">      <span class="attr">resources:</span> [<span class="string">&quot;services&quot;</span>, <span class="string">&quot;endpoints&quot;</span>]</span><br><span class="line">      <span class="attr">verbs:</span> [<span class="string">&quot;get&quot;</span>,<span class="string">&quot;create&quot;</span>,<span class="string">&quot;list&quot;</span>, <span class="string">&quot;watch&quot;</span>,<span class="string">&quot;update&quot;</span>]</span><br><span class="line">   <span class="bullet">-</span>  <span class="attr">apiGroups:</span> [<span class="string">&quot;extensions&quot;</span>]</span><br><span class="line">      <span class="attr">resources:</span> [<span class="string">&quot;podsecuritypolicies&quot;</span>]</span><br><span class="line">      <span class="attr">resourceNames:</span> [<span class="string">&quot;nfs-provisioner&quot;</span>]</span><br><span class="line">      <span class="attr">verbs:</span> [<span class="string">&quot;use&quot;</span>]</span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterRoleBinding</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">run-nfs-provisioner</span></span><br><span class="line"><span class="attr">subjects:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">nfs-provisioner</span></span><br><span class="line">    <span class="attr">namespace:</span> <span class="string">bdqn-test</span></span><br><span class="line"><span class="attr">roleRef:</span></span><br><span class="line">  <span class="attr">kind:</span> <span class="string">ClusterRole</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nfs-provisioner-runner</span></span><br><span class="line">  <span class="attr">apiGroup:</span> <span class="string">rbac.authorization.k8s.io</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="执行一下："><a href="#执行一下：" class="headerlink" title="执行一下："></a>执行一下：</h2><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[root@master mysql]</span># <span class="selector-tag">kubectl</span>  <span class="selector-tag">apply</span>  <span class="selector-tag">-f</span> <span class="selector-tag">rbac-rolebind</span><span class="selector-class">.yaml</span> </span><br><span class="line"><span class="selector-tag">namespace</span>/<span class="selector-tag">bdqn-test</span> <span class="selector-tag">created</span></span><br><span class="line"><span class="selector-tag">serviceaccount</span>/<span class="selector-tag">nfs-provisioner</span> <span class="selector-tag">created</span></span><br><span class="line"><span class="selector-tag">clusterrole</span><span class="selector-class">.rbac</span><span class="selector-class">.authorization</span><span class="selector-class">.k8s</span><span class="selector-class">.io</span>/<span class="selector-tag">nfs-provisioner-runner</span> <span class="selector-tag">created</span></span><br><span class="line"><span class="selector-tag">clusterrolebinding</span><span class="selector-class">.rbac</span><span class="selector-class">.authorization</span><span class="selector-class">.k8s</span><span class="selector-class">.io</span>/<span class="selector-tag">run-nfs-provisioner</span> <span class="selector-tag">created</span></span><br></pre></td></tr></table></figure>
+<h2 id="基于deployment资源，创建，-nfs-client-provisioner"><a href="#基于deployment资源，创建，-nfs-client-provisioner" class="headerlink" title="基于deployment资源，创建， nfs-client-provisioner"></a>基于deployment资源，创建， nfs-client-provisioner</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">root@master</span> <span class="string">mysql</span>]<span class="comment"># vim deployment.yaml</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">extensions/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nfs-client-provisioner</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">bdqn-test</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">3</span></span><br><span class="line">  <span class="attr">strategy:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">Recreate</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">nfs-client-provisioner</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">serviceAccount:</span> <span class="string">nfs-provisioner</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nfs-client-provisioner</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">registry.cn-hangzhou.aliyuncs.com/open-ali/nfs-client-provisioner</span></span><br><span class="line">          <span class="attr">volumeMounts:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nfs-client-root</span></span><br><span class="line">              <span class="attr">mountPath:</span>  <span class="string">/persistentvolumes</span></span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">PROVISIONER_NAME</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">bdqn-test</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">NFS_SERVER</span></span><br><span class="line">              <span class="attr">value:</span> <span class="number">192.168</span><span class="number">.1</span><span class="number">.10</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">NFS_PATH</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">/data</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nfs-client-root</span></span><br><span class="line">          <span class="attr">nfs:</span></span><br><span class="line">            <span class="attr">server:</span> <span class="number">192.168</span><span class="number">.1</span><span class="number">.10</span></span><br><span class="line">            <span class="attr">path:</span> <span class="string">/data</span></span><br></pre></td></tr></table></figure>
+<h2 id="执行一下：-1"><a href="#执行一下：-1" class="headerlink" title="执行一下："></a>执行一下：</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mysql</span>]<span class="comment"># kubectl apply -f deployment.yaml </span></span><br><span class="line">deployment.extensions/nfs-client-provisioner created</span><br></pre></td></tr></table></figure>
+<h2 id="创建storageClass："><a href="#创建storageClass：" class="headerlink" title="创建storageClass："></a>创建storageClass：</h2><figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@master mysql]<span class="meta"># vim  bdqn-storageclass.yaml</span></span><br><span class="line"><span class="symbol">apiVersion:</span> storage.k8s.io/v1</span><br><span class="line"><span class="symbol">kind:</span> StorageClass</span><br><span class="line"><span class="symbol">metadata:</span></span><br><span class="line"><span class="symbol">  name:</span> mysql-sc</span><br><span class="line"><span class="symbol">  namespace:</span> bdqn-test</span><br><span class="line"><span class="symbol">provisioner:</span> bdqn-test</span><br><span class="line"><span class="symbol">reclaimPolicy:</span> Retain</span><br></pre></td></tr></table></figure>
+<h2 id="执行一下：-2"><a href="#执行一下：-2" class="headerlink" title="执行一下："></a>执行一下：</h2><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[root@master mysql]</span># <span class="selector-tag">kubectl</span> <span class="selector-tag">apply</span> <span class="selector-tag">-f</span> <span class="selector-tag">bdqn-storageclass</span><span class="selector-class">.yaml</span> </span><br><span class="line"><span class="selector-tag">storageclass</span><span class="selector-class">.storage</span><span class="selector-class">.k8s</span><span class="selector-class">.io</span>/<span class="selector-tag">mysql-sc</span> <span class="selector-tag">created</span></span><br></pre></td></tr></table></figure>
+<h2 id="查看："><a href="#查看：" class="headerlink" title="查看："></a>查看：</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mysql</span>]<span class="comment"># kubectl get pod</span></span><br><span class="line">NAME                               READY   STATUS    RESTARTS   AGE</span><br><span class="line">bdqn-mysql-mysql-<span class="number">7</span>b89c7b99-nqclx   <span class="number">1</span>/<span class="number">1</span>     Running   <span class="number">0</span>          <span class="number">59m</span></span><br></pre></td></tr></table></figure>
+<p>成功</p>
+<h1 id="如果想将service资源对象的类型更改为NodPort，又应该怎么做？"><a href="#如果想将service资源对象的类型更改为NodPort，又应该怎么做？" class="headerlink" title="如果想将service资源对象的类型更改为NodPort，又应该怎么做？"></a>如果想将service资源对象的类型更改为NodPort，又应该怎么做？</h1><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mysql</span>]<span class="comment"># helm delete bdqn-mysql --purge </span></span><br><span class="line">release <span class="string">&quot;bdqn-mysql&quot;</span> deleted</span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mysql</span>]<span class="comment"># kubectl get pv</span></span><br><span class="line">NAME      CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE</span><br><span class="line">mysqlpv   <span class="number">8</span>Gi        RWO            Recycle          Available                                   <span class="number">37m</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mysql</span>]<span class="comment"># helm fetch stable/mysql</span></span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">mysql</span>]<span class="comment"># tar -zxvf mysql-0.3.5.tgz</span></span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">mysql</span>]<span class="comment"># cd mysql/</span></span><br><span class="line">[root@<span class="keyword">master</span> <span class="title">mysql</span>]<span class="comment"># vim values.yaml</span></span><br><span class="line">更改第<span class="number">79</span>行</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200303170710607.png" alt="[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-9Zq2QQcd-1583226188636)(C:\Users\skx20\AppData\Roaming\Typora\typora-user-images\image-20200302163815475.png)]"></p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mysql</span>]<span class="comment"># helm install stable/mysql -n bdqn-mysql --set mysqlRootPassword=123.com -f values.yaml</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200303170729858.png" alt="[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-v4pxcM5H-1583226188636)(C:\Users\skx20\AppData\Roaming\Typora\typora-user-images\image-20200302164121231.png)]"></p>
+<h1 id="服务的升级"><a href="#服务的升级" class="headerlink" title="服务的升级"></a>服务的升级</h1><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mysql</span>]<span class="comment"># helm list </span></span><br><span class="line">NAME      	REVISION	UPDATED                 	STATUS  	CHART      	APP <span class="keyword">VERSION</span>   NAMESPACE</span><br><span class="line">bdqn-mysql	<span class="number">1</span>       	Mon Mar  <span class="number">2</span> <span class="number">16</span>:<span class="number">40</span>:<span class="number">35</span> <span class="number">2020</span>	DEPLOYED	mysql-<span class="number">0.3</span>.<span class="number">5</span>	              default  </span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mysql</span>]<span class="comment"># vim values.yaml </span></span><br><span class="line"><span class="number">55</span>行注释掉：</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200303170742657.png" alt="[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-YqIYQ6jv-1583226188637)(C:\Users\skx20\AppData\Roaming\Typora\typora-user-images\image-20200302174918886.png)]"></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@master mysql]# helm<span class="built_in"> upgrade </span>--<span class="builtin-name">set</span> <span class="attribute">imageTag</span>=5.7.15 bdqn-mysql stable/mysql -f values.yaml</span><br></pre></td></tr></table></figure>
+<p>确认一下：</p>
+<p><img src="https://img-blog.csdnimg.cn/20200303170751885.png" alt="[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-AtjatOTD-1583226188637)(C:\Users\skx20\AppData\Roaming\Typora\typora-user-images\image-20200302175122414.png)]"></p>
+<h1 id="服务的回滚"><a href="#服务的回滚" class="headerlink" title="服务的回滚"></a>服务的回滚</h1><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[root@master mysql]</span># <span class="selector-tag">helm</span> <span class="selector-tag">history</span> <span class="selector-tag">bdqn-mysql</span></span><br><span class="line"><span class="selector-tag">REVISION</span>	<span class="selector-tag">UPDATED</span>                 	<span class="selector-tag">STATUS</span>    	<span class="selector-tag">CHART</span>      	<span class="selector-tag">DESCRIPTION</span>     </span><br><span class="line">1       	<span class="selector-tag">Mon</span> <span class="selector-tag">Mar</span>  2 16<span class="selector-pseudo">:40</span><span class="selector-pseudo">:35</span> 2020	<span class="selector-tag">SUPERSEDED</span>	<span class="selector-tag">mysql-0</span>.3.5	<span class="selector-tag">Install</span> <span class="selector-tag">complete</span></span><br><span class="line">2       	<span class="selector-tag">Mon</span> <span class="selector-tag">Mar</span>  2 17<span class="selector-pseudo">:50</span><span class="selector-pseudo">:01</span> 2020	<span class="selector-tag">DEPLOYED</span>  	<span class="selector-tag">mysql-0</span>.3.5	<span class="selector-tag">Upgrade</span> <span class="selector-tag">complete</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">mysql</span>]<span class="comment"># helm rollback bdqn-mysql 1</span></span><br><span class="line">Rollback was a success.</span><br></pre></td></tr></table></figure>
+<p>确认一下：<br><img src="https://img-blog.csdnimg.cn/20200303170808797.png" alt="在这里插入图片描述"></p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="阿怪 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="阿怪 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿怪
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://aguai.fun/2020/03/03/Helm%E5%85%A5%E9%97%A8/" title="Helm入门">https://aguai.fun/2020/03/03/Helm入门/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+  
+</div>
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/k8s/" rel="tag"># k8s</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/29/Ingress%E5%8E%9F%E7%90%86%E5%8F%8A%E9%85%8D%E7%BD%AE/" rel="prev" title="Ingress原理及配置">
+      <i class="fa fa-chevron-left"></i> Ingress原理及配置
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/04/%E8%87%AA%E5%AE%9A%E4%B9%89Helm%E6%A8%A1%E6%9D%BF/" rel="next" title="自定义Helm模板">
+      自定义Helm模板 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Helm%E6%90%AD%E5%BB%BA%EF%BC%9A"><span class="nav-text">Helm搭建：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%EF%BC%9A"><span class="nav-text">概念：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%85%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%EF%BC%9A"><span class="nav-text">包管理工具：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Charts%EF%BC%9A%E6%98%AF%E4%B8%80%E4%B8%AAHelm%E7%9A%84%E7%A8%8B%E5%BA%8F%E5%8C%85%EF%BC%8C%E5%AE%83%E5%8C%85%E5%90%AB%E4%BA%86%E8%BF%90%E8%A1%8C%E4%B8%80%E4%B8%AAkubernets%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E6%89%80%E9%9C%80%E8%A6%81%E7%9A%84%E9%95%9C%E5%83%8F%E3%80%81%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB%E5%92%8C%E8%B5%84%E6%BA%90%E5%AE%9A%E4%B9%89%E7%AD%89%E3%80%82"><span class="nav-text">Charts：是一个Helm的程序包，它包含了运行一个kubernets应用程序所需要的镜像、依赖关系和资源定义等。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Release%EF%BC%9A%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8CCharts%E4%B9%8B%E5%90%8E%EF%BC%8C%E5%BE%97%E5%88%B0%E7%9A%84%E4%B8%80%E4%B8%AA%E5%AE%9E%E4%BE%8B%E3%80%82"><span class="nav-text">Release：应用程序运行Charts之后，得到的一个实例。</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%EF%BC%9A"><span class="nav-text">命令：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AA%E5%AE%9E%E4%BE%8B%EF%BC%9Ahelm-install-charts-n-Release%E5%90%8D%E7%A7%B0%E3%80%82"><span class="nav-text">部署一个实例：helm install + charts -n Release名称。</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E5%85%B3%E4%BA%8ERelease%E7%9A%84%E6%8F%8F%E8%BF%B0%E3%80%82"><span class="nav-text">1、关于Release的描述。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81%E5%85%B3%E4%BA%8E%E8%BF%99%E4%B8%AARelease%E8%B5%84%E6%BA%90%E7%9A%84%E6%8F%8F%E8%BF%B0%E3%80%82"><span class="nav-text">2、关于这个Release资源的描述。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%E3%80%81%E6%80%8E%E4%B9%88%E4%BD%BF%E7%94%A8%E7%9C%9F%E4%B8%AARelease%E3%80%82"><span class="nav-text">3、怎么使用真个Release。</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%EF%BC%9AHelm%E9%83%A8%E7%BD%B2%E5%AE%89%E8%A3%85%E4%B8%80%E4%B8%AAMysql%E6%9C%8D%E5%8A%A1"><span class="nav-text">参考：Helm部署安装一个Mysql服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Helm%E9%83%A8%E7%BD%B2mysql%E6%9C%8D%E5%8A%A1%EF%BC%9A"><span class="nav-text">Helm部署mysql服务：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%A6%E5%A4%96%E4%B8%A4%E5%8F%B0%E8%8A%82%E7%82%B9%E5%AF%BC%E5%85%A5%E5%8C%85%EF%BC%9A"><span class="nav-text">另外两台节点导入包：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E4%B9%8B%E5%89%8D%E5%A4%B1%E8%B4%A5%E7%9A%84%EF%BC%9A"><span class="nav-text">删除之前失败的：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85nfs%E5%B7%A5%E5%85%B7%EF%BC%9A"><span class="nav-text">安装nfs工具：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AEnfs%EF%BC%9A"><span class="nav-text">设置nfs：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%BC%E5%85%A5nfs-pv1-yml%E6%96%87%E4%BB%B6%E5%B9%B6%E6%9B%B4%E6%94%B9%EF%BC%9A"><span class="nav-text">导入nfs-pv1.yml文件并更改：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90PV"><span class="nav-text">生成PV:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8BPV%EF%BC%9A"><span class="nav-text">查看PV：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8Charts%E7%BC%93%E5%AD%98%E7%9B%AE%E5%BD%95%E4%B8%8B%E4%B8%8B%E8%BD%BDchart%E9%95%9C%E5%83%8F"><span class="nav-text">在Charts缓存目录下下载chart镜像:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%8E%8B%E4%B8%80%E4%B8%8B%EF%BC%9A"><span class="nav-text">解压一下：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E5%88%B0%E8%A7%A3%E5%8E%8B%E5%90%8E%E7%9A%84%E7%9B%AE%E5%BD%95%E4%B8%8B%E7%94%9F%E6%88%90%EF%BC%9A"><span class="nav-text">进到解压后的目录下生成：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E4%B8%80%E4%B8%8B%EF%BC%9A"><span class="nav-text">查看一下：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E5%85%A5mysql"><span class="nav-text">进入mysql:</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%8D%E9%83%A8%E7%BD%B2mysql%E7%9A%84%E6%97%B6%E5%80%99%EF%BC%8C%E5%A6%82%E4%BD%95%E5%BC%80%E5%90%AFstorageclass%EF%BC%8C%E4%BB%A5%E5%8F%8A%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%EF%BC%9F"><span class="nav-text">再部署mysql的时候，如何开启storageclass，以及如何使用？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8Enfs%EF%BC%8C%E5%88%9B%E5%BB%BAsc%E3%80%82"><span class="nav-text">基于nfs，创建sc。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BArbac%E6%9D%83%E9%99%90%EF%BC%9A"><span class="nav-text">创建rbac权限：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E4%B8%80%E4%B8%8B%EF%BC%9A"><span class="nav-text">执行一下：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8Edeployment%E8%B5%84%E6%BA%90%EF%BC%8C%E5%88%9B%E5%BB%BA%EF%BC%8C-nfs-client-provisioner"><span class="nav-text">基于deployment资源，创建， nfs-client-provisioner</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E4%B8%80%E4%B8%8B%EF%BC%9A-1"><span class="nav-text">执行一下：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAstorageClass%EF%BC%9A"><span class="nav-text">创建storageClass：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E4%B8%80%E4%B8%8B%EF%BC%9A-2"><span class="nav-text">执行一下：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%EF%BC%9A"><span class="nav-text">查看：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E6%9E%9C%E6%83%B3%E5%B0%86service%E8%B5%84%E6%BA%90%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%B1%BB%E5%9E%8B%E6%9B%B4%E6%94%B9%E4%B8%BANodPort%EF%BC%8C%E5%8F%88%E5%BA%94%E8%AF%A5%E6%80%8E%E4%B9%88%E5%81%9A%EF%BC%9F"><span class="nav-text">如果想将service资源对象的类型更改为NodPort，又应该怎么做？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8D%87%E7%BA%A7"><span class="nav-text">服务的升级</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%9B%9E%E6%BB%9A"><span class="nav-text">服务的回滚</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="阿怪"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">阿怪</p>
+  <div class="site-description" itemprop="description">直到这一刻微笑着说话为止，我至少留下了一公升眼泪</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">103</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/a_guai_" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;a_guai_" rel="noopener" target="_blank"><i class="crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="阿怪"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">博客</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">574k</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/clicklove.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
+

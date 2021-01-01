@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"aguai.fun","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offalse":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python列表简介">
+<meta property="og:url" content="https://aguai.fun/2020/03/11/Python%E5%88%97%E8%A1%A8%E7%AE%80%E4%BB%8B/index.html">
+<meta property="og:site_name" content="阿怪の博客">
+<meta property="og:description" content="Python">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200311125448198.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200311125509101.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200311125521203.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200311125532722.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200311125543731.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2020031112555473.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2020031112560476.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2020031112561295.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200311125621234.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/202003111256312.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200311125641359.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2020031112565194.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200311125700651.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200311125709816.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200311125726104.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200311125754778.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="article:published_time" content="2020-03-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-03-11T05:00:10.003Z">
+<meta property="article:author" content="阿怪">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200311125448198.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+
+<link rel="canonical" href="https://aguai.fun/2020/03/11/Python%E5%88%97%E8%A1%A8%E7%AE%80%E4%BB%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Python列表简介 | 阿怪の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿怪の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">103</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://aguai.fun/2020/03/11/Python%E5%88%97%E8%A1%A8%E7%AE%80%E4%BB%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="阿怪">
+      <meta itemprop="description" content="直到这一刻微笑着说话为止，我至少留下了一公升眼泪">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿怪の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Python列表简介
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-03-11 00:00:00 / 修改时间：13:00:10" itemprop="dateCreated datePublished" datetime="2020-03-11T00:00:00+08:00">2020-03-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.2k</span>
+            </span>
+            <div class="post-description">Python</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Python列表简介"><a href="#Python列表简介" class="headerlink" title="Python列表简介"></a>Python列表简介</h1><h2 id="什么是列表"><a href="#什么是列表" class="headerlink" title="什么是列表"></a>什么是列表</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#普通的变量定义形式</span></span><br><span class="line">tom =<span class="string">&#x27;Tom&#x27;</span></span><br><span class="line">jack =<span class="string">&#x27;Jack&#x27;</span></span><br><span class="line">john =<span class="string">&#x27;John&#x27;</span></span><br><span class="line"></span><br><span class="line">pet1 =<span class="string">&#x27;cat&#x27;</span></span><br><span class="line">pet2 =<span class="string">&#x27;dog&#x27;</span></span><br><span class="line">pet3 =<span class="string">&#x27;bird&#x27;</span></span><br><span class="line"><span class="comment">#定义列表</span></span><br><span class="line">name =[<span class="string">&#x27;Tom&#x27;</span>,<span class="string">&#x27;Jack&#x27;</span>,<span class="string">&#x27;John&#x27;</span>]</span><br><span class="line">pet =[<span class="string">&#x27;cat&#x27;</span>,<span class="string">&#x27;dog&#x27;</span>,<span class="string">&#x27;brid&#x27;</span>]</span><br><span class="line"><span class="comment">#打印列表</span></span><br><span class="line"><span class="builtin-name">print</span>(name)</span><br><span class="line"><span class="builtin-name">print</span>(pet)</span><br></pre></td></tr></table></figure>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">&#x27;Tom</span>&#x27;, <span class="symbol">&#x27;Jack</span>&#x27;, <span class="symbol">&#x27;John</span>&#x27;]</span><br><span class="line">[<span class="symbol">&#x27;cat</span>&#x27;, <span class="symbol">&#x27;dog</span>&#x27;, <span class="symbol">&#x27;brid</span>&#x27;]</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200311125448198.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<blockquote>
+<p>通过索引读取列表中的元素，索引从0开始，-1代表最后一个元素</p>
+</blockquote>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">print</span><span class="params">(name[<span class="number">0</span>])</span></span></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(pet[<span class="number">2</span>])</span></span></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(name[-<span class="number">1</span>])</span></span></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(pet[-<span class="number">2</span>])</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Tom</span><br><span class="line"><span class="keyword">brid</span></span><br><span class="line"><span class="keyword">John</span></span><br><span class="line"><span class="keyword">dog</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200311125509101.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="列表操作"><a href="#列表操作" class="headerlink" title="列表操作"></a>列表操作</h2><h3 id="通过索引获取元素进行修改"><a href="#通过索引获取元素进行修改" class="headerlink" title="通过索引获取元素进行修改"></a>通过索引获取元素进行修改</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#修改列表的元素</span></span><br><span class="line">name[1]=<span class="string">&#x27;Sean&#x27;</span></span><br><span class="line"><span class="builtin-name">print</span>(name)</span><br></pre></td></tr></table></figure>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">&#x27;Tom</span>&#x27;, <span class="symbol">&#x27;Sean</span>&#x27;, <span class="symbol">&#x27;John</span>&#x27;]</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200311125521203.png" alt="在这里插入图片描述"></p>
+<h3 id="添加"><a href="#添加" class="headerlink" title="添加"></a>添加</h3><h4 id="在列表末尾添加append"><a href="#在列表末尾添加append" class="headerlink" title="在列表末尾添加append()"></a>在列表末尾添加append()</h4><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#在列表末尾添加新元素</span></span><br><span class="line"></span><br><span class="line">name.append(<span class="string">&#x27;Bob&#x27;</span>)</span><br><span class="line"><span class="builtin-name">print</span>(name)</span><br></pre></td></tr></table></figure>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">&#x27;Tom</span>&#x27;, <span class="symbol">&#x27;Sean</span>&#x27;, <span class="symbol">&#x27;John</span>&#x27;, <span class="symbol">&#x27;Bob</span>&#x27;]</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200311125532722.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h4 id="在列表指定位置插入insert"><a href="#在列表指定位置插入insert" class="headerlink" title="在列表指定位置插入insert()"></a>在列表指定位置插入insert()</h4><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#在列表指定位置插入</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(pet)</span></span></span><br><span class="line">pet.insert(<span class="number">0</span>,<span class="string">&#x27;penguin&#x27;</span>)</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(pet)</span></span></span><br><span class="line">pet.insert(-<span class="number">2</span>,<span class="string">&#x27;pig&#x27;</span>)</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(pet)</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">&#x27;penguin</span>&#x27;, <span class="symbol">&#x27;cat</span>&#x27;, <span class="symbol">&#x27;pig</span>&#x27;, <span class="symbol">&#x27;dog</span>&#x27;, <span class="symbol">&#x27;brid</span>&#x27;]</span><br><span class="line">[<span class="symbol">&#x27;penguin</span>&#x27;, <span class="symbol">&#x27;penguin</span>&#x27;, <span class="symbol">&#x27;cat</span>&#x27;, <span class="symbol">&#x27;pig</span>&#x27;, <span class="symbol">&#x27;dog</span>&#x27;, <span class="symbol">&#x27;brid</span>&#x27;]</span><br><span class="line">[<span class="symbol">&#x27;penguin</span>&#x27;, <span class="symbol">&#x27;penguin</span>&#x27;, <span class="symbol">&#x27;cat</span>&#x27;, <span class="symbol">&#x27;pig</span>&#x27;, <span class="symbol">&#x27;pig</span>&#x27;, <span class="symbol">&#x27;dog</span>&#x27;, <span class="symbol">&#x27;brid</span>&#x27;]</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200311125543731.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h3 id="从列表中删除元素"><a href="#从列表中删除元素" class="headerlink" title="从列表中删除元素"></a>从列表中删除元素</h3><p>被删除的元素不可以再进行访问</p>
+<h4 id="根据索引从列表中删除元素del"><a href="#根据索引从列表中删除元素del" class="headerlink" title="根据索引从列表中删除元素del"></a>根据索引从列表中删除元素del</h4><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">print</span><span class="params">(pet)</span></span></span><br><span class="line"><span class="selector-tag">del</span> pet[<span class="number">0</span>]</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(pet)</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">&#x27;penguin</span>&#x27;, <span class="symbol">&#x27;cat</span>&#x27;, <span class="symbol">&#x27;pig</span>&#x27;, <span class="symbol">&#x27;dog</span>&#x27;, <span class="symbol">&#x27;brid</span>&#x27;]</span><br><span class="line">[<span class="symbol">&#x27;cat</span>&#x27;, <span class="symbol">&#x27;pig</span>&#x27;, <span class="symbol">&#x27;dog</span>&#x27;, <span class="symbol">&#x27;brid</span>&#x27;]</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/2020031112555473.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h4 id="删除列表末尾的元素pop"><a href="#删除列表末尾的元素pop" class="headerlink" title="删除列表末尾的元素pop()"></a>删除列表末尾的元素pop()</h4><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">print</span><span class="params">(pet)</span></span></span><br><span class="line">new_pet = pet.pop()</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(new_pet)</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[<span class="string">&#x27;cat&#x27;</span>, <span class="string">&#x27;pig&#x27;</span>, <span class="string">&#x27;dog&#x27;</span>, <span class="string">&#x27;brid&#x27;</span>]</span></span><br><span class="line"><span class="selector-tag">brid</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/2020031112560476.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h4 id="弹出指定位置的元素pop索引"><a href="#弹出指定位置的元素pop索引" class="headerlink" title="弹出指定位置的元素pop索引"></a>弹出指定位置的元素pop索引</h4><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pet.pop(<span class="number">2</span>)</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(pet)</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">&#x27;cat</span>&#x27;, <span class="symbol">&#x27;pig</span>&#x27;]</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/2020031112561295.png" alt="在这里插入图片描述"></p>
+<h4 id="del与pop区别：被删除的元素还能继续使用"><a href="#del与pop区别：被删除的元素还能继续使用" class="headerlink" title="del与pop区别：被删除的元素还能继续使用"></a>del与pop区别：被删除的元素还能继续使用</h4><h3 id="根据元素的值进行删除remove-value"><a href="#根据元素的值进行删除remove-value" class="headerlink" title="根据元素的值进行删除remove(value)"></a>根据元素的值进行删除remove(value)</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#remove 根据值删除元素</span></span><br><span class="line">pet.<span class="builtin-name">remove</span>(<span class="string">&#x27;cat&#x27;</span>)</span><br><span class="line"><span class="builtin-name">print</span>(pet)</span><br></pre></td></tr></table></figure>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">&#x27;pig</span>&#x27;]</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200311125621234.png" alt="在这里插入图片描述"></p>
+<p><img src="https://img-blog.csdnimg.cn/202003111256312.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="列表排序"><a href="#列表排序" class="headerlink" title="列表排序"></a>列表排序</h2><h3 id="sort-永久排序"><a href="#sort-永久排序" class="headerlink" title="sort:永久排序"></a>sort:永久排序</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#定义列表，汽车的品牌</span></span><br><span class="line">brand = [<span class="string">&#x27;aodi&#x27;</span>,<span class="string">&#x27;bmw&#x27;</span>,<span class="string">&#x27;toyota&#x27;</span>,<span class="string">&#x27;byd&#x27;</span>,<span class="string">&#x27;luhu&#x27;</span>]</span><br><span class="line"><span class="builtin-name">print</span>(brand)</span><br><span class="line"></span><br><span class="line"><span class="comment">#排序</span></span><br><span class="line">brand.sort()</span><br><span class="line"><span class="builtin-name">print</span>(brand)</span><br></pre></td></tr></table></figure>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">&#x27;aodi</span>&#x27;, <span class="symbol">&#x27;bmw</span>&#x27;, <span class="symbol">&#x27;toyota</span>&#x27;, <span class="symbol">&#x27;byd</span>&#x27;, <span class="symbol">&#x27;luhu</span>&#x27;]</span><br><span class="line">[<span class="symbol">&#x27;aodi</span>&#x27;, <span class="symbol">&#x27;bmw</span>&#x27;, <span class="symbol">&#x27;byd</span>&#x27;, <span class="symbol">&#x27;luhu</span>&#x27;, <span class="symbol">&#x27;toyota</span>&#x27;]</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200311125641359.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h3 id="sorted-列表-临时排序"><a href="#sorted-列表-临时排序" class="headerlink" title="sorted(列表):临时排序"></a>sorted(列表):临时排序</h3><figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">print</span>(<span class="title">sorted</span>(<span class="variable">brand</span>))</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">&#x27;aodi</span>&#x27;, <span class="symbol">&#x27;bmw</span>&#x27;, <span class="symbol">&#x27;byd</span>&#x27;, <span class="symbol">&#x27;luhu</span>&#x27;, <span class="symbol">&#x27;toyota</span>&#x27;]</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/2020031112565194.png" alt="在这里插入图片描述"></p>
+<h3 id="倒序sort-reverse-True"><a href="#倒序sort-reverse-True" class="headerlink" title="倒序sort(reverse=True)"></a>倒序sort(reverse=True)</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">brand.sort(<span class="attribute">reverse</span>=<span class="literal">True</span>)</span><br><span class="line"><span class="builtin-name">print</span>(brand)</span><br></pre></td></tr></table></figure>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">&#x27;toyota</span>&#x27;, <span class="symbol">&#x27;luhu</span>&#x27;, <span class="symbol">&#x27;byd</span>&#x27;, <span class="symbol">&#x27;bmw</span>&#x27;, <span class="symbol">&#x27;aodi</span>&#x27;]</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200311125700651.png" alt="在这里插入图片描述"></p>
+<h3 id="列表长度：len"><a href="#列表长度：len" class="headerlink" title="列表长度：len()"></a>列表长度：len()</h3><figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">print</span>(<span class="title">len</span>(<span class="variable">brand</span>))</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">5</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200311125709816.png" alt="在这里插入图片描述"></p>
+<h1 id="今日作业："><a href="#今日作业：" class="headerlink" title="今日作业："></a>今日作业：</h1><h2 id="列表练习（一）"><a href="#列表练习（一）" class="headerlink" title="列表练习（一）"></a>列表练习（一）</h2><h3 id="1、定义一个列表，存储5个科目名称"><a href="#1、定义一个列表，存储5个科目名称" class="headerlink" title="1、定义一个列表，存储5个科目名称"></a>1、定义一个列表，存储5个科目名称</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kemu=[<span class="string">&#x27;语文&#x27;</span>,<span class="string">&#x27;数学&#x27;</span>,<span class="string">&#x27;英语&#x27;</span>,<span class="string">&#x27;地理&#x27;</span>,<span class="string">&#x27;化学&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="builtin-name">print</span>(kemu</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="2、新增科目（末尾新增-amp-指定位置新增）"><a href="#2、新增科目（末尾新增-amp-指定位置新增）" class="headerlink" title="2、新增科目（末尾新增&amp;指定位置新增）"></a>2、新增科目（末尾新增&amp;指定位置新增）</h3><p>末尾新增</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kemu.append(<span class="string">&#x27;文综&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(kemu)</span></span></span><br></pre></td></tr></table></figure>
+<p>指定位置新增</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kemu.insert(<span class="number">2</span>,<span class="string">&#x27;国学&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(kemu)</span></span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="3、修改科目"><a href="#3、修改科目" class="headerlink" title="3、修改科目"></a>3、修改科目</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kemu[<span class="number">3</span>]=<span class="string">&#x27;天文&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(kemu)</span></span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="4、删除科目，并且在打印科目列表的时候，能够显示删除了哪个科目"><a href="#4、删除科目，并且在打印科目列表的时候，能够显示删除了哪个科目" class="headerlink" title="4、删除科目，并且在打印科目列表的时候，能够显示删除了哪个科目"></a>4、删除科目，并且在打印科目列表的时候，能够显示删除了哪个科目</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">print</span><span class="params">(kemu)</span></span></span><br><span class="line"></span><br><span class="line">new_kemu = kemu.pop()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(new_kemu)</span></span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="5、删除指定名称的科目"><a href="#5、删除指定名称的科目" class="headerlink" title="5、删除指定名称的科目"></a>5、删除指定名称的科目</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kemu.<span class="builtin-name">remove</span>(<span class="string">&#x27;天文&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="builtin-name">print</span>(kemu)</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="6、删除第2个科目"><a href="#6、删除第2个科目" class="headerlink" title="6、删除第2个科目"></a>6、删除第2个科目</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kemu.pop(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(kemu)</span></span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200311125726104.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="列表练习（二）"><a href="#列表练习（二）" class="headerlink" title="列表练习（二）"></a>列表练习（二）</h2><h3 id="1、将5个城市的名称存储到列表中，并且保证名称不是按照字母顺序排列的"><a href="#1、将5个城市的名称存储到列表中，并且保证名称不是按照字母顺序排列的" class="headerlink" title="1、将5个城市的名称存储到列表中，并且保证名称不是按照字母顺序排列的"></a>1、将5个城市的名称存储到列表中，并且保证名称不是按照字母顺序排列的</h3><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">diming</span>=[<span class="string">&#x27;山西&#x27;</span>,<span class="string">&#x27;北京&#x27;</span>,<span class="string">&#x27;太原&#x27;</span>,<span class="string">&#x27;介休&#x27;</span>,<span class="string">&#x27;广西&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="2、打印出原始的城市列表信息"><a href="#2、打印出原始的城市列表信息" class="headerlink" title="2、打印出原始的城市列表信息"></a>2、打印出原始的城市列表信息</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">print</span><span class="params">(diming)</span></span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="3、使用sorted-方法按字母顺序打印城市列表，但是不要修改列表元素的顺序"><a href="#3、使用sorted-方法按字母顺序打印城市列表，但是不要修改列表元素的顺序" class="headerlink" title="3、使用sorted()方法按字母顺序打印城市列表，但是不要修改列表元素的顺序"></a>3、使用sorted()方法按字母顺序打印城市列表，但是不要修改列表元素的顺序</h3><figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">print</span>(<span class="title">sorted</span>(<span class="variable">diming</span>))</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="4、打印该列表，确认城市名称排列顺序没有被修改"><a href="#4、打印该列表，确认城市名称排列顺序没有被修改" class="headerlink" title="4、打印该列表，确认城市名称排列顺序没有被修改"></a>4、打印该列表，确认城市名称排列顺序没有被修改</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">print</span><span class="params">(diming)</span></span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="5、使用sort-方法排列城市名称，确保永久性修改排列顺序"><a href="#5、使用sort-方法排列城市名称，确保永久性修改排列顺序" class="headerlink" title="5、使用sort()方法排列城市名称，确保永久性修改排列顺序"></a>5、使用sort()方法排列城市名称，确保永久性修改排列顺序</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">diming.sort(<span class="attribute">reverse</span>=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="builtin-name">print</span>(diming)</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200311125754778.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="阿怪 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="阿怪 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿怪
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://aguai.fun/2020/03/11/Python%E5%88%97%E8%A1%A8%E7%AE%80%E4%BB%8B/" title="Python列表简介">https://aguai.fun/2020/03/11/Python列表简介/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+  
+</div>
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Python/" rel="tag"># Python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/10/Python%E5%8F%98%E9%87%8F/" rel="prev" title="Python变量">
+      <i class="fa fa-chevron-left"></i> Python变量
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/12/Python%E5%88%97%E8%A1%A8%E6%93%8D%E4%BD%9C/" rel="next" title="Python列表操作">
+      Python列表操作 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Python%E5%88%97%E8%A1%A8%E7%AE%80%E4%BB%8B"><span class="nav-text">Python列表简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%88%97%E8%A1%A8"><span class="nav-text">什么是列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%E6%93%8D%E4%BD%9C"><span class="nav-text">列表操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E7%B4%A2%E5%BC%95%E8%8E%B7%E5%8F%96%E5%85%83%E7%B4%A0%E8%BF%9B%E8%A1%8C%E4%BF%AE%E6%94%B9"><span class="nav-text">通过索引获取元素进行修改</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0"><span class="nav-text">添加</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8%E5%88%97%E8%A1%A8%E6%9C%AB%E5%B0%BE%E6%B7%BB%E5%8A%A0append"><span class="nav-text">在列表末尾添加append()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8%E5%88%97%E8%A1%A8%E6%8C%87%E5%AE%9A%E4%BD%8D%E7%BD%AE%E6%8F%92%E5%85%A5insert"><span class="nav-text">在列表指定位置插入insert()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E5%88%97%E8%A1%A8%E4%B8%AD%E5%88%A0%E9%99%A4%E5%85%83%E7%B4%A0"><span class="nav-text">从列表中删除元素</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%B9%E6%8D%AE%E7%B4%A2%E5%BC%95%E4%BB%8E%E5%88%97%E8%A1%A8%E4%B8%AD%E5%88%A0%E9%99%A4%E5%85%83%E7%B4%A0del"><span class="nav-text">根据索引从列表中删除元素del</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E5%88%97%E8%A1%A8%E6%9C%AB%E5%B0%BE%E7%9A%84%E5%85%83%E7%B4%A0pop"><span class="nav-text">删除列表末尾的元素pop()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%B9%E5%87%BA%E6%8C%87%E5%AE%9A%E4%BD%8D%E7%BD%AE%E7%9A%84%E5%85%83%E7%B4%A0pop%E7%B4%A2%E5%BC%95"><span class="nav-text">弹出指定位置的元素pop索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#del%E4%B8%8Epop%E5%8C%BA%E5%88%AB%EF%BC%9A%E8%A2%AB%E5%88%A0%E9%99%A4%E7%9A%84%E5%85%83%E7%B4%A0%E8%BF%98%E8%83%BD%E7%BB%A7%E7%BB%AD%E4%BD%BF%E7%94%A8"><span class="nav-text">del与pop区别：被删除的元素还能继续使用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B9%E6%8D%AE%E5%85%83%E7%B4%A0%E7%9A%84%E5%80%BC%E8%BF%9B%E8%A1%8C%E5%88%A0%E9%99%A4remove-value"><span class="nav-text">根据元素的值进行删除remove(value)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%E6%8E%92%E5%BA%8F"><span class="nav-text">列表排序</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#sort-%E6%B0%B8%E4%B9%85%E6%8E%92%E5%BA%8F"><span class="nav-text">sort:永久排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sorted-%E5%88%97%E8%A1%A8-%E4%B8%B4%E6%97%B6%E6%8E%92%E5%BA%8F"><span class="nav-text">sorted(列表):临时排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%80%92%E5%BA%8Fsort-reverse-True"><span class="nav-text">倒序sort(reverse&#x3D;True)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%E9%95%BF%E5%BA%A6%EF%BC%9Alen"><span class="nav-text">列表长度：len()</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%8A%E6%97%A5%E4%BD%9C%E4%B8%9A%EF%BC%9A"><span class="nav-text">今日作业：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%E7%BB%83%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89"><span class="nav-text">列表练习（一）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%AE%9A%E4%B9%89%E4%B8%80%E4%B8%AA%E5%88%97%E8%A1%A8%EF%BC%8C%E5%AD%98%E5%82%A85%E4%B8%AA%E7%A7%91%E7%9B%AE%E5%90%8D%E7%A7%B0"><span class="nav-text">1、定义一个列表，存储5个科目名称</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E6%96%B0%E5%A2%9E%E7%A7%91%E7%9B%AE%EF%BC%88%E6%9C%AB%E5%B0%BE%E6%96%B0%E5%A2%9E-amp-%E6%8C%87%E5%AE%9A%E4%BD%8D%E7%BD%AE%E6%96%B0%E5%A2%9E%EF%BC%89"><span class="nav-text">2、新增科目（末尾新增&amp;指定位置新增）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E4%BF%AE%E6%94%B9%E7%A7%91%E7%9B%AE"><span class="nav-text">3、修改科目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81%E5%88%A0%E9%99%A4%E7%A7%91%E7%9B%AE%EF%BC%8C%E5%B9%B6%E4%B8%94%E5%9C%A8%E6%89%93%E5%8D%B0%E7%A7%91%E7%9B%AE%E5%88%97%E8%A1%A8%E7%9A%84%E6%97%B6%E5%80%99%EF%BC%8C%E8%83%BD%E5%A4%9F%E6%98%BE%E7%A4%BA%E5%88%A0%E9%99%A4%E4%BA%86%E5%93%AA%E4%B8%AA%E7%A7%91%E7%9B%AE"><span class="nav-text">4、删除科目，并且在打印科目列表的时候，能够显示删除了哪个科目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%E3%80%81%E5%88%A0%E9%99%A4%E6%8C%87%E5%AE%9A%E5%90%8D%E7%A7%B0%E7%9A%84%E7%A7%91%E7%9B%AE"><span class="nav-text">5、删除指定名称的科目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6%E3%80%81%E5%88%A0%E9%99%A4%E7%AC%AC2%E4%B8%AA%E7%A7%91%E7%9B%AE"><span class="nav-text">6、删除第2个科目</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%E7%BB%83%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89"><span class="nav-text">列表练习（二）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%B0%865%E4%B8%AA%E5%9F%8E%E5%B8%82%E7%9A%84%E5%90%8D%E7%A7%B0%E5%AD%98%E5%82%A8%E5%88%B0%E5%88%97%E8%A1%A8%E4%B8%AD%EF%BC%8C%E5%B9%B6%E4%B8%94%E4%BF%9D%E8%AF%81%E5%90%8D%E7%A7%B0%E4%B8%8D%E6%98%AF%E6%8C%89%E7%85%A7%E5%AD%97%E6%AF%8D%E9%A1%BA%E5%BA%8F%E6%8E%92%E5%88%97%E7%9A%84"><span class="nav-text">1、将5个城市的名称存储到列表中，并且保证名称不是按照字母顺序排列的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E6%89%93%E5%8D%B0%E5%87%BA%E5%8E%9F%E5%A7%8B%E7%9A%84%E5%9F%8E%E5%B8%82%E5%88%97%E8%A1%A8%E4%BF%A1%E6%81%AF"><span class="nav-text">2、打印出原始的城市列表信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E4%BD%BF%E7%94%A8sorted-%E6%96%B9%E6%B3%95%E6%8C%89%E5%AD%97%E6%AF%8D%E9%A1%BA%E5%BA%8F%E6%89%93%E5%8D%B0%E5%9F%8E%E5%B8%82%E5%88%97%E8%A1%A8%EF%BC%8C%E4%BD%86%E6%98%AF%E4%B8%8D%E8%A6%81%E4%BF%AE%E6%94%B9%E5%88%97%E8%A1%A8%E5%85%83%E7%B4%A0%E7%9A%84%E9%A1%BA%E5%BA%8F"><span class="nav-text">3、使用sorted()方法按字母顺序打印城市列表，但是不要修改列表元素的顺序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81%E6%89%93%E5%8D%B0%E8%AF%A5%E5%88%97%E8%A1%A8%EF%BC%8C%E7%A1%AE%E8%AE%A4%E5%9F%8E%E5%B8%82%E5%90%8D%E7%A7%B0%E6%8E%92%E5%88%97%E9%A1%BA%E5%BA%8F%E6%B2%A1%E6%9C%89%E8%A2%AB%E4%BF%AE%E6%94%B9"><span class="nav-text">4、打印该列表，确认城市名称排列顺序没有被修改</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%E3%80%81%E4%BD%BF%E7%94%A8sort-%E6%96%B9%E6%B3%95%E6%8E%92%E5%88%97%E5%9F%8E%E5%B8%82%E5%90%8D%E7%A7%B0%EF%BC%8C%E7%A1%AE%E4%BF%9D%E6%B0%B8%E4%B9%85%E6%80%A7%E4%BF%AE%E6%94%B9%E6%8E%92%E5%88%97%E9%A1%BA%E5%BA%8F"><span class="nav-text">5、使用sort()方法排列城市名称，确保永久性修改排列顺序</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="阿怪"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">阿怪</p>
+  <div class="site-description" itemprop="description">直到这一刻微笑着说话为止，我至少留下了一公升眼泪</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">103</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/a_guai_" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;a_guai_" rel="noopener" target="_blank"><i class="crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="阿怪"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">博客</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">574k</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/clicklove.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
+

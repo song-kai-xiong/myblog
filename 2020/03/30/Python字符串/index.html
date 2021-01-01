@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"aguai.fun","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offalse":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python字符串">
+<meta property="og:url" content="https://aguai.fun/2020/03/30/Python%E5%AD%97%E7%AC%A6%E4%B8%B2/index.html">
+<meta property="og:site_name" content="阿怪の博客">
+<meta property="og:description" content="Python">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-29T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-04-01T06:22:57.152Z">
+<meta property="article:author" content="阿怪">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://aguai.fun/2020/03/30/Python%E5%AD%97%E7%AC%A6%E4%B8%B2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Python字符串 | 阿怪の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿怪の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">103</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://aguai.fun/2020/03/30/Python%E5%AD%97%E7%AC%A6%E4%B8%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="阿怪">
+      <meta itemprop="description" content="直到这一刻微笑着说话为止，我至少留下了一公升眼泪">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿怪の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Python字符串
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-30 00:00:00" itemprop="dateCreated datePublished" datetime="2020-03-30T00:00:00+08:00">2020-03-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-04-01 14:22:57" itemprop="dateModified" datetime="2020-04-01T14:22:57+08:00">2020-04-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.2k</span>
+            </span>
+            <div class="post-description">Python</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Python字符串"><a href="#Python字符串" class="headerlink" title="Python字符串"></a>Python字符串</h1><h2 id="表达方式"><a href="#表达方式" class="headerlink" title="表达方式"></a>表达方式</h2><blockquote>
+<p>单引号</p>
+<p>双引号</p>
+<p>三引号</p>
+<p>转义符：\n    \t    \ \</p>
+</blockquote>
+<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><blockquote>
+<p>索引：[index]</p>
+<p>切片：[start:end]</p>
+<p>字符串拼接</p>
+</blockquote>
+<h2 id="常用函数"><a href="#常用函数" class="headerlink" title="常用函数"></a>常用函数</h2><h3 id="通用操作"><a href="#通用操作" class="headerlink" title="通用操作"></a>通用操作</h3><blockquote>
+<p>len()</p>
+<p>in</p>
+<p>not in</p>
+</blockquote>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="string">&#x27;hello,work&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(len(s)</span></span>)</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(<span class="string">&#x27;h&#x27;</span> in (s)</span></span>)</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(<span class="string">&#x27;k&#x27;</span> not in (s)</span></span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">10</span></span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="literal">False</span></span><br></pre></td></tr></table></figure>
+<h3 id="与大小写相关的方法"><a href="#与大小写相关的方法" class="headerlink" title="与大小写相关的方法"></a>与大小写相关的方法</h3><blockquote>
+<p>upper：将字符串转换为大写</p>
+<p>lower：将字符串转换为小写</p>
+<p>isupper()：判断字符串是否都为大写</p>
+<p>islower()：判断字符串是否都为小写</p>
+<p>swapcase()：小写转大写，大写转小写</p>
+<p>capitalize()：将首字母转换为大写</p>
+<p>istitle()：判断字符串是不是一个标题</p>
+<p>title()：将字符串中的单词转换为标题格式，每个单词首字母大写，其余小写</p>
+</blockquote>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="string">&#x27;hello,word&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(s.istitle()</span></span>)</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(s.islower()</span></span>)</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(s.swapcase()</span></span>)</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(s.capitalize()</span></span>)</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(s.title()</span></span>)</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(s.istitle()</span></span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="literal">False</span></span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="built_in">HELLO,</span>WORD</span><br><span class="line"><span class="built_in">Hello,</span>word</span><br><span class="line"><span class="built_in">Hello,</span>Word</span><br><span class="line"><span class="literal">False</span></span><br></pre></td></tr></table></figure>
+<h3 id="上机练习"><a href="#上机练习" class="headerlink" title="上机练习"></a>上机练习</h3><blockquote>
+<p>程序等待用户输入，在用户输入“yes”的时候，执行某项操作，否则就退出程序。要求：将用户的输入全部转换为小写，然后与“yes”进行比较。</p>
+</blockquote>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">yes_or_no</span> = <span class="function"><span class="title">input</span>(<span class="string">&#x27;请输入&#x27;</span>)</span></span><br><span class="line"><span class="variable"><span class="keyword">if</span></span> <span class="variable">yes_or_no.lower</span>() == <span class="string">&#x27;yes&#x27;</span>:</span><br><span class="line">    <span class="function"><span class="title">print</span>(<span class="string">&#x27;执行XXX操作&#x27;</span>)</span></span><br><span class="line"><span class="variable"><span class="keyword">else</span></span>:</span><br><span class="line">    <span class="function"><span class="title">print</span>(<span class="string">&#x27;退出程序&#x27;</span>)</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">请输入<span class="literal">yes</span></span><br><span class="line">执行XXX操作</span><br></pre></td></tr></table></figure>
+<h3 id="判断类方法"><a href="#判断类方法" class="headerlink" title="判断类方法"></a>判断类方法</h3><blockquote>
+<p>isalpha()：只包含字母，不为空</p>
+<p>isalnum()：只包含字母和数字，不为空</p>
+<p>isspace()：包含：空格，制表位，换行符。不为空</p>
+<p>isdecimal()：只包含数字，不为空</p>
+<p>isdigit()：检测字符串是否只有数字组成</p>
+<p>startwith(参数)：判断参数是否为字符串的前缀</p>
+<p>endswith(参数)：判断参数是否为字符串后缀</p>
+</blockquote>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="string">&#x27;a&#x27;</span></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(s.isalpha()</span></span>)</span><br><span class="line">str = <span class="string">&#x27;asdfa3d&#x27;</span></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(str.isalnum()</span></span>)</span><br><span class="line">t = <span class="string">&#x27;\t\n \t&#x27;</span></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(t.isspace()</span></span>)</span><br><span class="line">d = <span class="string">&#x27;666&#x27;</span></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(d.isdecimal()</span></span>)</span><br><span class="line">file_name = <span class="string">&#x27;apache_2020_03_30_15_27_39.log&#x27;</span></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(file_name.startswith(<span class="string">&#x27;apache&#x27;</span>)</span></span>)</span><br><span class="line">import os</span><br><span class="line">[item <span class="keyword">for</span> item <span class="keyword">in</span> os.listdir(<span class="string">&#x27;.&#x27;</span>) <span class="keyword">if</span> item.startswith(<span class="string">&#x27;新建&#x27;</span>)]</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="literal">True</span></span><br></pre></td></tr></table></figure>
+<h3 id="上机练习-1"><a href="#上机练习-1" class="headerlink" title="上机练习"></a>上机练习</h3><blockquote>
+<p>模拟用户注册，要求：<br>1、用户名不能是纯数字，不能以数字开头，必须包含数字、字母或者下划线其中两项。<br>2、用户密码长度在6-12位之间，不能是纯数字或纯字母，必须包含数字、字母大写或小写两项。<br>3、符合以上要求，程序提示注册成功；否则在输入内容之后立即给出错误提示。</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">&#x27;---------用户注册系统---------&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">user_name</span>():</span></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        user = <span class="built_in">input</span>(<span class="string">&#x27;请输入用户名：&#x27;</span>)</span><br><span class="line">        <span class="keyword">if</span> user.isdecimal():</span><br><span class="line">            print(<span class="string">&#x27;用户名不能是纯数字&#x27;</span>)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">elif</span> user == <span class="string">&#x27;&#x27;</span>:</span><br><span class="line">            print(<span class="string">&#x27;用户名不能为空&#x27;</span>)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">elif</span> user[<span class="number">0</span>].isdecimal() == <span class="literal">True</span>:</span><br><span class="line">            print(<span class="string">&#x27;用户名不能以数字开头&#x27;</span>)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">elif</span> user.isalpha():</span><br><span class="line">            print(<span class="string">&#x27;用户名必须包含数字、字母或者下划线其中两项&#x27;</span>)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> user</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">password</span>():</span></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        passwd = <span class="built_in">input</span>(<span class="string">&#x27;请输入密码：&#x27;</span>)</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(passwd) &lt; <span class="number">6</span> <span class="keyword">or</span> <span class="built_in">len</span>(passwd) &gt; <span class="number">12</span>:</span><br><span class="line">            print(<span class="string">&#x27;用户密码长度在6-12位之间&#x27;</span>)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">elif</span> passwd.isdecimal() <span class="keyword">or</span> passwd.isalpha():</span><br><span class="line">            print(<span class="string">&#x27;用户密码不能是纯数字或纯字母,必须包含数字、字母大写或小写两项&#x27;</span>)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> passwd</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">zhuce</span>():</span></span><br><span class="line">    user_name()</span><br><span class="line">    password()</span><br><span class="line">    print(<span class="string">&#x27;用户注册成功！！！&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">zhuce()</span><br></pre></td></tr></table></figure>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">--<span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="comment">用户注册系统</span>--<span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span></span><br><span class="line"><span class="comment">请输入用户名：song123</span></span><br><span class="line"><span class="comment">请输入密码：qwe123</span></span><br><span class="line"><span class="comment">用户注册成功！！！</span></span><br></pre></td></tr></table></figure>
+<h3 id="查找类方法"><a href="#查找类方法" class="headerlink" title="查找类方法"></a>查找类方法</h3><blockquote>
+<p>find()：返回子串在字符串中的具体位置，不是判断字符串是否包含子串，异常情况返回-1。（not/not in）</p>
+<p>index()：与find()类似。异常情况返回value Errot</p>
+<p>rfind()：与find()类似。从后向前查找</p>
+<p>rindex()：与index()类似。从后向前查找</p>
+</blockquote>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">&#x27;hello,python&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(str.find(<span class="string">&#x27;p&#x27;</span>)</span></span>)</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(str.index(<span class="string">&#x27;l&#x27;</span>)</span></span>)</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(str.rfind(<span class="string">&#x27;p&#x27;</span>)</span></span>)</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(str.rindex(<span class="string">&#x27;p&#x27;</span>)</span></span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">6</span><br><span class="line">2</span><br><span class="line">6</span><br><span class="line">6</span><br></pre></td></tr></table></figure>
+<h3 id="上级练习"><a href="#上级练习" class="headerlink" title="上级练习"></a>上级练习</h3><blockquote>
+<p> 提示：<br>正确格式：<a href="mailto:&#x61;&#x62;&#99;&#64;&#49;&#x36;&#x33;&#46;&#99;&#111;&#x6d;&#46;&#99;&#110;">&#x61;&#x62;&#99;&#64;&#49;&#x36;&#x33;&#46;&#99;&#111;&#x6d;&#46;&#99;&#110;</a></p>
+<p>验证规则：<br>1、邮箱必须包含“@”和“.”<br>2、“@”在邮箱字符串中不能是第一个位置<br>3、“.”右侧至少应该有2-3个字符<br>4、“.”左侧不能是“@” </p>
+</blockquote>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">def</span> <span class="function"><span class="title">yanzheng</span>():</span></span><br><span class="line"><span class="function">    <span class="variable">youxiang</span> = <span class="title">input</span>(<span class="string">&#x27;输入你的邮箱：&#x27;</span>)</span></span><br><span class="line">    <span class="variable">num</span> = <span class="variable">youxiang.index</span>(<span class="string">&#x27;.&#x27;</span>)</span><br><span class="line">    <span class="variable">qiepian</span> = <span class="variable">youxiang</span>[<span class="variable">num</span>:-<span class="number">1</span>]</span><br><span class="line">    <span class="variable"><span class="keyword">if</span></span> <span class="variable">youxiang</span>[<span class="number">0</span>] == <span class="string">&#x27;@&#x27;</span> <span class="variable"><span class="keyword">or</span></span> <span class="variable">youxiang</span>[<span class="number">0</span>] == <span class="string">&#x27;.&#x27;</span>:</span><br><span class="line">        <span class="function"><span class="title">print</span>(<span class="string">&#x27;邮箱第一位不能是@或者.&#x27;</span>)</span></span><br><span class="line">    <span class="variable">elif</span> <span class="string">&#x27;.&#x27;</span> <span class="variable"><span class="keyword">not</span></span> <span class="variable"><span class="keyword">in</span></span> <span class="variable">youxiang</span> <span class="variable"><span class="keyword">or</span></span> <span class="string">&#x27;@&#x27;</span> <span class="variable"><span class="keyword">not</span></span> <span class="variable"><span class="keyword">in</span></span> <span class="variable">youxiang</span>:</span><br><span class="line">        <span class="function"><span class="title">print</span>(<span class="string">&#x27;邮箱必须包含“@”和“.”&#x27;</span>)</span></span><br><span class="line">    <span class="variable">elif</span> <span class="function"><span class="title">len</span>(<span class="variable">qiepian</span>) &lt;= <span class="number">2</span>:</span></span><br><span class="line"><span class="function">        <span class="title">print</span>(<span class="string">&#x27;&quot;.&quot;右侧至少应该有2-3个字符&#x27;</span>)</span></span><br><span class="line">    <span class="variable">elif</span> <span class="variable">youxiang</span>[-<span class="number">1</span>] == <span class="string">&#x27;@&#x27;</span> <span class="variable"><span class="keyword">or</span></span> <span class="variable">youxiang</span>[-<span class="number">1</span>] == <span class="string">&#x27;.&#x27;</span>:</span><br><span class="line">        <span class="function"><span class="title">print</span>(<span class="string">&#x27;邮箱最后一位不能是@或者.&#x27;</span>)</span></span><br><span class="line">    <span class="variable"><span class="keyword">else</span></span>:</span><br><span class="line">        <span class="function"><span class="title">print</span>(<span class="string">&#x27;邮箱正确&#x27;</span>)</span></span><br><span class="line"><span class="function"><span class="title">print</span>(<span class="title">yanzheng</span>())</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入你的邮箱：<span class="number">2389113325</span><span class="variable">@qq</span>.com</span><br><span class="line">邮箱正确</span><br><span class="line"><span class="keyword">None</span></span><br></pre></td></tr></table></figure>
+<h3 id="分隔与合并方法"><a href="#分隔与合并方法" class="headerlink" title="分隔与合并方法"></a>分隔与合并方法</h3><blockquote>
+<p>split()：分隔</p>
+<p>join()：合并</p>
+</blockquote>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">content = <span class="string">&#x27;春眠不觉晓,处处闻啼鸟,夜来风雨声,花落知多少&#x27;</span></span><br><span class="line">new_content = content.<span class="keyword">split</span>(<span class="string">&#x27;,&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> <span class="keyword">c</span> in new_conten<span class="variable">t:</span></span><br><span class="line">    <span class="keyword">print</span>(<span class="keyword">c</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">con</span> = <span class="string">&#x27;2020-03-30&#x27;</span></span><br><span class="line"><span class="keyword">for</span> <span class="keyword">c</span> in <span class="keyword">con</span>.<span class="keyword">split</span>(<span class="string">&#x27;-&#x27;</span>):</span><br><span class="line">    <span class="keyword">print</span>(<span class="keyword">c</span>,end=<span class="string">&#x27; &#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">c</span> = <span class="string">&#x27;2020 03 30&#x27;</span></span><br><span class="line">new_c = <span class="string">&#x27;/&#x27;</span>.<span class="keyword">join</span>(<span class="keyword">c</span>.<span class="keyword">split</span>(<span class="string">&#x27; &#x27;</span>))</span><br><span class="line"><span class="keyword">print</span>(new_c)</span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">春眠不觉晓</span><br><span class="line">处处闻啼鸟</span><br><span class="line">夜来风雨声</span><br><span class="line">花落知多少</span><br><span class="line"><span class="number">2020</span> <span class="number">03</span> <span class="number">30</span> <span class="number">2020</span><span class="regexp">/03/</span><span class="number">30</span></span><br></pre></td></tr></table></figure>
+<h3 id="上机实验"><a href="#上机实验" class="headerlink" title="上机实验"></a>上机实验</h3><figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>、提取user_info字符串中最后<span class="number">5</span>个用户的记录</span><br><span class="line">user_info = <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="symbol">postfix:</span>x:<span class="number">89</span>:<span class="number">89</span>::<span class="meta-keyword">/var/</span>spool/postfix:<span class="meta-keyword">/sbin/</span>nologin</span><br><span class="line"><span class="symbol">tcpdump:</span>x:<span class="number">72</span>:<span class="number">72</span>::/:<span class="meta-keyword">/sbin/</span>nologin</span><br><span class="line">test<span class="number">-07</span>:x:<span class="number">1000</span>:<span class="number">1000</span>:test<span class="number">-07</span>:<span class="meta-keyword">/home/</span>test<span class="number">-07</span>:<span class="meta-keyword">/bin/</span>bash</span><br><span class="line"><span class="symbol">chou:</span>x:<span class="number">1003</span>:<span class="number">1003</span>::<span class="meta-keyword">/home/</span>chouchou:<span class="meta-keyword">/bin/</span>bash</span><br><span class="line"><span class="symbol">test02:</span>x:<span class="number">1002</span>:<span class="number">1007</span>::<span class="meta-keyword">/home/</span>test001:<span class="meta-keyword">/bin/</span>bash</span><br><span class="line"><span class="symbol">try:</span>x:<span class="number">1004</span>:<span class="number">1004</span>::<span class="meta-keyword">/home/</span>try:<span class="meta-keyword">/bin/</span>bash</span><br><span class="line"><span class="symbol">laoyu:</span>x:<span class="number">1005</span>:<span class="number">1009</span>::<span class="meta-keyword">/home/</span>laoyu:<span class="meta-keyword">/bin/</span>bash</span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="number">2</span>、把每个用户的信息按“:”分别提取用户名、所属组、家目录、登录的shell类型</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">user_info</span> = &#x27;&#x27;&#x27;postfix:x:<span class="number">89</span>:<span class="number">89</span>::/var/spool/postfix:/sbin/nologin</span><br><span class="line"><span class="attribute">tcpdump</span>:x:<span class="number">72</span>:<span class="number">72</span>::/:/sbin/nologin</span><br><span class="line"><span class="attribute">test</span>-<span class="number">07</span>:x:<span class="number">1000</span>:<span class="number">1000</span>:test-<span class="number">07</span>:/home/test-<span class="number">07</span>:/bin/bash</span><br><span class="line"><span class="attribute">chou</span>:x:<span class="number">1003</span>:<span class="number">1003</span>::/home/chouchou:/bin/bash</span><br><span class="line"><span class="attribute">test02</span>:x:<span class="number">1002</span>:<span class="number">1007</span>::/home/test<span class="number">001</span>:/bin/bash</span><br><span class="line"><span class="attribute">try</span>:x:<span class="number">1004</span>:<span class="number">1004</span>::/home/try:/bin/bash</span><br><span class="line"><span class="attribute">laoyu</span>:x:<span class="number">1005</span>:<span class="number">1009</span>::/home/laoyu:/bin/bash&#x27;&#x27;&#x27;</span><br><span class="line"></span><br><span class="line"><span class="attribute">new_info</span> = user_info.split(&#x27;\n&#x27;)[-<span class="number">5</span>:]</span><br><span class="line"></span><br><span class="line"><span class="attribute">for</span> i in new_info:</span><br><span class="line">    <span class="attribute">print</span>(&#x27;用户名：&#x27;+i.split(&#x27;:&#x27;)[<span class="number">0</span>]+&#x27;所属群组：&#x27;+i.split(&#x27;:&#x27;)[<span class="number">4</span>]+&#x27;家目录：&#x27;+i.split(&#x27;:&#x27;)[<span class="number">5</span>]+&#x27;登陆环境：&#x27;+i.split(&#x27;:&#x27;)[<span class="number">6</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">用户名：test-<span class="number">07</span>所属群组：test-<span class="number">07</span>家目录：<span class="regexp">/home/</span>test-<span class="number">07</span>登陆环境：<span class="regexp">/bin/</span>bash</span><br><span class="line">用户名：chou所属群组：家目录：<span class="regexp">/home/</span>chouchou登陆环境：<span class="regexp">/bin/</span>bash</span><br><span class="line">用户名：test02所属群组：家目录：<span class="regexp">/home/</span>test001登陆环境：<span class="regexp">/bin/</span>bash</span><br><span class="line">用户名：<span class="keyword">try</span>所属群组：家目录：<span class="regexp">/home/</span><span class="keyword">try</span>登陆环境：<span class="regexp">/bin/</span>bash</span><br><span class="line">用户名：laoyu所属群组：家目录：<span class="regexp">/home/</span>laoyu登陆环境：<span class="regexp">/bin/</span>bash</span><br></pre></td></tr></table></figure>
+<h3 id="裁剪"><a href="#裁剪" class="headerlink" title="裁剪"></a>裁剪</h3><blockquote>
+<p>strip()：裁剪字符串两遍的空白</p>
+<p>rstrip()：裁剪字符串右边的空白</p>
+<p>lstrip()：裁剪字符串左边的空白</p>
+</blockquote>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">&#x27;\tHello, \tWorld \n&#x27;</span></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(str.strip()</span></span>)</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(str.lstrip()</span></span>)</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(str.rstrip()</span></span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Hello,</span> 	World</span><br><span class="line"><span class="built_in">Hello,</span> 	World </span><br><span class="line"></span><br><span class="line"><span class="built_in">	Hello,</span> 	World</span><br></pre></td></tr></table></figure>
+<h3 id="替换"><a href="#替换" class="headerlink" title="替换"></a>替换</h3><blockquote>
+<p>replace</p>
+</blockquote>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">str</span> = <span class="string">&#x27;\tHello, \tWorld \n&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span>(<span class="built_in">str</span>.replace(<span class="string">&#x27;, \t&#x27;</span>,<span class="string">&#x27;-&#x27;</span>))</span><br></pre></td></tr></table></figure>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Hello-World</span> </span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="阿怪 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="阿怪 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿怪
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://aguai.fun/2020/03/30/Python%E5%AD%97%E7%AC%A6%E4%B8%B2/" title="Python字符串">https://aguai.fun/2020/03/30/Python字符串/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+  
+</div>
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Python/" rel="tag"># Python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/27/%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%EF%BC%8C%E7%BB%A7%E6%89%BF/" rel="prev" title="类和对象，继承">
+      <i class="fa fa-chevron-left"></i> 类和对象，继承
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/01/%E4%BD%BF%E7%94%A8Python%E5%88%86%E6%9E%90Apache%E7%9A%84%E8%AE%BF%E9%97%AE%E6%97%A5%E5%BF%97/" rel="next" title="使用Python分析Apache的访问日志">
+      使用Python分析Apache的访问日志 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Python%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-text">Python字符串</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8%E8%BE%BE%E6%96%B9%E5%BC%8F"><span class="nav-text">表达方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="nav-text">基本用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0"><span class="nav-text">常用函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E6%93%8D%E4%BD%9C"><span class="nav-text">通用操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8E%E5%A4%A7%E5%B0%8F%E5%86%99%E7%9B%B8%E5%85%B3%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-text">与大小写相关的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E6%9C%BA%E7%BB%83%E4%B9%A0"><span class="nav-text">上机练习</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A4%E6%96%AD%E7%B1%BB%E6%96%B9%E6%B3%95"><span class="nav-text">判断类方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E6%9C%BA%E7%BB%83%E4%B9%A0-1"><span class="nav-text">上机练习</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE%E7%B1%BB%E6%96%B9%E6%B3%95"><span class="nav-text">查找类方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E7%BA%A7%E7%BB%83%E4%B9%A0"><span class="nav-text">上级练习</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E9%9A%94%E4%B8%8E%E5%90%88%E5%B9%B6%E6%96%B9%E6%B3%95"><span class="nav-text">分隔与合并方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E6%9C%BA%E5%AE%9E%E9%AA%8C"><span class="nav-text">上机实验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A3%81%E5%89%AA"><span class="nav-text">裁剪</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%BF%E6%8D%A2"><span class="nav-text">替换</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="阿怪"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">阿怪</p>
+  <div class="site-description" itemprop="description">直到这一刻微笑着说话为止，我至少留下了一公升眼泪</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">103</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/a_guai_" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;a_guai_" rel="noopener" target="_blank"><i class="crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="阿怪"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">博客</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">574k</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/clicklove.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
+

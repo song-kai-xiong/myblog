@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"aguai.fun","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offalse":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker实现服务发现">
+<meta property="og:url" content="https://aguai.fun/2020/01/24/Docker%E5%AE%9E%E7%8E%B0%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0/index.html">
+<meta property="og:site_name" content="阿怪の博客">
+<meta property="og:description" content="Docker">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200120154827274.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200120154937829.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2020012015495010.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200120155011206.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200120155350538.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="article:published_time" content="2020-01-23T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-22T10:43:34.715Z">
+<meta property="article:author" content="阿怪">
+<meta property="article:tag" content="Docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+
+<link rel="canonical" href="https://aguai.fun/2020/01/24/Docker%E5%AE%9E%E7%8E%B0%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Docker实现服务发现 | 阿怪の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿怪の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">103</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://aguai.fun/2020/01/24/Docker%E5%AE%9E%E7%8E%B0%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="阿怪">
+      <meta itemprop="description" content="直到这一刻微笑着说话为止，我至少留下了一公升眼泪">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿怪の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Docker实现服务发现
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-01-24 00:00:00" itemprop="dateCreated datePublished" datetime="2020-01-24T00:00:00+08:00">2020-01-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-22 18:43:34" itemprop="dateModified" datetime="2020-02-22T18:43:34+08:00">2020-02-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9.5k</span>
+            </span>
+            <div class="post-description">Docker</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Docker实现服务发现"><a href="#Docker实现服务发现" class="headerlink" title="Docker实现服务发现"></a>Docker实现服务发现</h1><h2 id="Docker-Consul-registrator实现服务发现"><a href="#Docker-Consul-registrator实现服务发现" class="headerlink" title="Docker + Consul + registrator实现服务发现"></a>Docker + Consul + registrator实现服务发现</h2><blockquote>
+<p>Consul：分布式、高可用的，服务发现和配置的工具，数据中心</p>
+<p>Registrator：负责收集dockerhost上，容器服务的信息，并且发送给consul</p>
+<p>Consul-template：根据编辑好的模板生成新的nginx配置文件，并且负责加载nginx配置文件</p>
+</blockquote>
+<p>实验环境</p>
+<table>
+<thead>
+<tr>
+<th>docker01</th>
+<th>192.168.1.70</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>docker02</td>
+<td>192.168.1.60</td>
+</tr>
+<tr>
+<td>docker03</td>
+<td>192.168.1.50</td>
+</tr>
+</tbody></table>
+<p>关闭防火墙和selinux，并修改主机名</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># systemctl  stop  firewalld</span></span><br><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># setenforce  0</span></span><br><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># hostnamectl  set-hostname   docker01</span></span><br><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># su -</span></span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>1）docker01上，启动consul服务</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@docker01 ~]# unzip  consul_1.<span class="number">5.1</span>_linux_amd64.zip</span><br><span class="line">[root@docker01 ~]# mv  consul  <span class="regexp">/usr/</span>local<span class="regexp">/bin/</span></span><br><span class="line">[root@docker01 ~]# chmod  +x  <span class="regexp">/usr/</span>local<span class="regexp">/bin/</span>consul</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//以二进制的方式部署consul，并启动，身份为leader</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@docker01 ~]# consul  agent  -server  -bootstrap  \</span><br><span class="line">&gt;  -ui  -data-dir&#x3D;&#x2F;var&#x2F;lib&#x2F;consul-data  \</span><br><span class="line">&gt;  -bind&#x3D;192.168.1.70  \</span><br><span class="line">&gt;  -client&#x3D;0.0.0.0  \</span><br><span class="line">&gt;  -node&#x3D;master</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//这时这个命令会占用终端，可以使用nohup命令让它保持后台运行</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@docker01 ~]# nohup consul  agent  -server  -bootstrap   -ui  <span class="attribute">-data-dir</span>=/var/lib/consul-data   <span class="attribute">-bind</span>=192.168.1.70   <span class="attribute">-client</span>=0.0.0.0   <span class="attribute">-node</span>=master  &amp;</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>PS:</p>
+<blockquote>
+<p>-bootstrap：加入这个选项时，一般都在server单节点的时候用，自选举为leader</p>
+<p>-ui：开启内部web界面</p>
+<p>-data-dir：key/volume数据存储位置</p>
+<p>-bind：指定开启服务的IP</p>
+<p>-client：指定访问的客户端</p>
+<p>-node：只当集群内通信使用的名称，默认是用主机名命名的</p>
+</blockquote>
+<p>PS：开启的端口</p>
+<blockquote>
+<p>8300：集群节点</p>
+<p>8301：集群内部的访问</p>
+<p>8302：跨数据中心的通信</p>
+<p>8500：web ui界面</p>
+<p>8600：使用dns协议查看节点信息的端口</p>
+</blockquote>
+<p>//查看conusl的信息</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[root@docker01 ~]</span><span class="comment"># consul info</span></span><br><span class="line"><span class="attr">leader_addr</span> = <span class="number">192.168</span>.<span class="number">1.70</span>:<span class="number">8300</span>  //这个对我们比较有用，其他的都是一些它的算法</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//查看集群内成员的信息</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@docker01 ~]<span class="comment"># consul  members</span></span><br><span class="line"><span class="keyword">Node</span>    <span class="title">Address</span>            Status  <span class="keyword">Type</span>    Build  Protocol  DC   Segment</span><br><span class="line"><span class="keyword">master</span>  <span class="title">192</span>.<span class="number">168.1</span>.<span class="number">70</span>:<span class="number">8301</span>  alive   server  <span class="number">1.5</span>.<span class="number">1</span>  <span class="number">2</span>         dc1  <span class="tag">&lt;all&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>2）docker02、docker03，加入consul集群</p>
+<blockquote>
+<p>这里我们采用容器的方式去运行consul服务</p>
+</blockquote>
+<p>//docker02</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@docker02 ~]# docker  load  &lt;  myprogrium-consul.tar</span><br><span class="line">[root@docker02 ~]# docker run  -d  --name  consul  -p  <span class="number">8301:8301</span>  -p   <span class="number">8301:8301</span>/udp  -p  <span class="number">8500:8500</span>  -p  <span class="number">8600:8600</span>  -p  <span class="number">8600:8600</span>/udp  --restart  always  progrium/consul:latest  -join   <span class="number">192.168.1.70</span>  -advertise  <span class="number">192.168.1.60</span>  -client  <span class="number">0.0.0.0</span>  -node=node01</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//docker03</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@docker03 ~]# docker load  &lt;  myprogrium-consul.tar</span><br><span class="line">[root@docker03 ~]# docker run  -d  --name  consul  -p  <span class="number">8301:8301</span>  -p   <span class="number">8301:8301</span>/udp  -p  <span class="number">8500:8500</span>  -p  <span class="number">8600:8600</span>  -p  <span class="number">8600:8600</span>/udp  --restart  always  progrium/consul:latest  -join   <span class="number">192.168.1.70</span>  -advertise  <span class="number">192.168.1.50</span>  -client  <span class="number">0.0.0.0</span>  -node=node02</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//在docker01上就能看到加入的信息</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2019</span><span class="regexp">/12/</span><span class="number">26</span> <span class="number">09</span>:<span class="number">50</span>:<span class="number">25</span> [INFO] <span class="attr">serf:</span> <span class="attr">EventMemberJoin:</span> node01 <span class="number">192.168</span><span class="number">.1</span><span class="number">.60</span></span><br><span class="line"><span class="number">2019</span><span class="regexp">/12/</span><span class="number">26</span> <span class="number">09</span>:<span class="number">50</span>:<span class="number">25</span> [INFO] <span class="attr">consul:</span> member <span class="string">&#x27;node01&#x27;</span> joined, marking health alive</span><br><span class="line"><span class="number">2019</span><span class="regexp">/12/</span><span class="number">26</span> <span class="number">09</span>:<span class="number">53</span>:<span class="number">06</span> [INFO] <span class="attr">serf:</span> <span class="attr">EventMemberJoin:</span> node02 <span class="number">192.168</span><span class="number">.1</span><span class="number">.50</span></span><br><span class="line"><span class="number">2019</span><span class="regexp">/12/</span><span class="number">26</span> <span class="number">09</span>:<span class="number">53</span>:<span class="number">06</span> [INFO] <span class="attr">consul:</span> member <span class="string">&#x27;node02&#x27;</span> joined, marking health alive</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@docker01 ~]<span class="comment"># consul  members</span></span><br><span class="line"><span class="keyword">Node</span>    <span class="title">Address</span>            Status  <span class="keyword">Type</span>    Build  Protocol  DC   Segment</span><br><span class="line"><span class="keyword">master</span>  <span class="title">192</span>.<span class="number">168.1</span>.<span class="number">70</span>:<span class="number">8301</span>  alive   server  <span class="number">1.5</span>.<span class="number">1</span>  <span class="number">2</span>         dc1  <span class="tag">&lt;all&gt;</span></span><br><span class="line">node01  <span class="number">192.168</span>.<span class="number">1.60</span>:<span class="number">8301</span>  alive   client  <span class="number">0.5</span>.<span class="number">2</span>  <span class="number">2</span>         dc1  <span class="tag">&lt;default&gt;</span></span><br><span class="line">node02  <span class="number">192.168</span>.<span class="number">1.50</span>:<span class="number">8301</span>  alive   client  <span class="number">0.5</span>.<span class="number">2</span>  <span class="number">2</span>         dc1  <span class="tag">&lt;default&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//浏览器访问consul服务，验证集群信息</p>
+<p>192.168.1.70:8500</p>
+<p><img src="https://img-blog.csdnimg.cn/20200120154827274.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>3)下载部署consul-template</p>
+<p>//在docker01上导入consul-template_0.19.5_linux_amd64.zip</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@docker01 ~]# unzip  consul-template_0.<span class="number">19.5</span>_linux_amd64.zip</span><br><span class="line">[root@docker01 ~]# mv  consul-template  <span class="regexp">/usr/</span>local<span class="regexp">/bin/</span></span><br><span class="line">[root@docker01 ~]# chmod  +x  <span class="regexp">/usr/</span>local<span class="regexp">/bin/</span>consul-template</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>4）docker02、docker03上部署registrator服务</p>
+<blockquote>
+<p>registrator是一个能自动发现docker container提供的服务，并在后端服务注册中心注册服务或取消服务的工具，后端注册中心支持consul、etcd、skydns2、zookeeper等</p>
+</blockquote>
+<p>//docker02</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@docker02 ~]# docker  load  &lt;  myregistrator.tar</span><br><span class="line">[root@docker02 ~]# docker  run  -d  \</span><br><span class="line">&gt;  --name  registrator  \</span><br><span class="line">&gt;  -v  &#x2F;var&#x2F;run&#x2F;docker.sock:&#x2F;tmp&#x2F;docker.sock  \</span><br><span class="line">&gt;  --restart  always  \</span><br><span class="line">&gt;  gliderlabs&#x2F;registrator  \</span><br><span class="line">&gt;  consul:&#x2F;&#x2F;192.168.1.60:8500</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//运行一个nginx容器</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@docker02 ~]<span class="comment"># docker  run  -d  -P  --name  test  nginx:latest</span></span><br><span class="line">b0665dcbd6c5        nginx:latest             <span class="string">&quot;nginx -g &#x27;daemon of…&quot;</span>   <span class="number">10</span> seconds ago      Up <span class="number">9</span> seconds        <span class="number">0.0</span>.<span class="number">0.0</span>:<span class="number">32768</span>-&gt;<span class="number">80</span>/tcp </span><br><span class="line"><span class="regexp">//</span>映射的端口为<span class="number">32768</span></span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//回到浏览器</p>
+<p><img src="https://img-blog.csdnimg.cn/20200120154937829.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><img src="https://img-blog.csdnimg.cn/2020012015495010.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//docker03</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@docker03 ~]# docker load  &lt;  myregistrator.tar</span><br><span class="line">[root@docker02 ~]# docker  run  -d  \</span><br><span class="line">&gt;  --name  registrator  \</span><br><span class="line">&gt;  -v  &#x2F;var&#x2F;run&#x2F;docker.sock:&#x2F;tmp&#x2F;docker.sock  \</span><br><span class="line">&gt;  --restart  always  \</span><br><span class="line">&gt;  gliderlabs&#x2F;registrator  \</span><br><span class="line">&gt;  consul:&#x2F;&#x2F;192.168.1.50:8500</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200120155011206.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>5）docker01部署一个nginx服务</p>
+<p>//依赖环境</p>
+<p>[root@docker01 ~]# yum -y install zlib-devel openssl-devel pcre-devel</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@docker01 ~]<span class="comment"># useradd  -M  -s  /sbin/nologin  nginx</span></span><br><span class="line">[root@docker01 ~]<span class="comment"># tar  zxf  nginx-1.14.0.tar.gz </span></span><br><span class="line">[root@docker01 ~]<span class="comment"># cd  nginx-1.14.0/</span></span><br><span class="line">[root@docker01 nginx-<span class="number">1.14</span>.<span class="number">0</span>]<span class="comment"># ./configure  --prefix=/usr/local/nginx  \</span></span><br><span class="line">&gt;  --user=nginx  --group=nginx  <span class="string">\</span></span><br><span class="line">&gt;  --<span class="keyword">with</span>-http_stub_status_module  <span class="string">\</span></span><br><span class="line">&gt;  --<span class="keyword">with</span>-http_realip_module  <span class="string">\</span></span><br><span class="line">&gt;  --<span class="keyword">with</span>-pcre  --<span class="keyword">with</span>-http_ssl_module</span><br><span class="line">[root@docker01 nginx-<span class="number">1.14</span>.<span class="number">0</span>]<span class="comment"># make  &amp;&amp;  make  install</span></span><br><span class="line">[root@docker01 nginx-<span class="number">1.14</span>.<span class="number">0</span>]<span class="comment"># ln  -s  /usr/local/nginx/sbin/*   /usr/local/sbin/</span></span><br><span class="line">[root@docker01 nginx-<span class="number">1.14</span>.<span class="number">0</span>]<span class="comment"># nginx  -t</span></span><br><span class="line">nginx: the configuration file /usr/local/nginx/conf/nginx.conf syntax <span class="keyword">is</span> ok</span><br><span class="line">nginx: configuration file /usr/local/nginx/conf/nginx.conf test <span class="keyword">is</span> successful</span><br><span class="line">[root@docker01 nginx-<span class="number">1.14</span>.<span class="number">0</span>]<span class="comment"># nginx</span></span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>PS：</p>
+<blockquote>
+<p>这里nginx作为反向代理，代理后端docker02、docker03上nignx的容器服务，所以我们先去docker02、docker03上部署一些服务，为了方便等会看到负载的效果，所以我们运行完成容器之后，做一个主界面内容的区分</p>
+</blockquote>
+<blockquote>
+<p>docker02：web01 web02</p>
+<p>docker03：web03 web04</p>
+</blockquote>
+<p>//docker02</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="variable">@docker02</span> ~]<span class="comment"># docker  run  -itd  --name  web01  -P  nginx:latest </span></span><br><span class="line">[root<span class="variable">@docker02</span> ~]<span class="comment"># docker exec  -it  web01   /bin/bash</span></span><br><span class="line">root<span class="variable">@dac0cc15f3fe</span><span class="symbol">:/</span><span class="comment"># cd  /usr/share/nginx/html/</span></span><br><span class="line">root<span class="variable">@dac0cc15f3fe</span><span class="symbol">:/usr/share/nginx/html</span><span class="comment"># echo  &quot;This web caontainer in dockek02-web01&quot;  &gt;  index.html </span></span><br><span class="line">root<span class="variable">@dac0cc15f3fe</span><span class="symbol">:/usr/share/nginx/html</span><span class="comment"># cat  index.html </span></span><br><span class="line">This web caontainer <span class="keyword">in</span> dockek02-web01</span><br><span class="line">[root<span class="variable">@docker02</span> ~]<span class="comment"># docker  run  -itd   --name  web02  -P  nginx:latest </span></span><br><span class="line">[root<span class="variable">@docker02</span> ~]<span class="comment"># docker exec  -it  web02  /bin/bash</span></span><br><span class="line">root<span class="variable">@26d622553e5e</span><span class="symbol">:/</span><span class="comment"># cd  /usr/share/nginx/html/</span></span><br><span class="line">root<span class="variable">@26d622553e5e</span><span class="symbol">:/usr/share/nginx/html</span><span class="comment"># echo  &quot;This web caontainer in dockek02-web02&quot;  &gt;  index.html </span></span><br><span class="line">root<span class="variable">@26d622553e5e</span><span class="symbol">:/usr/share/nginx/html</span><span class="comment"># cat  index.html </span></span><br><span class="line">This web caontainer <span class="keyword">in</span> dockek02-web02</span><br><span class="line">[root<span class="variable">@docker02</span> ~]<span class="comment"># curl  127.0.0.1:32769</span></span><br><span class="line">This web caontainer <span class="keyword">in</span> dockek02-web01</span><br><span class="line">[root<span class="variable">@docker02</span> ~]<span class="comment"># curl  127.0.0.1:32770</span></span><br><span class="line">This web caontainer <span class="keyword">in</span> dockek02-web02</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//docker03</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="variable">@docker03</span> ~]<span class="comment"># docker run  -itd  --name  web03  -P  nginx:latest </span></span><br><span class="line">[root<span class="variable">@docker03</span> ~]<span class="comment"># docker exec -it  web03  /bin/bash</span></span><br><span class="line">root<span class="variable">@a10f25a91edf</span><span class="symbol">:/</span><span class="comment"># cd  /usr/share/nginx/html/</span></span><br><span class="line">root<span class="variable">@a10f25a91edf</span><span class="symbol">:/usr/share/nginx/html</span><span class="comment"># echo  &quot;This web caontainer in dockek03-web03&quot;  &gt;  index.html </span></span><br><span class="line">root<span class="variable">@a10f25a91edf</span><span class="symbol">:/usr/share/nginx/html</span><span class="comment"># cat  index.html </span></span><br><span class="line">This web caontainer <span class="keyword">in</span> dockek03-web03</span><br><span class="line">[root<span class="variable">@docker03</span> ~]<span class="comment"># docker run  -itd  --name  web04  -P  nginx:latest </span></span><br><span class="line">[root<span class="variable">@docker03</span> ~]<span class="comment"># docker exec -it  web04  /bin/bash</span></span><br><span class="line">root<span class="variable">@6d30a445c9b8</span><span class="symbol">:/</span><span class="comment"># cd  /usr/share/nginx/html/</span></span><br><span class="line">root<span class="variable">@6d30a445c9b8</span><span class="symbol">:/usr/share/nginx/html</span><span class="comment"># echo  &quot;his web caontainer in dockek03-web04&quot;  &gt;  index.html </span></span><br><span class="line">root<span class="variable">@6d30a445c9b8</span><span class="symbol">:/usr/share/nginx/html</span><span class="comment"># cat  index.html   </span></span><br><span class="line">This web caontainer <span class="keyword">in</span> dockek03-web04</span><br><span class="line">[root<span class="variable">@docker03</span> ~]<span class="comment"># curl  127.0.0.1:32768</span></span><br><span class="line">This web caontainer <span class="keyword">in</span> dockek03-web03</span><br><span class="line">[root<span class="variable">@docker03</span> ~]<span class="comment"># curl  127.0.0.1:32769</span></span><br><span class="line">This web caontainer <span class="keyword">in</span> dockek03-web04</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>更改nginx的配置文件</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">[root@docker01 ~]<span class="comment"># cd  /usr/local/nginx/</span></span><br><span class="line">[root@docker01 nginx]<span class="comment"># mkdir  consul</span></span><br><span class="line">[root@docker01 nginx]<span class="comment"># cd  consul/</span></span><br><span class="line">[root@docker01 consul]<span class="comment"># pwd</span></span><br><span class="line"><span class="regexp">/usr/</span>local<span class="regexp">/nginx/</span>consul</span><br><span class="line">[root@docker01 consul]<span class="comment"># vim  nginx.ctmpl</span></span><br><span class="line">[root@docker01 consul]<span class="comment"># cat  nginx.ctmpl </span></span><br><span class="line">upstream  httpd_backend &#123;</span><br><span class="line">	&#123;&#123;range service <span class="string">&quot;nginx&quot;</span>&#125;&#125;</span><br><span class="line">	server &#123;&#123; .Address &#125;&#125;:&#123;&#123; .Port &#125;&#125;;</span><br><span class="line">	&#123;&#123; end &#125;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">	listen  <span class="number">8000</span>;</span><br><span class="line">	server_name  localhost;</span><br><span class="line">	location  / &#123;</span><br><span class="line">	proxy_pass  http:<span class="regexp">//</span>http_backend;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">[root@docker01 ~]<span class="comment"># vim  /usr/local/nginx/conf/nginx.conf</span></span><br><span class="line"><span class="regexp">//</span>在文件最后，也就是倒数第二行添加：</span><br><span class="line">include  <span class="regexp">/usr/</span>local<span class="regexp">/nginx/</span>consul/*.conf;</span><br><span class="line"><span class="regexp">//</span>使nginx的主配置文件能够识别到新产生的配置文件</span><br><span class="line">[root@docker01 ~]<span class="comment"># nginx  -s  reload</span></span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//使用consul-template命令，根据模板生产的配置文件，并重新加载nginx的配置文件</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[root@docker01 consul]</span># <span class="selector-tag">consul-template</span> <span class="selector-tag">-consul-addr</span> 192.168.1.70<span class="selector-pseudo">:8500</span> <span class="selector-tag">-template</span> &quot;/<span class="selector-tag">usr</span>/<span class="selector-tag">local</span>/<span class="selector-tag">nginx</span>/<span class="selector-tag">consul</span>/<span class="selector-tag">nginx</span><span class="selector-class">.ctmpl</span>:/<span class="selector-tag">usr</span>/<span class="selector-tag">local</span>/<span class="selector-tag">nginx</span>/<span class="selector-tag">consul</span>/<span class="selector-tag">vhost</span><span class="selector-class">.conf</span>:/<span class="selector-tag">usr</span>/<span class="selector-tag">local</span>/<span class="selector-tag">sbin</span>/<span class="selector-tag">nginx</span>  <span class="selector-tag">-s</span>  <span class="selector-tag">reload</span>&quot;</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//这时这个命令会占用终端，可以使用nohup命令让它保持后台运行</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[root@docker01 consul]</span># <span class="selector-tag">nohup</span>  <span class="selector-tag">consul-template</span> <span class="selector-tag">-consul-addr</span> 192.168.1.70<span class="selector-pseudo">:8500</span> <span class="selector-tag">-template</span> &quot;/<span class="selector-tag">usr</span>/<span class="selector-tag">local</span>/<span class="selector-tag">nginx</span>/<span class="selector-tag">consul</span>/<span class="selector-tag">nginx</span><span class="selector-class">.ctmpl</span>:/<span class="selector-tag">usr</span>/<span class="selector-tag">local</span>/<span class="selector-tag">nginx</span>/<span class="selector-tag">consul</span>/<span class="selector-tag">vhost</span><span class="selector-class">.conf</span>:/<span class="selector-tag">usr</span>/<span class="selector-tag">local</span>/<span class="selector-tag">sbin</span>/<span class="selector-tag">nginx</span>  <span class="selector-tag">-s</span>  <span class="selector-tag">reload</span>&quot;  &amp;</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//此时，应该能够看到，新生产的vhost.conf配置文件已经生效，访问本机的8000端口可以得到不同容器提供的服务</p>
+<figure class="highlight roboconf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">[root@docker01 ~]<span class="comment"># cd  /usr/local/nginx/consul/</span></span><br><span class="line">[root@docker01 consul]<span class="comment"># ls</span></span><br><span class="line">nginx.ctmpl  vhost.conf</span><br><span class="line">[root@docker01 consul]<span class="comment"># cat  vhost.conf</span></span><br><span class="line">upstream  httpd_backend &#123;</span><br><span class="line">	</span><br><span class="line">	<span class="attribute">server 192.168.1.60</span>:32768;</span><br><span class="line">	</span><br><span class="line">	<span class="attribute">server 192.168.1.60</span>:32769;</span><br><span class="line">	</span><br><span class="line">	<span class="attribute">server 192.168.1.60</span>:32770;</span><br><span class="line">	</span><br><span class="line">	<span class="attribute">server 192.168.1.50</span>:32768;</span><br><span class="line">	</span><br><span class="line">	<span class="attribute">server 192.168.1.50</span>:32769;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    <span class="attribute">listen  8000;</span></span><br><span class="line"><span class="attribute">    server_name  localhost;</span></span><br><span class="line"><span class="attribute">    location  / &#123;</span></span><br><span class="line"><span class="attribute">    proxy_pass  http</span>://httpd_backend;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@docker01</span> consul]<span class="meta"># curl  localhost:8000</span></span><br><span class="line">This web caontainer <span class="keyword">in</span> dockek02-web01</span><br><span class="line">[root<span class="symbol">@docker01</span> consul]<span class="meta"># curl  localhost:8000</span></span><br><span class="line">This web caontainer <span class="keyword">in</span> dockek02-web02</span><br><span class="line">[root<span class="symbol">@docker01</span> consul]<span class="meta"># curl  localhost:8000</span></span><br><span class="line">This web caontainer <span class="keyword">in</span> dockek03-web03</span><br><span class="line">[root<span class="symbol">@docker01</span> consul]<span class="meta"># curl  localhost:8000</span></span><br><span class="line">This web caontainer <span class="keyword">in</span> dockek03-web04</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<blockquote>
+<p>当然，这时不管是添加新的nginx的web容器，或是删除，生产的配置文件都会时时更新，这是我们在运行consul-template这条命令最后添加：/usr/local/sbin/nginx -s reload它的作用</p>
+</blockquote>
+<p>//删除之前的test容器，查看vhost文件</p>
+<figure class="highlight roboconf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@docker02 ~]<span class="comment"># docker rm  -f  test</span></span><br><span class="line">[root@docker01 consul]<span class="comment"># cat  vhost.conf </span></span><br><span class="line">upstream  httpd_backend &#123;</span><br><span class="line">	</span><br><span class="line">	<span class="attribute">server 192.168.1.60</span>:32769;</span><br><span class="line">	</span><br><span class="line">	<span class="attribute">server 192.168.1.60</span>:32770;</span><br><span class="line">	</span><br><span class="line">	<span class="attribute">server 192.168.1.50</span>:32768;</span><br><span class="line">	</span><br><span class="line">	<span class="attribute">server 192.168.1.50</span>:32769;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//在运行一个web05，查看vhost文件的变化</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[root@docker02 ~]</span># <span class="selector-tag">docker</span>  <span class="selector-tag">run</span>  <span class="selector-tag">-itd</span>  <span class="selector-tag">--name</span>  <span class="selector-tag">web05</span> <span class="selector-tag">-P</span> <span class="selector-tag">nginx</span><span class="selector-pseudo">:latest</span> </span><br><span class="line"><span class="selector-tag">upstream</span>  <span class="selector-tag">httpd_backend</span> &#123;</span><br><span class="line">	</span><br><span class="line">	<span class="selector-tag">server</span> <span class="selector-tag">192</span><span class="selector-class">.168</span><span class="selector-class">.1</span><span class="selector-class">.60</span><span class="selector-pseudo">:32769</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="selector-tag">server</span> <span class="selector-tag">192</span><span class="selector-class">.168</span><span class="selector-class">.1</span><span class="selector-class">.60</span><span class="selector-pseudo">:32770</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="selector-tag">server</span> <span class="selector-tag">192</span><span class="selector-class">.168</span><span class="selector-class">.1</span><span class="selector-class">.60</span><span class="selector-pseudo">:32771</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="selector-tag">server</span> <span class="selector-tag">192</span><span class="selector-class">.168</span><span class="selector-class">.1</span><span class="selector-class">.50</span><span class="selector-pseudo">:32768</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="selector-tag">server</span> <span class="selector-tag">192</span><span class="selector-class">.168</span><span class="selector-class">.1</span><span class="selector-class">.50</span><span class="selector-pseudo">:32769</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200120155350538.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>1、docker01主机上以二进制包的方式部署consul服务并后台运行，其身份为leader</p>
+<p>2、docker02、docker03以容器的方式运行consul服务，并加入到docker01的consul群集中</p>
+<p>3、在主机docker02、docker03上后台运行registrator容器，使其自动发现docker容器提供的服务，并发送给consul</p>
+<p>4、在docker01上部署Nginx，提供反向代理服务，docker02、docker03主机上基于Nginx镜像，各运行两个web容器，提供不同的网页文件，以便测试效果</p>
+<p>5、在docker01上安装consul-template命令，将收集到的信息（registrator收集到容器的信息）写入template模板中，并且最终写入Nginx的配置文件中</p>
+<p>6、至此，实现客户端通过访问Nginx反向代理服务器（docker01），获得docker02、docker03服务器上运行的Nginx容器提供的网页文件</p>
+<p>Consul：分布式、高可用的，服务发现和配置的工具，数据中心</p>
+<p>Registrator：负责收集dockerhost上，容器服务的信息，并且发送给consul</p>
+<p>registrator是一个能自动发现docker container提供的服务，并在后端服务注册中心注册服务或取消服务的工具，后端注册中心支持consul、etcd、skydns2、zookeeper等</p>
+<p>Consul-template：根据编辑好的模板生成新的nginx配置文件，并且负责加载nginx配置文件</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="阿怪 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="阿怪 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿怪
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://aguai.fun/2020/01/24/Docker%E5%AE%9E%E7%8E%B0%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0/" title="Docker实现服务发现">https://aguai.fun/2020/01/24/Docker实现服务发现/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+  
+</div>
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/01/24/Prometheus%EF%BC%88%E6%99%AE%E7%BD%97%E7%B1%B3%E4%BF%AE%E6%96%AF%EF%BC%89/" rel="prev" title="Prometheus（普罗米修斯）">
+      <i class="fa fa-chevron-left"></i> Prometheus（普罗米修斯）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/01/24/%E5%88%9B%E5%BB%BA%E8%B5%84%E6%BA%90%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F/" rel="next" title="创建资源的两种方式">
+      创建资源的两种方式 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker%E5%AE%9E%E7%8E%B0%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0"><span class="nav-text">Docker实现服务发现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker-Consul-registrator%E5%AE%9E%E7%8E%B0%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0"><span class="nav-text">Docker + Consul + registrator实现服务发现</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="阿怪"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">阿怪</p>
+  <div class="site-description" itemprop="description">直到这一刻微笑着说话为止，我至少留下了一公升眼泪</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">103</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/a_guai_" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;a_guai_" rel="noopener" target="_blank"><i class="crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="阿怪"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">博客</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">574k</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/clicklove.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
+

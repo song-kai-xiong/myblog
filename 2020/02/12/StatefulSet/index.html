@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"aguai.fun","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offalse":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="K8s">
+<meta property="og:type" content="article">
+<meta property="og:title" content="StatefulSet">
+<meta property="og:url" content="https://aguai.fun/2020/02/12/StatefulSet/index.html">
+<meta property="og:site_name" content="阿怪の博客">
+<meta property="og:description" content="K8s">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-02-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-22T10:43:41.562Z">
+<meta property="article:author" content="阿怪">
+<meta property="article:tag" content="k8s">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://aguai.fun/2020/02/12/StatefulSet/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>StatefulSet | 阿怪の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿怪の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">103</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://aguai.fun/2020/02/12/StatefulSet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="阿怪">
+      <meta itemprop="description" content="直到这一刻微笑着说话为止，我至少留下了一公升眼泪">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿怪の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          StatefulSet
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-02-12 00:00:00" itemprop="dateCreated datePublished" datetime="2020-02-12T00:00:00+08:00">2020-02-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-22 18:43:41" itemprop="dateModified" datetime="2020-02-22T18:43:41+08:00">2020-02-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <div class="post-description">K8s</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="StatefulSet"><a href="#StatefulSet" class="headerlink" title="StatefulSet"></a>StatefulSet</h2><p>RC、RS、Deployment、DS（DaemonSet）这些Pod控制器都是面向无状态的服务，它们所管理的Pod的IP、名字、启停顺序等都是随机的</p>
+<p>这些Pod控制器都有一个相同点    </p>
+<blockquote>
+<p>​    <strong>template（模板）：根据模板创建出来的Pod，它们的状态都是一摸一样的（除了名称、IP、域名之外）</strong></p>
+<p>​    <strong>可以理解为：任何一个Pod都可以被删除，然后用新生成的Pod进行替换</strong></p>
+</blockquote>
+<p><strong>StatefulSet：</strong></p>
+<p>顾名思义：有状态的集合，管理所有有状态的服务，比如MySQL、MongoDB集群等</p>
+<p>它之前的名字是：PetSet</p>
+<p>Pet：宠物</p>
+<p>把之前按无状态的服务比喻为牛、羊等牲畜。把有状态的服务比喻为：宠物</p>
+<p>StatefulSet本质上是Deployment的一种变体，在v1.9版本中已成为<strong>GA</strong>版本，它为了解决有状态服务的问题，它所管理的Pod拥有固定的Pod名称，启停顺序，在StatefulSet中，Pod名字称为网络标识(hostname)，还必须要用到共享存储</p>
+<blockquote>
+<p><strong>有状态的服务：后端生成的每一个Pod都具有自己的唯一性，不可随意被删除</strong></p>
+<p><strong>需要记录前一次或者多次通信中的相关事件，以作为下一次通信的分类标准。比如：mysql等数据库服务。（Pod的名称不能随意变化，数据持久化的目录也是不一样的，每一个Pod都有自己独有的数据持久化存储目录）</strong></p>
+</blockquote>
+<p>一个小实例：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">root@master</span> <span class="string">~</span>]<span class="comment"># vim  statefulset.yaml</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">headless-svc</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">headless-svc</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">port:</span> <span class="number">80</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">headless-pod</span></span><br><span class="line">  <span class="attr">clusterIP:</span> <span class="string">None</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">StatefulSet</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">statefulset-test</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">serviceName:</span> <span class="string">headless-svc</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">3</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">headless-pod</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">headless-pod</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">myhttpd</span></span><br><span class="line">        <span class="attr">image:</span> <span class="string">httpd</span></span><br><span class="line">        <span class="attr">ports:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">80</span></span><br><span class="line">[<span class="string">root@master</span> <span class="string">~</span>]<span class="comment"># kubectl  apply  -f  statefulset.yaml </span></span><br><span class="line"><span class="string">service/headless-svc</span> <span class="string">created</span></span><br><span class="line"><span class="string">statefulset.apps/statefulset-test</span> <span class="string">created</span></span><br><span class="line">[<span class="string">root@master</span> <span class="string">~</span>]<span class="comment"># kubectl  get svc</span></span><br><span class="line"><span class="string">NAME</span>           <span class="string">TYPE</span>        <span class="string">CLUSTER-IP</span>   <span class="string">EXTERNAL-IP</span>   <span class="string">PORT(S)</span>   <span class="string">AGE</span></span><br><span class="line"><span class="string">headless-svc</span>   <span class="string">ClusterIP</span>   <span class="string">None</span>         <span class="string">&lt;none&gt;</span>        <span class="number">80</span><span class="string">/TCP</span>    <span class="string">4m</span></span><br></pre></td></tr></table></figure>
+<p>Deployment控制的pod的名称由来：</p>
+<p>​    Deployment+RS+随机字符串（Pod的名称），没有顺序的额，可以被随意替代</p>
+<p>StategulSet的三个组成部分：</p>
+<p>1、headless-svc：无头服务。因为没有IP地址，所以它不具备负载均衡的功能了</p>
+<p>作用：为后端的每一个Pod去命名</p>
+<p>因为statefulset要求Pod的名称是有顺序的，每一个Pod都不能被随意取代，也就是说即使Pod重建之后，名称依然不变</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]# kubectl  get pod</span><br><span class="line">NAME                 READY   STATUS    RESTARTS   AGE</span><br><span class="line">statefulset-test-0   1/1     Running   0          23m</span><br><span class="line">statefulset-test-1   1/1     Running   0          22m</span><br><span class="line">statefulset-test-2   1/1     Running   0          22m</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]# kubectl  delete  pod  statefulset-test-0</span><br><span class="line">[root@master ~]# kubectl  get pod</span><br><span class="line">NAME                 READY   STATUS              RESTARTS   AGE</span><br><span class="line">statefulset-test-0   0/1     ContainerCreating   0          6s</span><br><span class="line">statefulset-test-1   1/1     Running             0          25m</span><br><span class="line">statefulset-test-2   1/1     Running             0          25m</span><br><span class="line">//Pod重建之后名称没有发生变化</span><br></pre></td></tr></table></figure>
+<p>2、statefulset：定义具体的应用</p>
+<p>3、volumeClaimTeplates：自动创建PVC，为后端的Pod提供专有的存储</p>
+<p>存储卷申请模板，创建PVC，指定pvc名称大小，将自动创建pvc，且pvc必须由存储类供应</p>
+<blockquote>
+<p><strong>为什么需要 headless service 无头服务？</strong><br>在用Deployment时，每一个Pod名称是没有顺序的，是随机字符串，因此是Pod名称是无序的，但是在statefulset中要求必须是有序 ，每一个pod不能被随意取代，pod重建后pod名称还是一样的。而pod IP是变化的，所以是以Pod名称来识别。pod名称是pod唯一性的标识符，必须持久稳定有效。这时候要用到无头服务，它可以给每个Pod一个唯一的名称 。<br><strong>为什么需要volumeClaimTemplate？</strong><br>对于有状态的副本集都会用到持久存储，对于分布式系统来讲，它的最大特点是数据是不一样的，所以各个节点不能使用同一存储卷，每个节点有自已的专用存储，但是如果在Deployment中的Pod template里定义的存储卷，是所有副本集共用一个存储卷，数据是相同的，因为是基于模板来的 ，而statefulset中每个Pod都要自已的专有存储卷，所以statefulset的存储卷就不能再用Pod模板来创建了，于是statefulSet使用volumeClaimTemplate，称为卷申请模板，它会为每个Pod生成不同的pvc，并绑定pv， 从而实现各pod有专用存储。这就是为什么要用volumeClaimTemplate的原因</p>
+</blockquote>
+<p>每一个pod—&gt;对应一个pvc—-&gt;每一个pvc对应一个pv</p>
+<p>​    storageclass：自动创建PV</p>
+<p>​    需要解决：自动创建PVC—–&gt;volumeClaimTeplates</p>
+<p>一、创建StorageClass资源对象</p>
+<p>​    1、基于NFS服务，创建NFS服务</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]# showmount  -e</span><br><span class="line">Export list for master:</span><br><span class="line">/nfsdata *</span><br></pre></td></tr></table></figure>
+<p>​    2、创建rbac权限</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">root@master</span> <span class="string">~</span>]<span class="comment"># vim rbac-rolebind.yaml</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nfs-provisioner</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterRole</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nfs-provisioner-runner</span></span><br><span class="line"><span class="attr">rules:</span></span><br><span class="line">   <span class="bullet">-</span>  <span class="attr">apiGroups:</span> [<span class="string">&quot;&quot;</span>]</span><br><span class="line">      <span class="attr">resources:</span> [<span class="string">&quot;persistentvolumes&quot;</span>]</span><br><span class="line">      <span class="attr">verbs:</span> [<span class="string">&quot;get&quot;</span>, <span class="string">&quot;list&quot;</span>, <span class="string">&quot;watch&quot;</span>, <span class="string">&quot;create&quot;</span>, <span class="string">&quot;delete&quot;</span>]</span><br><span class="line">   <span class="bullet">-</span>  <span class="attr">apiGroups:</span> [<span class="string">&quot;&quot;</span>]</span><br><span class="line">      <span class="attr">resources:</span> [<span class="string">&quot;persistentvolumeclaims&quot;</span>]</span><br><span class="line">      <span class="attr">verbs:</span> [<span class="string">&quot;get&quot;</span>, <span class="string">&quot;list&quot;</span>, <span class="string">&quot;watch&quot;</span>, <span class="string">&quot;update&quot;</span>]</span><br><span class="line">   <span class="bullet">-</span>  <span class="attr">apiGroups:</span> [<span class="string">&quot;storage.k8s.io&quot;</span>]</span><br><span class="line">      <span class="attr">resources:</span> [<span class="string">&quot;storageclasses&quot;</span>]</span><br><span class="line">      <span class="attr">verbs:</span> [<span class="string">&quot;get&quot;</span>, <span class="string">&quot;list&quot;</span>, <span class="string">&quot;watch&quot;</span>]</span><br><span class="line">   <span class="bullet">-</span>  <span class="attr">apiGroups:</span> [<span class="string">&quot;&quot;</span>]</span><br><span class="line">      <span class="attr">resources:</span> [<span class="string">&quot;events&quot;</span>]</span><br><span class="line">      <span class="attr">verbs:</span> [<span class="string">&quot;watch&quot;</span>, <span class="string">&quot;create&quot;</span>, <span class="string">&quot;update&quot;</span>, <span class="string">&quot;patch&quot;</span>]</span><br><span class="line">   <span class="bullet">-</span>  <span class="attr">apiGroups:</span> [<span class="string">&quot;&quot;</span>]</span><br><span class="line">      <span class="attr">resources:</span> [<span class="string">&quot;services&quot;</span>, <span class="string">&quot;endpoints&quot;</span>]</span><br><span class="line">      <span class="attr">verbs:</span> [<span class="string">&quot;get&quot;</span>,<span class="string">&quot;create&quot;</span>,<span class="string">&quot;list&quot;</span>, <span class="string">&quot;watch&quot;</span>,<span class="string">&quot;update&quot;</span>]</span><br><span class="line">   <span class="bullet">-</span>  <span class="attr">apiGroups:</span> [<span class="string">&quot;extensions&quot;</span>]</span><br><span class="line">      <span class="attr">resources:</span> [<span class="string">&quot;podsecuritypolicies&quot;</span>]</span><br><span class="line">      <span class="attr">resourceNames:</span> [<span class="string">&quot;nfs-provisioner&quot;</span>]</span><br><span class="line">      <span class="attr">verbs:</span> [<span class="string">&quot;use&quot;</span>]</span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterRoleBinding</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">run-nfs-provisioner</span></span><br><span class="line"><span class="attr">subjects:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">nfs-provisioner</span></span><br><span class="line">    <span class="attr">namespace:</span>  <span class="string">default</span>   <span class="string">//这个字段必须要写，不然会报错</span></span><br><span class="line"><span class="attr">roleRef:</span></span><br><span class="line">  <span class="attr">kind:</span> <span class="string">ClusterRole</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nfs-provisioner-runner</span></span><br><span class="line">  <span class="attr">apiGroup:</span> <span class="string">rbac.authorization.k8s.io</span></span><br><span class="line">[<span class="string">root@master</span> <span class="string">~</span>]<span class="comment"># kubectl apply -f  rbac-rolebind.yaml </span></span><br><span class="line"><span class="string">serviceaccount/nfs-provisioner</span> <span class="string">unchanged</span></span><br><span class="line"><span class="string">clusterrole.rbac.authorization.k8s.io/nfs-provisioner-runner</span> <span class="string">unchanged</span></span><br><span class="line"><span class="string">clusterrolebinding.rbac.authorization.k8s.io/run-nfs-provisioner</span> <span class="string">created</span></span><br></pre></td></tr></table></figure>
+<p>​    3、创建Deployment资源对象，用Pod代替真正的NFS服务</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">root@master</span> <span class="string">~</span>]<span class="comment"># vim nfs-deployment.yaml</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">extensions/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nfs-client-provisioner</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">strategy:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">Recreate</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">nfs-client-provisioner</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">serviceAccount:</span> <span class="string">nfs-provisioner</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nfs-client-provisioner</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">registry.cn-hangzhou.aliyuncs.com/open-ali/nfs-client-provisioner</span></span><br><span class="line">          <span class="attr">volumeMounts:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nfs-client-root</span></span><br><span class="line">              <span class="attr">mountPath:</span>  <span class="string">/persistentvolumes</span></span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">PROVISIONER_NAME</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">bdqn</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">NFS_SERVER</span></span><br><span class="line">              <span class="attr">value:</span> <span class="number">192.168</span><span class="number">.1</span><span class="number">.70</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">NFS_PATH</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">/nfsdata</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nfs-client-root</span></span><br><span class="line">          <span class="attr">nfs:</span></span><br><span class="line">            <span class="attr">server:</span> <span class="number">192.168</span><span class="number">.1</span><span class="number">.70</span></span><br><span class="line">            <span class="attr">path:</span> <span class="string">/nfsdata</span></span><br><span class="line">[<span class="string">root@master</span> <span class="string">~</span>]<span class="comment"># kubectl  apply  -f nfs-deployment.yaml </span></span><br><span class="line"><span class="string">deployment.extensions/nfs-client-provisioner</span> <span class="string">created</span></span><br><span class="line">[<span class="string">root@master</span> <span class="string">~</span>]<span class="comment"># kubectl  get pod</span></span><br><span class="line"><span class="string">NAME</span>                                     <span class="string">READY</span>   <span class="string">STATUS</span>    <span class="string">RESTARTS</span>   <span class="string">AGE</span></span><br><span class="line"><span class="string">nfs-client-provisioner-f6cb6688b-5zn8d</span>   <span class="number">1</span><span class="string">/1</span>     <span class="string">Running</span>   <span class="number">0</span>          <span class="string">7s</span></span><br></pre></td></tr></table></figure>
+<p>​    4、创建storaclass</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">root@master</span> <span class="string">~</span>]<span class="comment"># vim test-storageclass.yaml</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">storage.k8s.io/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">StorageClass</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">sc-nfs</span></span><br><span class="line"><span class="attr">provisioner:</span> <span class="string">bdqn</span></span><br><span class="line"><span class="attr">reclaimPolicy:</span> <span class="string">Retain</span></span><br><span class="line">[<span class="string">root@master</span> <span class="string">~</span>]<span class="comment"># kubectl  apply  -f  test-storageclass.yaml </span></span><br><span class="line"><span class="string">storageclass.storage.k8s.io/sc-nfs</span> <span class="string">created</span></span><br><span class="line">[<span class="string">root@master</span> <span class="string">~</span>]<span class="comment"># kubectl  get sc</span></span><br><span class="line"><span class="string">NAME</span>     <span class="string">PROVISIONER</span>   <span class="string">AGE</span></span><br><span class="line"><span class="string">sc-nfs</span>   <span class="string">bdqn</span>          <span class="string">10s</span></span><br></pre></td></tr></table></figure>
+<p>二、解决自动创建PVC</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">root@master</span> <span class="string">~</span>]<span class="comment"># vim  statefulset.yaml</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">headless-svc</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">headless-svc</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">port:</span> <span class="number">80</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">myweb</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">headless-pod</span></span><br><span class="line">  <span class="attr">clusterIP:</span> <span class="string">None</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">StatefulSet</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">statefulset-test</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">serviceName:</span> <span class="string">headless-svc</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">3</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">headless-pod</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">headless-pod</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">image:</span> <span class="string">httpd</span></span><br><span class="line">        <span class="attr">name:</span> <span class="string">myhttpd</span></span><br><span class="line">        <span class="attr">ports:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">80</span></span><br><span class="line">          <span class="attr">name:</span> <span class="string">httpd</span></span><br><span class="line">        <span class="attr">volumeMounts:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">mountPath:</span> <span class="string">/mnt</span></span><br><span class="line">          <span class="attr">name:</span> <span class="string">test</span></span><br><span class="line">  <span class="attr">volumeClaimTemplates:</span>  <span class="string">//自动的创建PVC</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">test</span></span><br><span class="line">      <span class="attr">annotations:</span>   <span class="string">//这是指定storageclass</span></span><br><span class="line">        <span class="attr">volume.beta.kubernetes.io/storage-class:</span> <span class="string">sc-nfs</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">accessModes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">ReadWriteOnce</span></span><br><span class="line">      <span class="attr">resources:</span></span><br><span class="line">        <span class="attr">requests:</span></span><br><span class="line">          <span class="attr">storage:</span> <span class="string">100Mi</span></span><br><span class="line">[<span class="string">root@master</span> <span class="string">~</span>]<span class="comment"># kubectl  apply  -f  statefulset.yaml </span></span><br><span class="line"><span class="string">service/headless-svc</span> <span class="string">created</span></span><br><span class="line"><span class="string">statefulset.apps/statefulset-test</span> <span class="string">created</span></span><br><span class="line">[<span class="string">root@master</span> <span class="string">~</span>]<span class="comment"># kubectl  get pod</span></span><br><span class="line"><span class="string">NAME</span>                                     <span class="string">READY</span>   <span class="string">STATUS</span>    <span class="string">RESTARTS</span>   <span class="string">AGE</span></span><br><span class="line"><span class="string">nfs-client-provisioner-f6cb6688b-5zn8d</span>   <span class="number">1</span><span class="string">/1</span>     <span class="string">Running</span>   <span class="number">0</span>          <span class="string">13m</span></span><br><span class="line"><span class="string">statefulset-test-0</span>                       <span class="number">1</span><span class="string">/1</span>     <span class="string">Running</span>   <span class="number">0</span>          <span class="string">23s</span></span><br><span class="line"><span class="string">statefulset-test-1</span>                       <span class="number">1</span><span class="string">/1</span>     <span class="string">Running</span>   <span class="number">0</span>          <span class="string">16s</span></span><br><span class="line"><span class="string">statefulset-test-2</span>                       <span class="number">1</span><span class="string">/1</span>     <span class="string">Running</span>   <span class="number">0</span>          <span class="string">9s</span></span><br></pre></td></tr></table></figure>
+<p>注意：</p>
+<p>​    如果生成的Pod，第一个出现了问题，后面的都不会生成</p>
+<p>根据volumeClaimTemplates自动创建的PVC：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]# kubectl  get pvc</span><br><span class="line">NAME                      STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE</span><br><span class="line">test-statefulset-test-0   Bound    pvc-3a105a9d-5892-4080-a993-20fd2540cd3e   100Mi      RWO            sc-nfs         46m</span><br><span class="line">test-statefulset-test-1   Bound    pvc-123bf53d-a72b-4bfa-a901-bb98efcda056   100Mi      RWO            sc-nfs         45m</span><br><span class="line">test-statefulset-test-2   Bound    pvc-8529c668-5b38-4024-93af-b18fa238b0ba   100Mi      RWO            sc-nfs         45m</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>如果集群中没有StorageClass的动态供应PVC的机制，也可以提前手动创建多个PV、PVC，手动创建的PVC名称必须符合之后创建的StatefulSet命名规则：**(volumeClaimTemplates.name)-(pod_name)**</p>
+</blockquote>
+<blockquote>
+<p>Statefulset名称为statefulset-test  </p>
+<p>三个Pod副本: statefulset-test-0，statefulset-test-1，statefulset-test-2</p>
+<p>volumeClaimTemplates名称为：test</p>
+<p>那么自动创建出来的PVC名称为test-statefulset-test-[0-2]，为每个Pod创建一个PVC</p>
+</blockquote>
+<p><strong>规律总结：</strong></p>
+<blockquote>
+<ul>
+<li>匹配Pod name(网络标识)的模式为：**$(statefulset名称)-$(序号)**，比如上面的示例：statefulset-test-0，statefulset-test-1，statefulset-test-2。</li>
+<li>StatefulSet为每个Pod副本创建了一个DNS域名，这个域名的格式为： **$(podname).(headless server name)**，也就意味着服务间是通过Pod域名来通信而非Pod IP，因为当Pod所在Node发生故障时，Pod会被飘移到其它Node上，Pod IP会发生变化，但是Pod域名不会有变化。</li>
+<li>StatefulSet使用Headless服务来控制Pod的域名，这个域名的FQDN为：**$(service name).$(namespace).svc.cluster.local**，其中，“cluster.local”指的是集群的域名。</li>
+<li>根据volumeClaimTemplates，为每个Pod创建一个pvc，pvc的命名规则匹配模式：**(volumeClaimTemplates.name)-(pod_name)**，比如上面的volumeMounts.name=test， Pod name=statefulset-test-[0-2]，因此创建出来的PVC是test-statefulset-test-0，test-statefulset-test-1，test-statefulset-test-2</li>
+<li>删除Pod不会删除其pvc，手动删除pvc将自动释放pv。<br>关于Cluster Domain、headless service名称、StatefulSet 名称如何影响StatefulSet的Pod的</li>
+</ul>
+</blockquote>
+<p><strong>StatefulSet的启停顺序：</strong></p>
+<blockquote>
+<ul>
+<li>有序部署：部署StatefulSet时，如果有多个Pod副本，它们会被顺序地创建（从0到N-1）并且，在下一个Pod运行之前所有之前的Pod必须都是Running和Ready状态。</li>
+<li>有序删除：当Pod被删除时，它们被终止的顺序是从N-1到0。</li>
+<li>有序扩展：当对Pod执行扩展操作时，与部署一样，它前面的Pod必须都处于Running和Ready状态</li>
+</ul>
+</blockquote>
+<p><strong>StatefulSet Pod管理策略</strong>：</p>
+<blockquote>
+<p>在v1.7以后，通过允许修改Pod排序策略，同时通过.spec.podManagementPolicy字段确保其身份的唯一性。</p>
+<ul>
+<li>OrderedReady：上述的启停顺序，默认设置。</li>
+<li>Parallel：告诉StatefulSet控制器并行启动或终止所有Pod，并且在启动或终止另一个Pod之前不等待前一个Pod变为Running and Ready或完全终止</li>
+</ul>
+</blockquote>
+<p><strong>StatefulSet使用场景</strong>：</p>
+<blockquote>
+<ul>
+<li>稳定的持久化存储，即Pod重新调度后还是能访问到相同的持久化数据，基于PVC来实现</li>
+<li>稳定的网络标志，即Pod重新调度后其PodName和HostName不变，基于Headless Service（即没有Cluster IP的Service）来实现</li>
+<li>有序部署，有序扩展，即Pod是有顺序的，在部署或者扩展的时候要依据定义的顺序依次依次进行（即从0到N-1，在下一个Pod运行之前所有之前的Pod必须都是Running和Ready状态），基于init containers来实现</li>
+<li>有序收缩，有序删除（即从N-1到0）</li>
+</ul>
+</blockquote>
+<p><strong>更新策略：</strong></p>
+<blockquote>
+<p>在Kubernetes 1.7及更高版本中，通过.spec.updateStrategy字段允许配置或禁用Pod、labels、source request/limits、annotations自动滚动更新功能。</p>
+<p><strong>OnDelete：</strong>通过.spec.updateStrategy.type 字段设置为OnDelete，StatefulSet控制器不会自动更新StatefulSet中的Pod。用户必须手动删除Pod，以使控制器创建新的Pod。</p>
+<p><strong>RollingUpdate：</strong>通过.spec.updateStrategy.type 字段设置为RollingUpdate，实现了Pod的自动滚动更新，如果.spec.updateStrategy未指定，则此为默认策略。<br>StatefulSet控制器将删除并重新创建StatefulSet中的每个Pod。它将以Pod终止（从最大序数到最小序数）的顺序进行，一次更新每个Pod。在更新下一个Pod之前，必须等待这个Pod Running and Ready。</p>
+<p><strong>Partitions：</strong>通过指定 .spec.updateStrategy.rollingUpdate.partition 来对 RollingUpdate 更新策略进行分区，如果指定了分区，则当 StatefulSet 的 .spec.template 更新时，具有大于或等于分区序数的所有 Pod 将被更新。</p>
+<p>具有小于分区的序数的所有 Pod 将不会被更新，即使删除它们也将被重新创建。如果 StatefulSet 的 .spec.updateStrategy.rollingUpdate.partition 大于其 .spec.replicas，则其 .spec.template 的更新将不会传播到 Pod。在大多数情况下，不需要使用分区</p>
+</blockquote>
+<p><strong>StatefulSet注意事项：</strong></p>
+<blockquote>
+<ol>
+<li>还在beta状态，需要kubernetes v1.5版本以上才支持</li>
+<li>所有Pod的Volume必须使用PersistentVolume或者是管理员事先创建好</li>
+<li>为了保证数据安全，删除StatefulSet时不会删除Volume</li>
+<li>StatefulSet需要一个Headless Service来定义DNS domain，需要在StatefulSet之前创建好</li>
+<li>目前StatefulSet还没有feature complete，比如更新操作还需要手动patch</li>
+</ol>
+</blockquote>
+<p><strong>更多可以参考：<a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/">https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/</a></strong></p>
+<p>进入容器，验证持久化是否成功</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]# kubectl  get pod</span><br><span class="line">NAME                                     READY   STATUS    RESTARTS   AGE</span><br><span class="line">nfs-client-provisioner-f6cb6688b-5zn8d   1/1     Running   0          30m</span><br><span class="line">statefulset-test-0                       1/1     Running   0          17m</span><br><span class="line">statefulset-test-1                       1/1     Running   0          16m</span><br><span class="line">statefulset-test-2                       1/1     Running   0          16m</span><br><span class="line">[root@master ~]# kubectl exec  -it  statefulset-test-0  /bin/sh</span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="built_in">cd</span>  /mnt</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> touch  testfile</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="built_in">exit</span></span></span><br><span class="line">[root@master ~]# ls  /nfsdata/default-test-statefulset-test-0-pvc-3a105a9d-5892-4080-a993-20fd2540cd3e/</span><br><span class="line">testfile</span><br></pre></td></tr></table></figure>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a><strong>小结</strong></h2><p>Deployment、RC、RS、DS：</p>
+<blockquote>
+<p>这些Pod控制器都是面向无状态的服务，他们管理的Pod的IP、名字、启停顺序等都是随机的</p>
+<p>这些根据模板创建出来的Pod，特们的状态都是一摸一样的（除了名称、IP、域名之外）</p>
+<p>任何一个Pod都可以被删除，然后用因生成的Pod进项替换</p>
+</blockquote>
+<p>StatefulSet：</p>
+<blockquote>
+<p>顾名思义：有状态的集合，管理所有的有状态服务，比如MySQL集群等</p>
+<p>后端生成的每一个Pod都具有自己的唯一性，不可被随意删除</p>
+<p>需要记录前一次或者多次通信中的相关事件，以作为下一次通信的分类标准</p>
+<p>Pod的名称不能随意变化，数据持久化的目录也是不一样的，每一个Pod又都自己独有的数据持久化存储目录</p>
+</blockquote>
+<p>扩容、缩容：在此过程中，Pod的生成或删除操作也是有顺序性的</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">root@master</span> <span class="string">~</span>]<span class="comment"># kubectl  get pod  -n zhb</span></span><br><span class="line"><span class="string">NAME</span>                                     <span class="string">READY</span>   <span class="string">STATUS</span>    <span class="string">RESTARTS</span>   <span class="string">AGE</span></span><br><span class="line"><span class="string">nfs-client-provisioner-f6cb6688b-x2zls</span>   <span class="number">1</span><span class="string">/1</span>     <span class="string">Running</span>   <span class="number">1</span>          <span class="string">42h</span></span><br><span class="line"><span class="string">statefulset-test-0</span>                       <span class="number">1</span><span class="string">/1</span>     <span class="string">Running</span>   <span class="number">1</span>          <span class="string">42h</span></span><br><span class="line"><span class="string">statefulset-test-1</span>                       <span class="number">1</span><span class="string">/1</span>     <span class="string">Running</span>   <span class="number">1</span>          <span class="string">42h</span></span><br><span class="line"><span class="string">statefulset-test-2</span>                       <span class="number">1</span><span class="string">/1</span>     <span class="string">Running</span>   <span class="number">1</span>          <span class="string">42h</span></span><br><span class="line"><span class="string">statefulset-test-3</span>                       <span class="number">1</span><span class="string">/1</span>     <span class="string">Running</span>   <span class="number">0</span>          <span class="string">76s</span></span><br><span class="line"><span class="string">statefulset-test-4</span>                       <span class="number">1</span><span class="string">/1</span>     <span class="string">Running</span>   <span class="number">0</span>          <span class="string">66s</span></span><br></pre></td></tr></table></figure>
+<p>升级操作：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]# kubectl explain sts.spec.updateStrategy.rollingUpdate.partition</span><br></pre></td></tr></table></figure>
+<p>partition：如果partition后面的值等于N，N+的都会更新，默认值为0（所有都会更新）</p>
+<p>如果N等于2，那么它会从statefulset-test-2开始更新，以此类推</p>
+<p>statefulset-test-0<br>statefulset-test-1<br>statefulset-test-2<br>statefulset-test-3<br>statefulset-test-4</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="阿怪 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="阿怪 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿怪
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://aguai.fun/2020/02/12/StatefulSet/" title="StatefulSet">https://aguai.fun/2020/02/12/StatefulSet/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+  
+</div>
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/k8s/" rel="tag"># k8s</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/11/k8s%E7%9A%84%E5%AD%98%E5%82%A8%E7%B1%BB/" rel="prev" title="k8s的存储类">
+      <i class="fa fa-chevron-left"></i> k8s的存储类
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/02/17/ConfigMap%E3%80%81Secret/" rel="next" title="ConfigMap、Secret">
+      ConfigMap、Secret <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#StatefulSet"><span class="nav-text">StatefulSet</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-text">小结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="阿怪"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">阿怪</p>
+  <div class="site-description" itemprop="description">直到这一刻微笑着说话为止，我至少留下了一公升眼泪</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">103</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/a_guai_" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;a_guai_" rel="noopener" target="_blank"><i class="crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="阿怪"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">博客</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">574k</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/clicklove.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
+

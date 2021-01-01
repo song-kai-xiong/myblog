@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"aguai.fun","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offalse":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ansible">
+<meta property="og:url" content="https://aguai.fun/2020/05/23/ansible/index.html">
+<meta property="og:site_name" content="阿怪の博客">
+<meta property="og:description" content="Python">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200518175359779.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200518175415879.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200518175432764.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200518175453410.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200518175508960.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200518175527367.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200519185637539.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200519185659673.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2020051918571766.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200519185738593.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200519185751778.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200519185803387.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200519185815767.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200519185828701.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200519185843492.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200523194841497.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200523194858187.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200523194921219.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200523194932669.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200523195022899.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200523195010285.png">
+<meta property="article:published_time" content="2020-05-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-09-02T06:26:21.388Z">
+<meta property="article:author" content="阿怪">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200518175359779.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+
+<link rel="canonical" href="https://aguai.fun/2020/05/23/ansible/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ansible | 阿怪の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿怪の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">103</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://aguai.fun/2020/05/23/ansible/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="阿怪">
+      <meta itemprop="description" content="直到这一刻微笑着说话为止，我至少留下了一公升眼泪">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿怪の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ansible
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-05-23 00:00:00" itemprop="dateCreated datePublished" datetime="2020-05-23T00:00:00+08:00">2020-05-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-02 14:26:21" itemprop="dateModified" datetime="2020-09-02T14:26:21+08:00">2020-09-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.8k</span>
+            </span>
+            <div class="post-description">Python</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="下载ansible"><a href="#下载ansible" class="headerlink" title="下载ansible"></a>下载ansible</h1><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip3 install -i https:<span class="regexp">//</span>pypi.douban.com<span class="regexp">/simple/</span> ansible</span><br></pre></td></tr></table></figure>
+<h1 id="配置ssh"><a href="#配置ssh" class="headerlink" title="配置ssh"></a>配置ssh</h1><p> <a href="https://aguai.fun/posts/59654d60.html">https://aguai.fun/posts/59654d60.html</a> </p>
+<h1 id="ansible使用原则"><a href="#ansible使用原则" class="headerlink" title="ansible使用原则"></a>ansible使用原则</h1><blockquote>
+<p>确定要操作哪些服务器（服务器列表）<br>确定对这些服务器进行什么样的操作（命令）</p>
+</blockquote>
+<h1 id="第一次连通"><a href="#第一次连通" class="headerlink" title="第一次连通"></a>第一次连通</h1><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># mkdir /etc/ansible</span></span><br><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># vim /etc/ansible/hosts</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[test]</span></span><br><span class="line"><span class="number">127.0.0.1</span></span><br><span class="line"><span class="number">192.168.1.20</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[root@localhost ~]</span># <span class="selector-tag">ssh-copy-id</span> <span class="selector-tag">-i</span>  ~/<span class="selector-class">.ssh</span>/<span class="selector-tag">id_rsa</span><span class="selector-class">.pub</span> 127.0.0.1</span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># ansible test -m ping</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200518175359779.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h1 id="第二次连通"><a href="#第二次连通" class="headerlink" title="第二次连通"></a>第二次连通</h1><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># vim /etc/ansible/ansible.cfg</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[defaults]</span></span><br><span class="line"><span class="attr">remote_port</span> = <span class="number">22</span></span><br><span class="line"><span class="attr">remote_user</span> = root</span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># ansible test -m ping</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200518175415879.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># ansible test -m command -a <span class="string">&quot;hostname&quot;</span></span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200518175432764.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h1 id="传输文件"><a href="#传输文件" class="headerlink" title="传输文件"></a>传输文件</h1><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># mkdir /tmp/abc</span></span><br><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># cd /tmp/abc/</span></span><br><span class="line">[root<span class="symbol">@localhost</span> abc]<span class="meta"># ls</span></span><br><span class="line"><span class="number">666.</span>txt</span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> abc]<span class="meta"># ansible test -m copy -a <span class="string">&quot;src=/tmp/abc/666.txt dest=/opt/666.txt&quot;</span></span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200518175453410.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>再执行一遍命令就变绿色了</p>
+<h1 id="安装东西"><a href="#安装东西" class="headerlink" title="安装东西"></a>安装东西</h1><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> abc]<span class="meta"># ansible test -m yum -a <span class="string">&quot;name=tmux state=present&quot;</span> -become</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200518175508960.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>再执行一遍就变绿了</p>
+<h1 id="写剧本"><a href="#写剧本" class="headerlink" title="写剧本"></a>写剧本</h1><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> abc]<span class="meta"># vim test_playbook.yml </span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">hosts:</span> <span class="string">test</span></span><br><span class="line">  <span class="attr">become:</span> <span class="literal">yes</span></span><br><span class="line">  <span class="attr">become_method:</span> <span class="string">sudo</span></span><br><span class="line">  <span class="attr">tasks:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">copy</span> <span class="string">file</span></span><br><span class="line">    <span class="attr">copy:</span> <span class="string">src=/tmp/abc/666.txt</span> <span class="string">dest=/opt/666.txt</span></span><br><span class="line"></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">package</span> <span class="string">install</span></span><br><span class="line">    <span class="attr">yum:</span> <span class="string">name=&#123;&#123;item&#125;&#125;</span> <span class="string">state=present</span></span><br><span class="line">    <span class="attr">with_items:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">tmux</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> abc]<span class="meta"># ansible-playbook test_playbook.yml </span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200518175527367.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>第二次执行就正常了</p>
+<h1 id="指定"><a href="#指定" class="headerlink" title="指定"></a>指定</h1><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[root@localhost ~]</span># <span class="selector-tag">ssh-copy-id</span> <span class="selector-tag">-i</span>  ~/<span class="selector-class">.ssh</span>/<span class="selector-tag">id_rsa</span><span class="selector-class">.pub</span> 192.168.1.10</span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># vim hosts</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[demo]</span></span><br><span class="line"><span class="number">192.168.1.20</span></span><br><span class="line"><span class="number">192.168.1.10</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># rm -rf /etc/ansible/hosts </span></span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># ansible demo -i hosts -m ping</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200519185637539.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h1 id="Inventory管理"><a href="#Inventory管理" class="headerlink" title="Inventory管理"></a>Inventory管理</h1><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># vim /etc/ansible/ansible.cfg </span></span><br></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[defaults]</span></span><br><span class="line"><span class="attr">remote_port</span> = <span class="number">22</span></span><br><span class="line"><span class="attr">remote_user</span> = root</span><br><span class="line"><span class="attr">inventory</span> = /root/hosts</span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># ansible demo --list-hosts</span></span><br><span class="line">  hosts (<span class="number">2</span>):</span><br><span class="line">    <span class="number">192.168</span><span class="number">.1</span><span class="number">.20</span></span><br><span class="line">    <span class="number">192.168</span><span class="number">.1</span><span class="number">.10</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>按照服务器的功能，需要对服务器进行分类管理<br>hosts文件的定义就需要进行分组管理IP</p>
+</blockquote>
+<h1 id="按组定义hosts"><a href="#按组定义hosts" class="headerlink" title="按组定义hosts"></a>按组定义hosts</h1><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># vim hosts</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">127.0.0.1</span></span><br><span class="line"><span class="string">[webservers]</span></span><br><span class="line"><span class="number">192.168.1.10</span></span><br><span class="line"><span class="string">[dbservers]</span></span><br><span class="line"><span class="number">192.168.1.20</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="variable">@localhost</span> <span class="operator">~</span>]# ansible webservers <span class="comment">--list-hosts</span></span><br><span class="line">  hosts (<span class="number">1</span>):</span><br><span class="line">    <span class="number">192.168</span><span class="number">.1</span><span class="number">.10</span></span><br><span class="line">[root<span class="variable">@localhost</span> <span class="operator">~</span>]# ansible dbservers <span class="comment">--list-hosts</span></span><br><span class="line">  hosts (<span class="number">1</span>):</span><br><span class="line">    <span class="number">192.168</span><span class="number">.1</span><span class="number">.20</span></span><br><span class="line">[root<span class="variable">@localhost</span> <span class="operator">~</span>]# ansible <span class="keyword">all</span> <span class="comment">--list-hosts</span></span><br><span class="line">  hosts (<span class="number">3</span>):</span><br><span class="line">    <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line">    <span class="number">192.168</span><span class="number">.1</span><span class="number">.10</span></span><br><span class="line">    <span class="number">192.168</span><span class="number">.1</span><span class="number">.20</span></span><br><span class="line">[root<span class="variable">@localhost</span> <span class="operator">~</span>]# ansible <span class="string">&#x27;*&#x27;</span> <span class="comment">--list-hosts</span></span><br><span class="line">  hosts (<span class="number">3</span>):</span><br><span class="line">    <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line">    <span class="number">192.168</span><span class="number">.1</span><span class="number">.10</span></span><br><span class="line">    <span class="number">192.168</span><span class="number">.1</span><span class="number">.20</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># vim hosts </span></span><br></pre></td></tr></table></figure>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">127.0.0.1</span></span><br><span class="line"><span class="string">[webservers]</span></span><br><span class="line"><span class="number">192.168.1.10</span></span><br><span class="line"><span class="string">[dbservers]</span></span><br><span class="line"><span class="number">192.168.1.20</span></span><br><span class="line"><span class="string">[common:children]</span></span><br><span class="line">webservers</span><br><span class="line">dbservers</span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># ansible common --list-hosts</span></span><br><span class="line">  hosts (<span class="number">2</span>):</span><br><span class="line">    <span class="number">192.168</span><span class="number">.1</span><span class="number">.10</span></span><br><span class="line">    <span class="number">192.168</span><span class="number">.1</span><span class="number">.20</span></span><br></pre></td></tr></table></figure>
+<h1 id="按匹配规则定义hosts"><a href="#按匹配规则定义hosts" class="headerlink" title="按匹配规则定义hosts"></a>按匹配规则定义hosts</h1><p><img src="https://img-blog.csdnimg.cn/20200519185659673.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># vim hosts </span></span><br></pre></td></tr></table></figure>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">127.0.0.1</span></span><br><span class="line"><span class="string">[webservers]</span></span><br><span class="line"><span class="number">192.168.1.10</span></span><br><span class="line">blog.skx.com</span><br><span class="line">soft.skx.com</span><br><span class="line">img.skx.com</span><br><span class="line"><span class="string">[dbservers]</span></span><br><span class="line"><span class="number">192.168.1.20</span></span><br><span class="line"><span class="string">[common:children]</span></span><br><span class="line">webservers</span><br><span class="line">dbservers</span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[root@localhost ~]</span># <span class="selector-tag">ansible</span> *<span class="selector-class">.skx</span><span class="selector-class">.com</span> <span class="selector-tag">--list-hosts</span></span><br><span class="line">  <span class="selector-tag">hosts</span> (3):</span><br><span class="line">    <span class="selector-tag">blog</span><span class="selector-class">.skx</span><span class="selector-class">.com</span></span><br><span class="line">    <span class="selector-tag">soft</span><span class="selector-class">.skx</span><span class="selector-class">.com</span></span><br><span class="line">    <span class="selector-tag">img</span><span class="selector-class">.skx</span><span class="selector-class">.com</span></span><br></pre></td></tr></table></figure>
+<h1 id="定义服务器变量"><a href="#定义服务器变量" class="headerlink" title="定义服务器变量"></a>定义服务器变量</h1><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># vim /etc/ansible/hosts</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[test]</span></span><br><span class="line"><span class="number">192.168.1.20</span> ansible_port=<span class="number">22</span></span><br><span class="line"><span class="number">192.168.1.10</span> ansible_port=<span class="number">22</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># ansible test -i /etc/ansible/hosts -m ping</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/2020051918571766.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@localhost ~]</span># ansible test -i /etc/ansible/hosts -a &#x27;echo &#123;&#123;ansible_port&#125;&#125;&#x27;</span><br><span class="line"><span class="number">192.168.1.20</span> | CHANGED | rc=<span class="number">0</span> &gt;&gt;</span><br><span class="line"><span class="number">22</span></span><br><span class="line"><span class="number">192.168.1.10</span> | CHANGED | rc=<span class="number">0</span> &gt;&gt;</span><br><span class="line"><span class="number">22</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># vim /etc/ansible/hosts </span></span><br></pre></td></tr></table></figure>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[test]</span></span><br><span class="line"><span class="number">192.168.1.20</span></span><br><span class="line"><span class="number">192.168.1.10</span></span><br><span class="line"></span><br><span class="line"><span class="string">[test:vars]</span></span><br><span class="line">ansible_port=<span class="number">22</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@localhost ~]</span># ansible test -i /etc/ansible/hosts -a &#x27;echo &#123;&#123;ansible_port&#125;&#125;&#x27;</span><br><span class="line"><span class="number">192.168.1.20</span> | CHANGED | rc=<span class="number">0</span> &gt;&gt;</span><br><span class="line"><span class="number">22</span></span><br><span class="line"><span class="number">192.168.1.10</span> | CHANGED | rc=<span class="number">0</span> &gt;&gt;</span><br><span class="line"><span class="number">22</span></span><br></pre></td></tr></table></figure>
+<h1 id="yaml语法"><a href="#yaml语法" class="headerlink" title="yaml语法"></a>yaml语法</h1><p>目录结构</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[root@localhost ansible]</span># <span class="selector-tag">tree</span></span><br><span class="line">.</span><br><span class="line">├── <span class="selector-tag">ansible</span><span class="selector-class">.cfg</span></span><br><span class="line">├── <span class="selector-tag">group_vars</span></span><br><span class="line">│   └── <span class="selector-tag">test</span><span class="selector-class">.yaml</span></span><br><span class="line">├── <span class="selector-tag">hosts</span></span><br><span class="line">└── <span class="selector-tag">host_vars</span></span><br><span class="line">    └── 192.168.1.10<span class="selector-class">.yaml</span></span><br><span class="line"></span><br><span class="line">2 <span class="selector-tag">directories</span>, 4 <span class="selector-tag">files</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ansible]<span class="meta"># vim ./group_vars/test.yaml</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">mysql_port:</span> <span class="number">3307</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ansible]<span class="meta"># touch ./host_vars/192.168.1.10.yaml</span></span><br><span class="line">[root<span class="symbol">@localhost</span> ansible]<span class="meta"># vim ./host_vars/192.168.1.10.yaml </span></span><br></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">ansible_port</span>: <span class="number">22</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ansible]<span class="meta"># vim ~/hosts </span></span><br></pre></td></tr></table></figure>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">127.0.0.1</span></span><br><span class="line"><span class="string">[webservers]</span></span><br><span class="line"><span class="number">192.168.1.10</span></span><br><span class="line"><span class="string">[dbservers]</span></span><br><span class="line"><span class="number">192.168.1.20</span></span><br><span class="line"><span class="string">[common:children]</span></span><br><span class="line">webservers</span><br><span class="line">dbservers</span><br></pre></td></tr></table></figure>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@localhost ansible]</span># ansible webservers -a &#x27;echo &#123;&#123;ansible_port&#125;&#125;&#x27;</span><br><span class="line"><span class="number">192.168.1.10</span> | CHANGED | rc=<span class="number">0</span> &gt;&gt;</span><br><span class="line"><span class="number">22</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ansible]# ansible test -a <span class="string">&#x27;echo &#123;&#123;mysql_port&#125;&#125;&#x27;</span></span><br><span class="line">[<span class="builtin-name">WARNING</span>]: Could <span class="keyword">not</span> match supplied host pattern, ignoring: test</span><br><span class="line">[<span class="builtin-name">WARNING</span>]: <span class="literal">No</span> hosts matched, <span class="literal">nothing</span> <span class="keyword">to</span> <span class="keyword">do</span></span><br></pre></td></tr></table></figure>
+<h1 id="ansible常用模块演示"><a href="#ansible常用模块演示" class="headerlink" title="ansible常用模块演示"></a>ansible常用模块演示</h1><p><img src="https://img-blog.csdnimg.cn/20200519185738593.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="ping模块"><a href="#ping模块" class="headerlink" title="ping模块"></a>ping模块</h2><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ansible]<span class="meta"># ansible common -m ping</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200519185751778.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="远程指令"><a href="#远程指令" class="headerlink" title="远程指令"></a>远程指令</h2><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ansible]<span class="meta"># ansible common -m command -a <span class="string">&#x27;hostname&#x27;</span></span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200519185803387.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ansible]<span class="meta"># ansible common -a <span class="string">&#x27;whoami&#x27;</span></span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200519185815767.png" alt="在这里插入图片描述"></p>
+<h2 id="执行带管道的远程命令"><a href="#执行带管道的远程命令" class="headerlink" title="执行带管道的远程命令"></a>执行带管道的远程命令</h2><h3 id="raw"><a href="#raw" class="headerlink" title="raw"></a>raw</h3><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ansible]<span class="meta"># ansible common -m raw -a <span class="string">&#x27;cat /etc/passwd | wc -l&#x27;</span></span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200519185828701.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h3 id="shell"><a href="#shell" class="headerlink" title="shell"></a>shell</h3><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ansible]<span class="meta"># ansible common -m shell -a <span class="string">&#x27;cat /etc/passwd | wc -l&#x27;</span></span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200519185843492.png" alt="在这里插入图片描述"></p>
+<h3 id="创建目录"><a href="#创建目录" class="headerlink" title="创建目录"></a>创建目录</h3><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ansible]<span class="meta"># ansible common -m file -a <span class="string">&#x27;path=/opt/test mode=0755 state=directory&#x27;</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="创建文件"><a href="#创建文件" class="headerlink" title="创建文件"></a>创建文件</h3><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># mkdir /opt/abc</span></span><br><span class="line">[root<span class="symbol">@localhost</span> ansible]<span class="meta"># ansible common -m file -a <span class="string">&#x27;path=/opt/abc/test.md mode=0755 state=touch&#x27;</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="更新权限"><a href="#更新权限" class="headerlink" title="更新权限"></a>更新权限</h3><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ansible]<span class="meta"># ansible common -m file -a <span class="string">&#x27;path=/opt/abc mode=0640 state=touch&#x27;</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="删除文件目录或链接"><a href="#删除文件目录或链接" class="headerlink" title="删除文件目录或链接"></a>删除文件目录或链接</h3><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ansible]<span class="meta"># ansible common -m file -a <span class="string">&#x27;path=/opt/abc mode=0640 state=absent&#x27;</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="改变所有者"><a href="#改变所有者" class="headerlink" title="改变所有者"></a>改变所有者</h3><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ansible]<span class="meta"># ansible common -m file -a <span class="string">&#x27;path=/opt/abc mode=0640 owner=test group=root&#x27;</span> -become</span></span><br></pre></td></tr></table></figure>
+<h1 id="ansible拆分playbook-yml"><a href="#ansible拆分playbook-yml" class="headerlink" title="ansible拆分playbook.yml"></a>ansible拆分playbook.yml</h1><p>安装yaml</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># yum install yaml</span></span><br></pre></td></tr></table></figure>
+<p>编写文件</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># vim all.yml</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">include:</span> <span class="string">db.yml</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">include:</span> <span class="string">web.yml</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># vim db.yml </span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">hosts:</span> <span class="string">dbservers</span></span><br><span class="line">  <span class="attr">become:</span> <span class="literal">yes</span></span><br><span class="line">  <span class="attr">become_method:</span> <span class="string">sudo</span></span><br><span class="line">  <span class="attr">tasks:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">install</span> <span class="string">mongodb</span></span><br><span class="line">    <span class="attr">yum:</span> <span class="string">name=mongodb-server</span> <span class="string">state=present</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># vim web.yml </span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">hosts:</span> <span class="string">webservers</span></span><br><span class="line">  <span class="attr">tasks:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">git</span></span><br><span class="line">    <span class="attr">copy:</span> <span class="string">src=/tmp/data.txt</span> <span class="string">dest=/opt/data.txt</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">change</span> <span class="string">mode</span></span><br><span class="line">    <span class="attr">file:</span> <span class="string">dest=/opt/data.txt</span> <span class="string">mode=655</span> <span class="string">owner=test</span> <span class="string">group=root</span></span><br></pre></td></tr></table></figure>
+<p>执行命令列出主机</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# ansible-playbook <span class="keyword">all</span>.yml <span class="comment">--list-hosts</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200523194841497.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>创建文件</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># cd /tmp/</span></span><br><span class="line">[root<span class="symbol">@localhost</span> tmp]<span class="meta"># touch data.txt</span></span><br></pre></td></tr></table></figure>
+<p>提前测试</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# ansible-playbook <span class="keyword">all</span>.yml <span class="comment">--step</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200523194858187.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h1 id="使用Playbook部署nginx"><a href="#使用Playbook部署nginx" class="headerlink" title="使用Playbook部署nginx"></a>使用Playbook部署nginx</h1><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># vim nginx.yml</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">hosts:</span> <span class="string">webservers</span></span><br><span class="line">  <span class="attr">become:</span> <span class="literal">yes</span></span><br><span class="line">  <span class="attr">become_method:</span> <span class="string">sudo</span></span><br><span class="line">  <span class="attr">vars:</span></span><br><span class="line">    <span class="attr">worker_prosess:</span> <span class="number">4</span></span><br><span class="line">    <span class="attr">worker_connections:</span> <span class="number">768</span></span><br><span class="line">    <span class="attr">max_open_files:</span> <span class="number">65506</span></span><br><span class="line">  <span class="attr">tasks:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">install</span> <span class="string">nginx</span></span><br><span class="line">      <span class="attr">yum:</span> <span class="string">name=nginx</span> <span class="string">update_cache=yes</span> <span class="string">state=present</span></span><br><span class="line"></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">copy</span> <span class="string">nginx</span> <span class="string">config</span> <span class="string">file</span></span><br><span class="line">      <span class="attr">template:</span> <span class="string">src=/home/root/test_ansible/nginx.conf.j2</span> <span class="string">dest=/etc/nginx/nginx.conf</span></span><br><span class="line">      <span class="attr">notify:</span> <span class="string">restart</span> <span class="string">nginx</span></span><br><span class="line"></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">copy</span> <span class="string">index.html</span></span><br><span class="line">      <span class="attr">template:</span></span><br><span class="line">        <span class="attr">src:</span> <span class="string">/home/root/test_ansible/index.html.j2</span></span><br><span class="line">        <span class="attr">dest:</span> <span class="string">/usr/share/nginx/www/index.html</span></span><br><span class="line">        <span class="attr">mode:</span> <span class="number">0644</span></span><br><span class="line">      <span class="attr">notify:</span> <span class="string">restart</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">handlers:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">restart</span> <span class="string">nginx</span></span><br><span class="line">      <span class="attr">service:</span> <span class="string">name=nginx</span> <span class="string">state=restarted</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# mkdir <span class="regexp">/home/</span>root<span class="regexp">/test_ansible/</span></span><br><span class="line">[root@localhost ~]# vim <span class="regexp">/home/</span>root<span class="regexp">/test_ansible/</span>nginx.conf.j2</span><br></pre></td></tr></table></figure>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml">worker_processes  </span><span class="template-variable">&#123;&#123; <span class="name">worker_prosess</span> &#125;&#125;</span><span class="xml">;</span></span><br><span class="line"><span class="xml">worker_rlimit_nofile </span><span class="template-variable">&#123;&#123; <span class="name">max_open_files</span> &#125;&#125;</span><span class="xml">;</span></span><br><span class="line"></span><br><span class="line"><span class="xml">events &#123;</span></span><br><span class="line"><span class="xml">    worker_connections  </span><span class="template-variable">&#123;&#123; <span class="name">worker_connections</span> &#125;&#125;</span><span class="xml">;</span></span><br><span class="line"><span class="xml">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="xml">http &#123;</span></span><br><span class="line"><span class="xml">        server &#123;</span></span><br><span class="line"><span class="xml">        listen       80;</span></span><br><span class="line"><span class="xml">                </span></span><br><span class="line"><span class="xml">#               listen  443 ssl;</span></span><br><span class="line"><span class="xml">                </span></span><br><span class="line"><span class="xml">        server_name  localhost;</span></span><br><span class="line"><span class="xml">                </span></span><br><span class="line"><span class="xml">        location / &#123;</span></span><br><span class="line"><span class="xml">            root   /usr/share/nginx/www;</span></span><br><span class="line"><span class="xml">            index  index.html index.htm;</span></span><br><span class="line"><span class="xml">                        </span></span><br><span class="line"><span class="xml">#                       tr_files $uri $uri/ =404;</span></span><br><span class="line"><span class="xml">        &#125;</span></span><br><span class="line"><span class="xml">    &#125;</span></span><br><span class="line"><span class="xml">&#125;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# vim <span class="regexp">/home/</span>root<span class="regexp">/test_ansible/i</span>ndex.html.j2</span><br></pre></td></tr></table></figure>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;utf-8&quot;</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">head</span>&gt;</span></span></span><br><span class="line"><span class="xml">                <span class="tag">&lt;<span class="name">title</span>&gt;</span>wellcome to ansible<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">body</span>&gt;</span></span></span><br><span class="line"><span class="xml">                <span class="tag">&lt;<span class="name">h1</span>&gt;</span>nginx, configured by ansible<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="xml">                <span class="tag">&lt;<span class="name">p</span>&gt;</span>如果你能看到这个页面，说明ansible自动部署nginx成功了！<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="xml">                </span></span><br><span class="line"><span class="xml">                <span class="tag">&lt;<span class="name">p</span>&gt;</span></span><span class="template-variable">&#123;&#123; <span class="name">ansible_hostname</span> &#125;&#125;</span><span class="xml"><span class="tag">&lt;<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># mkdir -p /usr/share/nginx/www</span></span><br><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># systemctl status nginx.service</span></span><br><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># ansible-playbook nginx.yml --step</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200523194921219.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="启动nginx"><a href="#启动nginx" class="headerlink" title="启动nginx"></a>启动nginx</h2><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># systemctl start nginx</span></span><br><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># nginx</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200523194932669.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="更改提示内容"><a href="#更改提示内容" class="headerlink" title="更改提示内容"></a>更改提示内容</h2><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># yum install cowsay</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200523195022899.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h1 id="role"><a href="#role" class="headerlink" title="role"></a>role</h1><p> <a target="_blank" rel="noopener" href="https://galaxy.ansible.com/">https://galaxy.ansible.com/</a> </p>
+<h2 id="mong-db"><a href="#mong-db" class="headerlink" title="mong-db"></a>mong-db</h2><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># ansible-galaxy install geerlingguy.mysql</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># ll /root/.ansible/roles/geerlingguy.mysql/</span></span><br><span class="line">总用量 16</span><br><span class="line">drwxr-xr-x.<span class="number"> 2 </span>root root  <span class="number"> 22 </span>5月 <span class="number"> 21 </span>17:25 defaults</span><br><span class="line">drwxr-xr-x.<span class="number"> 2 </span>root root  <span class="number"> 22 </span>5月 <span class="number"> 21 </span>17:25 handlers</span><br><span class="line">-rw-rw-r--.<span class="number"> 1 </span>root root<span class="number"> 1080 </span>3月 <span class="number"> 18 </span>02:35 LICENSE</span><br><span class="line">drwxr-xr-x.<span class="number"> 2 </span>root root  <span class="number"> 50 </span>5月 <span class="number"> 21 </span>17:25 meta</span><br><span class="line">drwxr-xr-x.<span class="number"> 3 </span>root root  <span class="number"> 21 </span>5月 <span class="number"> 21 </span>17:25 molecule</span><br><span class="line">-rw-rw-r--.<span class="number"> 1 </span>root root<span class="number"> 9002 </span>3月 <span class="number"> 18 </span>02:35 README.md</span><br><span class="line">drwxr-xr-x.<span class="number"> 2 </span>root root <span class="number"> 231 </span>5月 <span class="number"> 21 </span>17:25 tasks</span><br><span class="line">drwxr-xr-x.<span class="number"> 2 </span>root root  <span class="number"> 67 </span>5月 <span class="number"> 21 </span>17:25 templates</span><br><span class="line">drwxr-xr-x.<span class="number"> 2 </span>root root <span class="number"> 126 </span>5月 <span class="number"> 21 </span>17:25 vars</span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># ansible-galaxy list</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200523195010285.png" alt="在这里插入图片描述"></p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># ansible-galaxy install geerlingguy.redis</span></span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="阿怪 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="阿怪 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿怪
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://aguai.fun/2020/05/23/ansible/" title="ansible">https://aguai.fun/2020/05/23/ansible/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+  
+</div>
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Python/" rel="tag"># Python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/05/17/%E8%87%AA%E5%8A%A8%E5%8C%96%E7%AE%A1%E7%90%86ssh/" rel="prev" title="自动化管理ssh">
+      <i class="fa fa-chevron-left"></i> 自动化管理ssh
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/05/26/%E7%94%9F%E6%88%90%E5%99%A8%E3%80%81%E8%A3%85%E9%A5%B0%E5%99%A8/" rel="next" title="生成器、装饰器">
+      生成器、装饰器 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BDansible"><span class="nav-text">下载ansible</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEssh"><span class="nav-text">配置ssh</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ansible%E4%BD%BF%E7%94%A8%E5%8E%9F%E5%88%99"><span class="nav-text">ansible使用原则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%BF%9E%E9%80%9A"><span class="nav-text">第一次连通</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AC%A1%E8%BF%9E%E9%80%9A"><span class="nav-text">第二次连通</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%A0%E8%BE%93%E6%96%87%E4%BB%B6"><span class="nav-text">传输文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E4%B8%9C%E8%A5%BF"><span class="nav-text">安装东西</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%89%A7%E6%9C%AC"><span class="nav-text">写剧本</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%87%E5%AE%9A"><span class="nav-text">指定</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Inventory%E7%AE%A1%E7%90%86"><span class="nav-text">Inventory管理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%89%E7%BB%84%E5%AE%9A%E4%B9%89hosts"><span class="nav-text">按组定义hosts</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%89%E5%8C%B9%E9%85%8D%E8%A7%84%E5%88%99%E5%AE%9A%E4%B9%89hosts"><span class="nav-text">按匹配规则定义hosts</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%8F%98%E9%87%8F"><span class="nav-text">定义服务器变量</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#yaml%E8%AF%AD%E6%B3%95"><span class="nav-text">yaml语法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ansible%E5%B8%B8%E7%94%A8%E6%A8%A1%E5%9D%97%E6%BC%94%E7%A4%BA"><span class="nav-text">ansible常用模块演示</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ping%E6%A8%A1%E5%9D%97"><span class="nav-text">ping模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9C%E7%A8%8B%E6%8C%87%E4%BB%A4"><span class="nav-text">远程指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E5%B8%A6%E7%AE%A1%E9%81%93%E7%9A%84%E8%BF%9C%E7%A8%8B%E5%91%BD%E4%BB%A4"><span class="nav-text">执行带管道的远程命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#raw"><span class="nav-text">raw</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#shell"><span class="nav-text">shell</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E7%9B%AE%E5%BD%95"><span class="nav-text">创建目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%96%87%E4%BB%B6"><span class="nav-text">创建文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0%E6%9D%83%E9%99%90"><span class="nav-text">更新权限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6%E7%9B%AE%E5%BD%95%E6%88%96%E9%93%BE%E6%8E%A5"><span class="nav-text">删除文件目录或链接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%B9%E5%8F%98%E6%89%80%E6%9C%89%E8%80%85"><span class="nav-text">改变所有者</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ansible%E6%8B%86%E5%88%86playbook-yml"><span class="nav-text">ansible拆分playbook.yml</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Playbook%E9%83%A8%E7%BD%B2nginx"><span class="nav-text">使用Playbook部署nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8nginx"><span class="nav-text">启动nginx</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%94%B9%E6%8F%90%E7%A4%BA%E5%86%85%E5%AE%B9"><span class="nav-text">更改提示内容</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#role"><span class="nav-text">role</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mong-db"><span class="nav-text">mong-db</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="阿怪"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">阿怪</p>
+  <div class="site-description" itemprop="description">直到这一刻微笑着说话为止，我至少留下了一公升眼泪</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">103</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/a_guai_" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;a_guai_" rel="noopener" target="_blank"><i class="crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="阿怪"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">博客</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">574k</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/clicklove.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
+

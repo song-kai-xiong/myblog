@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"aguai.fun","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offalse":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Python分析Apache的访问日志">
+<meta property="og:url" content="https://aguai.fun/2020/04/01/%E4%BD%BF%E7%94%A8Python%E5%88%86%E6%9E%90Apache%E7%9A%84%E8%AE%BF%E9%97%AE%E6%97%A5%E5%BF%97/index.html">
+<meta property="og:site_name" content="阿怪の博客">
+<meta property="og:description" content="Python">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200401203058719.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+<meta property="article:published_time" content="2020-03-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-04-01T12:46:34.044Z">
+<meta property="article:author" content="阿怪">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200401203058719.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70">
+
+<link rel="canonical" href="https://aguai.fun/2020/04/01/%E4%BD%BF%E7%94%A8Python%E5%88%86%E6%9E%90Apache%E7%9A%84%E8%AE%BF%E9%97%AE%E6%97%A5%E5%BF%97/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>使用Python分析Apache的访问日志 | 阿怪の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿怪の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">103</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://aguai.fun/2020/04/01/%E4%BD%BF%E7%94%A8Python%E5%88%86%E6%9E%90Apache%E7%9A%84%E8%AE%BF%E9%97%AE%E6%97%A5%E5%BF%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="阿怪">
+      <meta itemprop="description" content="直到这一刻微笑着说话为止，我至少留下了一公升眼泪">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿怪の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用Python分析Apache的访问日志
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-04-01 00:00:00 / 修改时间：20:46:34" itemprop="dateCreated datePublished" datetime="2020-04-01T00:00:00+08:00">2020-04-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.9k</span>
+            </span>
+            <div class="post-description">Python</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="使用Python分析Apache的访问日志"><a href="#使用Python分析Apache的访问日志" class="headerlink" title="使用Python分析Apache的访问日志"></a>使用Python分析Apache的访问日志</h1><h2 id="普通表达"><a href="#普通表达" class="headerlink" title="普通表达"></a>普通表达</h2><p> 通过解析网站的分析日志，能够挖掘出很多有价值的信息。例如：通过访问日志统计网站的PV和UV，解析出网站中最热的资源，统计用户访问出错的比例，统计网站请求的高峰时段等。这些信息可以帮助工程师优化网站的访问速度，也可以为公司决策提供数据支撑。 </p>
+<blockquote>
+<p>182.19.31.129 - - [16/JAN/2020:06:05:35 +0200] “GET /index.php HTTP/1.1” 200 0 “-“ “Mozilla/5.0 (compatible; PJBot/3.0; +<a target="_blank" rel="noopener" href="http://craw1.pagesjaunes.fr/robot)&quot;">http://craw1.pagesjaunes.fr/robot)&quot;</a> “-“</p>
+</blockquote>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">log = <span class="string">&#x27;182.19.31.129 - - [16/JAN/2020:06:05:35 +0200] &quot;GET /index.php HTTP/1.1&quot; 200 0 &quot;-&quot; &quot;Mozilla/5.0 (compatible; PJBot/3.0; +http://craw1.pagesjaunes.fr/robot)&quot; &quot;-&quot;&#x27;</span></span><br><span class="line">log_temp = log.split()</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(log_temp)</span></span></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(<span class="string">&#x27;用户IP：&#x27;</span> + log_temp[<span class="number">0</span>])</span></span></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(<span class="string">&#x27;访问页面：&#x27;</span> + log_temp[<span class="number">6</span>])</span></span></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(<span class="string">&#x27;状态码：&#x27;</span> + log_temp[<span class="number">8</span>])</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight scilab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">&#x27;182.19.31.129&#x27;</span>, <span class="string">&#x27;-&#x27;</span>, <span class="string">&#x27;-&#x27;</span>, <span class="string">&#x27;[16/JAN/2020:06:05:35&#x27;</span>, <span class="string">&#x27;+0200]&#x27;</span>, <span class="string">&#x27;&quot;</span>GET<span class="string">&#x27;, &#x27;</span>/index.php<span class="string">&#x27;, &#x27;</span>HTTP/<span class="number">1.1</span><span class="string">&quot;&#x27;</span>, <span class="string">&#x27;200&#x27;</span>, <span class="string">&#x27;0&#x27;</span>, <span class="string">&#x27;&quot;</span>-<span class="string">&quot;&#x27;</span>, <span class="string">&#x27;&quot;</span>Mozilla/<span class="number">5.0</span><span class="string">&#x27;, &#x27;</span>(compatible;<span class="string">&#x27;, &#x27;</span>PJBot/<span class="number">3.0</span>;<span class="string">&#x27;, &#x27;</span>+http://craw1.pagesjaunes.fr/robot)<span class="string">&quot;&#x27;</span>, <span class="string">&#x27;&quot;</span>-<span class="string">&quot;&#x27;</span>]</span><br><span class="line">用户IP：<span class="number">182.19</span><span class="number">.31</span><span class="number">.129</span></span><br><span class="line">访问页面：/index.php</span><br><span class="line">状态码：<span class="number">200</span></span><br></pre></td></tr></table></figure>
+<h2 id="函数表达"><a href="#函数表达" class="headerlink" title="函数表达"></a>函数表达</h2><blockquote>
+<p>在相同目录下创建一个文件，将上面信息放到新创建的文件中</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span>  print_function</span><br><span class="line"></span><br><span class="line">ips = []</span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;access.log.py&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">        ips.append(line.split()[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line">print(<span class="string">&quot;网站请求数[PV]：&quot;</span>+<span class="built_in">str</span>(<span class="built_in">len</span>(ips)))</span><br><span class="line">print(<span class="string">&quot;网站独立的访客数[UV]：&quot;</span>+<span class="built_in">str</span>(<span class="built_in">len</span>(<span class="built_in">set</span>(ips))))</span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">网站请求数<span class="selector-attr">[PV]</span>：120</span><br><span class="line">网站独立的访客数<span class="selector-attr">[UV]</span>：1</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200401203058719.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FfZ3VhaV8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h1 id="Counter类"><a href="#Counter类" class="headerlink" title="Counter类"></a>Counter类</h1><p>Counter()：输出字符在字符串中的数量</p>
+<p>most_common()：输出数量最多的()个字符</p>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">from</span> <span class="variable">collections</span> <span class="variable">import</span> <span class="variable">Counter</span></span><br><span class="line"></span><br><span class="line"><span class="variable">c</span> = <span class="function"><span class="title">Counter</span>(<span class="string">&#x27;abcdeabedf&#x27;</span>)</span></span><br><span class="line"><span class="function"><span class="title">print</span>(<span class="variable">c</span>)</span></span><br><span class="line"></span><br><span class="line"><span class="variable">r</span> = <span class="variable">c.most_common</span>(<span class="number">3</span>)</span><br><span class="line"><span class="function"><span class="title">print</span>(<span class="variable">r</span>)</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">Counter</span><span class="params">(&#123;<span class="string">&#x27;a&#x27;</span>: <span class="number">2</span>, <span class="string">&#x27;b&#x27;</span>: <span class="number">2</span>, <span class="string">&#x27;d&#x27;</span>: <span class="number">2</span>, <span class="string">&#x27;e&#x27;</span>: <span class="number">2</span>, <span class="string">&#x27;c&#x27;</span>: <span class="number">1</span>, <span class="string">&#x27;f&#x27;</span>: <span class="number">1</span>&#125;)</span></span></span><br><span class="line">[(<span class="string">&#x27;a&#x27;</span>, <span class="number">2</span>), (<span class="string">&#x27;b&#x27;</span>, <span class="number">2</span>), (<span class="string">&#x27;d&#x27;</span>, <span class="number">2</span>)]</span><br></pre></td></tr></table></figure>
+<h2 id="使用Counter类统计PV和UV"><a href="#使用Counter类统计PV和UV" class="headerlink" title="使用Counter类统计PV和UV"></a>使用Counter类统计PV和UV</h2><figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">from __future__ <span class="keyword">import</span> print_function</span><br><span class="line"></span><br><span class="line">d = &#123;&#125;</span><br><span class="line">with <span class="built_in">open</span>(<span class="string">&#x27;access.log.py&#x27;</span>) as f:</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">line</span> in f:</span><br><span class="line">        <span class="built_in">key</span> = <span class="built_in">line</span>.<span class="built_in">split</span>()[<span class="number">8</span>]</span><br><span class="line">        d.setdefault(<span class="built_in">key</span>, <span class="number">0</span>)</span><br><span class="line">        d[<span class="built_in">key</span>] += <span class="number">1</span></span><br><span class="line"><span class="built_in">print</span>(d)</span><br><span class="line"></span><br><span class="line"># 出错的页面数量</span><br><span class="line">error_requests = <span class="number">0</span></span><br><span class="line"># 页面总访问量</span><br><span class="line">sum_requests = <span class="number">0</span></span><br><span class="line"># 遍历字典</span><br><span class="line"><span class="keyword">for</span> <span class="built_in">key</span>, value in d.items():</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">int</span>(<span class="built_in">key</span>) &gt;= <span class="number">400</span>:</span><br><span class="line">        error_requests += value</span><br><span class="line">    sum_requests += value</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;页面出错率：&#123;0:2f&#125;%&#x27;</span>.format(error_requests * <span class="number">100.0</span>/sum_requests))</span><br></pre></td></tr></table></figure>
+<figure class="highlight erlang-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">&#x27;200&#x27;</span>: <span class="number">119</span>, <span class="string">&#x27;404&#x27;</span>: <span class="number">1</span>&#125;</span><br><span class="line">页面出错率：<span class="number">0.833333</span><span class="comment">%</span></span><br></pre></td></tr></table></figure>
+<h1 id="字符串格式化"><a href="#字符串格式化" class="headerlink" title="字符串格式化"></a>字符串格式化</h1><blockquote>
+<p>%表达式：不挑版本，通用</p>
+<p>​    浮点数：%d</p>
+<p>​    整数：$f</p>
+<p>​    字符串：%s</p>
+<p>format函数：Python2.6和Python3.+</p>
+</blockquote>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">print</span><span class="params">(<span class="string">&#x27;%d&#x27;</span> % <span class="number">3</span>)</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(<span class="string">&#x27;%09f&#x27;</span> % <span class="number">3.14</span>)</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(<span class="string">&#x27;%s&#x27;</span> % <span class="string">&#x27;hello&#x27;</span>)</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">3</span></span><br><span class="line"><span class="attribute">03</span>.<span class="number">140000</span></span><br><span class="line"><span class="attribute">hello</span></span><br></pre></td></tr></table></figure>
+<h3 id="参数较少的情况"><a href="#参数较少的情况" class="headerlink" title="参数较少的情况"></a>参数较少的情况</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">content</span> = <span class="string">&#x27;&#123;0&#125; is better than &#123;1&#125;,&#123;3&#125; is better than &#123;2&#125;.&#x27;</span>\</span><br><span class="line">    .format(<span class="string">&#x27;111&#x27;</span>,<span class="string">&#x27;222&#x27;</span>,<span class="string">&#x27;333&#x27;</span>,<span class="string">&#x27;444&#x27;</span>)</span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(content)</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">111 </span>is better than <span class="number">222</span>,<span class="number">444</span> is better than <span class="number">333</span>.</span><br></pre></td></tr></table></figure>
+<h3 id="参数如果多了怎么办（-d表示不确定）"><a href="#参数如果多了怎么办（-d表示不确定）" class="headerlink" title="参数如果多了怎么办（**d表示不确定）"></a>参数如果多了怎么办（**d表示不确定）</h3><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">d</span> = dict(good<span class="number">1</span> = &#x27;beautiful&#x27;,bad<span class="number">1</span> = &#x27;ugly&#x27;,good<span class="number">2</span> = &#x27;explicit&#x27;,bad<span class="number">2</span> = &#x27;implicit&#x27;)</span><br><span class="line"><span class="attribute">content</span> = &#x27;&#123;good<span class="number">1</span>&#125; is better than &#123;bad<span class="number">1</span>&#125;,&#123;good<span class="number">2</span>&#125; is better than &#123;bad<span class="number">2</span>&#125;.&#x27;.format(**d)</span><br><span class="line"><span class="attribute">print</span>((content))</span><br></pre></td></tr></table></figure>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">beautiful is better than ugly,explicit is better than <span class="keyword">implicit</span>.</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="阿怪 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="阿怪 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿怪
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://aguai.fun/2020/04/01/%E4%BD%BF%E7%94%A8Python%E5%88%86%E6%9E%90Apache%E7%9A%84%E8%AE%BF%E9%97%AE%E6%97%A5%E5%BF%97/" title="使用Python分析Apache的访问日志">https://aguai.fun/2020/04/01/使用Python分析Apache的访问日志/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+  
+</div>
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Python/" rel="tag"># Python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/30/Python%E5%AD%97%E7%AC%A6%E4%B8%B2/" rel="prev" title="Python字符串">
+      <i class="fa fa-chevron-left"></i> Python字符串
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/01/Python%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%20/" rel="next" title="Python正则表达式">
+      Python正则表达式 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Python%E5%88%86%E6%9E%90Apache%E7%9A%84%E8%AE%BF%E9%97%AE%E6%97%A5%E5%BF%97"><span class="nav-text">使用Python分析Apache的访问日志</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%99%AE%E9%80%9A%E8%A1%A8%E8%BE%BE"><span class="nav-text">普通表达</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E8%A1%A8%E8%BE%BE"><span class="nav-text">函数表达</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Counter%E7%B1%BB"><span class="nav-text">Counter类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Counter%E7%B1%BB%E7%BB%9F%E8%AE%A1PV%E5%92%8CUV"><span class="nav-text">使用Counter类统计PV和UV</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%A0%BC%E5%BC%8F%E5%8C%96"><span class="nav-text">字符串格式化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E8%BE%83%E5%B0%91%E7%9A%84%E6%83%85%E5%86%B5"><span class="nav-text">参数较少的情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E5%A6%82%E6%9E%9C%E5%A4%9A%E4%BA%86%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%88-d%E8%A1%A8%E7%A4%BA%E4%B8%8D%E7%A1%AE%E5%AE%9A%EF%BC%89"><span class="nav-text">参数如果多了怎么办（**d表示不确定）</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="阿怪"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">阿怪</p>
+  <div class="site-description" itemprop="description">直到这一刻微笑着说话为止，我至少留下了一公升眼泪</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">103</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/a_guai_" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;a_guai_" rel="noopener" target="_blank"><i class="crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="阿怪"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">博客</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">574k</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/clicklove.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
+

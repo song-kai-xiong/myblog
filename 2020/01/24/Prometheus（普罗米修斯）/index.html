@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"aguai.fun","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offalse":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Prometheus（普罗米修斯）">
+<meta property="og:url" content="https://aguai.fun/2020/01/24/Prometheus%EF%BC%88%E6%99%AE%E7%BD%97%E7%B1%B3%E4%BF%AE%E6%96%AF%EF%BC%89/index.html">
+<meta property="og:site_name" content="阿怪の博客">
+<meta property="og:description" content="Docker">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117112851947.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117112857687.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117112929498.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113034765.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113042951.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113112811.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113124826.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113134723.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113145890.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113154787.png">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113216625.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113240626.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113257298.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113312342.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113332700.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113348825.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113354289.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2020011711341461.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113424502.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113429237.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113449846.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113500803.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113609401.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113707203.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113724396.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200117113824286.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="article:published_time" content="2020-01-23T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-22T10:43:40.873Z">
+<meta property="article:author" content="阿怪">
+<meta property="article:tag" content="k8s">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+
+<link rel="canonical" href="https://aguai.fun/2020/01/24/Prometheus%EF%BC%88%E6%99%AE%E7%BD%97%E7%B1%B3%E4%BF%AE%E6%96%AF%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Prometheus（普罗米修斯） | 阿怪の博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">阿怪の博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">103</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/yourname" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://aguai.fun/2020/01/24/Prometheus%EF%BC%88%E6%99%AE%E7%BD%97%E7%B1%B3%E4%BF%AE%E6%96%AF%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="阿怪">
+      <meta itemprop="description" content="直到这一刻微笑着说话为止，我至少留下了一公升眼泪">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿怪の博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Prometheus（普罗米修斯）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-01-24 00:00:00" itemprop="dateCreated datePublished" datetime="2020-01-24T00:00:00+08:00">2020-01-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-22 18:43:40" itemprop="dateModified" datetime="2020-02-22T18:43:40+08:00">2020-02-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.7k</span>
+            </span>
+            <div class="post-description">Docker</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Prometheus（普罗米修斯）"><a href="#Prometheus（普罗米修斯）" class="headerlink" title="Prometheus（普罗米修斯）"></a><strong>Prometheus（普罗米修斯）</strong></h1><p>是一个系统和服务的监控平台。它可以自定义时间间隔从已配置的目标收集指标，评估规则表达式，显示结果，并在发现某些情况时触发警报</p>
+<p>与其他监视系统相比，Prometheus的主要区别特征是：</p>
+<p>一个多维数据模型（时间序列由指标名称定义和设置键/值尺寸）</p>
+<p>一个灵活的查询语言来利用这一维度</p>
+<p>不依赖于分布式存储；单服务器节点是自治的</p>
+<p>时间序列收集通过HTTP 上的拉模型进行</p>
+<p>通过中间网关支持推送时间序列</p>
+<p>通过服务发现或静态配置发现目标</p>
+<p>多种图形和仪表板支持模式</p>
+<p>支持分层和水平联合</p>
+<p>实验环境：</p>
+<table>
+<thead>
+<tr>
+<th>docker01</th>
+<th>192.168.1.70</th>
+<th>NodeEXporter</th>
+<th>cAdvisor+Prometheus server+gragana</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>docker02</td>
+<td>192.168.1.60</td>
+<td>NodeEXporter</td>
+<td>cAdvisor</td>
+</tr>
+<tr>
+<td>docker03</td>
+<td>192.168.1.50</td>
+<td>NodeEXporter</td>
+<td>cAdvisor</td>
+</tr>
+</tbody></table>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># hostnamectl set-hostname docker1</span></span><br><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># su -</span></span><br><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># hostnamectl set-hostname docker2</span></span><br><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># su -</span></span><br><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># hostnamectl set-hostname docker3</span></span><br><span class="line">[root<span class="symbol">@localhost</span> ~]<span class="meta"># su -</span></span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>全部关闭防火墙，禁用selinux</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@docker01</span> ~]<span class="meta"># systemctl  stop  firewalld</span></span><br><span class="line">[root<span class="symbol">@docker01</span> ~]<span class="meta"># systemctl  disable  firewalld</span></span><br><span class="line">[root<span class="symbol">@docker01</span> ~]<span class="meta"># setenforce  0</span></span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>需要部署的组件</p>
+<p>Prometheus server（9090）：普罗米修斯的主机服务器</p>
+<p>NodeEXporter（9100）：负责收集host硬件信息和操作系统信息 //谷歌开发的监控软件。收集数据，不太直观。有历史保留，方便后期做优化</p>
+<p>cAdvisor（8080）：负责收集host上运行的容器信息</p>
+<p>Grafana（3000）：负责展示普罗米修斯监控界面 //类似于kibana的图形界面，提供可视化web页面</p>
+<p>1）三个节点，全部部署node-exporter和cadvisor</p>
+<p>//分别在三个节点上导入镜像</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[root@docker01 ~]</span># <span class="selector-tag">docker</span> <span class="selector-tag">load</span> &lt; <span class="selector-tag">node-exporter</span><span class="selector-class">.tar</span> &amp;&amp; <span class="selector-tag">docker</span> <span class="selector-tag">load</span> &lt; <span class="selector-tag">mycadvisor</span><span class="selector-class">.tar</span> </span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//部署node-exporter，收集硬件和系统信息（三台都需要部署）</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@docker01 ~]# docker run  -d -p <span class="number">9100</span>:<span class="number">9100</span> -v <span class="regexp">/proc:/</span>host/proc  \</span><br><span class="line">&gt;  -v <span class="regexp">/sys:/</span>host<span class="regexp">/sys -v /</span>:/rootfs --net=host  \</span><br><span class="line">&gt;  prom<span class="regexp">/node-exporter --path.procfs /</span>host/proc  \</span><br><span class="line">&gt;  --path.sysfs <span class="regexp">/host/</span>sys  \</span><br><span class="line">&gt;  --collector.filesystem.ignored-mount-points <span class="string">&quot;^/(sys|proc|dev|host|etc)($|/)&quot;</span></span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>PS：注意这里使用了–net=host，这样prometheus server可以直接与node-exporter通信</p>
+<p>验证，打开浏览器验证结果（192.168.1.70:9100）</p>
+<p><img src="https://img-blog.csdnimg.cn/20200117112851947.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200117112857687.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//部署安装cAdvisor，收集节点容器信息（三台都需要部署）</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@docker01 ~]#  docker run -v <span class="regexp">/:/</span>rootfs:ro -v <span class="regexp">/var/</span>run:<span class="regexp">/var/</span>run/:rw  \</span><br><span class="line">&gt;  -v <span class="regexp">/sys:/</span>sys:ro -v <span class="regexp">/var/</span>lib<span class="regexp">/docker:/</span>var<span class="regexp">/lib/</span>docker:ro  \</span><br><span class="line">&gt;  -p <span class="number">8080</span>:<span class="number">8080</span> --detach=<span class="keyword">true</span> --name=cadvisor  \</span><br><span class="line">&gt;  --net=host google/cadvisor</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>打开浏览器验证（192.168.1.70:8080）</p>
+<p><img src="https://img-blog.csdnimg.cn/20200117112929498.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>2）在docker01上部署prometheus server服务</p>
+<p>在部署prometheus之前，我们需要对它的配置文件进行修改，所以我们先运行一个容器，将其配置文件拷贝出来</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="variable">@docker01</span> ~]<span class="comment"># docker  load  &lt;  prometheus.tar</span></span><br><span class="line">[root<span class="variable">@docker01</span> ~]<span class="comment"># docker run -d -p 9090:9090 --name prometheus --net=host prom/prometheus</span></span><br><span class="line">[root<span class="variable">@docker01</span> ~]<span class="comment"># docker exec -it prometheus /bin/sh</span></span><br><span class="line">/prometheus <span class="variable">$ </span>cd /etc/prometheus/</span><br><span class="line">/etc/prometheus <span class="variable">$ </span>ls</span><br><span class="line">console_libraries  consoles           prometheus.yml</span><br><span class="line">[root<span class="variable">@docker01</span> ~]<span class="comment"># docker cp prometheus:/etc/prometheus/prometheus.yml ./</span></span><br><span class="line">[root<span class="variable">@docker01</span> ~]<span class="comment"># vim prometheus.yml</span></span><br><span class="line">- <span class="symbol">targets:</span> [<span class="string">&#x27;localhost:9090&#x27;</span>,<span class="string">&#x27;localhost:8080&#x27;</span>,<span class="string">&#x27;localhost:9100&#x27;</span>,<span class="string">&#x27;192.168.1.60:8080&#x27;</span>,<span class="string">&#x27;192.168.1.60:9100&#x27;</span>,<span class="string">&#x27;192.168.1.50:8080&#x27;</span>,<span class="string">&#x27;192.168.1.50:9100&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>PS：这里制定了prometheus的监控项，包括它也会监控自己收集到的数据</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@docker01</span> ~]<span class="meta"># docker rm -f prometheus</span></span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//重新运行容器：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@docker01 ~]# docker run -d -p <span class="number">9090</span>:<span class="number">9090</span> --name prometheus --net=host -v <span class="regexp">/root/</span>prometheus.yml:<span class="regexp">/etc/</span>prometheus<span class="regexp">/prometheus.yml  prom/</span>prometheus</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//浏览器访问：192.168.1.70:9090</p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113034765.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113042951.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>PS:这里能够看到我们各个监控项</p>
+<p>3）在docker01上部署grafana服务，用来展示prometheus收集到的数据</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@docker01</span> ~]<span class="meta"># docker load  &lt; grafana.tar</span></span><br><span class="line">[root<span class="symbol">@docker01</span> ~]<span class="meta"># mkdir grafana-storage</span></span><br><span class="line">[root<span class="symbol">@docker01</span> ~]<span class="meta"># chmod 777 -R grafana-storage/</span></span><br><span class="line">[root<span class="symbol">@docker01</span> ~]<span class="meta"># docker run -d -p 3000:3000 --name grafana -v /root/grafana-storage:/var/lib/grafana -e <span class="string">&quot;GF_SECURITY_ADMIN_PASSWORD=123.com&quot;</span>  grafana/grafana</span></span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>浏览器访问：192.168.1.70:3000</p>
+<p>用户名：admin</p>
+<p>密码：123.com</p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113112811.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//创建数据源</p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113124826.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113134723.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113145890.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113154787.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>PS：看到这这提示，说明prometheus和grafana服务是正常连接的</p>
+<p>此时，虽然grafana收集到了数据，但怎么显示它，仍然是个问题，grafana支持自定义显示信息，不过要自定义起来非常麻烦，不过好在，grafana官方为我们提供了一些模板，来供我们使用</p>
+<p>Grafana官网：<a target="_blank" rel="noopener" href="https://grafana.com/">https://grafana.com</a></p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113216625.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//可以根据自己的喜好选择模板</p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113240626.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>选中一款模板后，然后，我们又两种方式可以套用这个模板</p>
+<p>第一种方式：通过JSON文件使用模板</p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113257298.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>下载完成之后，回到grangana控制台</p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113312342.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113332700.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113348825.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113354289.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>第二种方式：</p>
+<p>可以直接通过模板的ID号</p>
+<p><img src="https://img-blog.csdnimg.cn/2020011711341461.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113424502.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113429237.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113449846.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113500803.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<h1 id="配置AlertManager"><a href="#配置AlertManager" class="headerlink" title="配置AlertManager"></a><strong>配置AlertManager</strong></h1><p>AlertManager：用来接收prometheus发送的报警信息，并且执行设置好的报警方式、报警内容</p>
+<p>AlertManager.yml配置文件：</p>
+<p>global：全部配置，包括报警解决后的超时时间、SMTP相关配置、各种渠道通知的API地址等新消息</p>
+<p>route：用来设置报警的分发策略</p>
+<p>receivers：配置告警消息接收者信息</p>
+<p>inhibit_rules：抑制规则配置，当存在于另一组匹配的报警时，抑制规则将禁用一组匹配的警报</p>
+<p>//运行一个容器获取配置文件并进行配置</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">root@docker01</span> <span class="string">~</span>]<span class="comment"># docker  run  -d  --name  alertmanager  -p  9093：993  prom/alertmanager:latest</span></span><br><span class="line">[<span class="string">root@docker01</span> <span class="string">~</span>]<span class="comment"># docker  cp  alertmanager:/etc/alertmanager/alertmanager  ./</span></span><br><span class="line">[<span class="string">root@docker01</span> <span class="string">~</span>]<span class="comment"># cat alertmanager.yml </span></span><br><span class="line"><span class="attr">global:</span></span><br><span class="line">  <span class="attr">resolve_timeout:</span> <span class="string">5m</span></span><br><span class="line">  <span class="attr">smtp_from:</span> <span class="string">&#x27;2960824193@qq.com&#x27;</span></span><br><span class="line">  <span class="attr">smtp_smarthost:</span> <span class="string">&#x27;smtp.qq.com:465&#x27;</span></span><br><span class="line">  <span class="attr">smtp_auth_username:</span> <span class="string">&#x27;2960824193@qq.com&#x27;</span></span><br><span class="line">  <span class="attr">smtp_auth_password:</span> <span class="string">&#x27;aseydtzejqfqdhai&#x27;</span></span><br><span class="line">  <span class="attr">smtp_require_tls:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">smtp_hello:</span> <span class="string">&#x27;qq.com&#x27;</span></span><br><span class="line"><span class="attr">route:</span></span><br><span class="line">  <span class="attr">group_by:</span> [<span class="string">&#x27;alertname&#x27;</span>]</span><br><span class="line">  <span class="attr">group_wait:</span> <span class="string">5s</span></span><br><span class="line">  <span class="attr">group_interval:</span> <span class="string">5s</span></span><br><span class="line">  <span class="attr">repeat_interval:</span> <span class="string">5m</span></span><br><span class="line">  <span class="attr">receiver:</span> <span class="string">&#x27;email&#x27;</span></span><br><span class="line"><span class="attr">receivers:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">&#x27;email&#x27;</span></span><br><span class="line">  <span class="attr">email_configs:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">to:</span> <span class="string">&#x27;2960824193@qq.com&#x27;</span></span><br><span class="line">    <span class="attr">send_resolved:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">inhibit_rules:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">source_match:</span></span><br><span class="line">      <span class="attr">severity:</span> <span class="string">&#x27;critical&#x27;</span></span><br><span class="line">    <span class="attr">target_match:</span></span><br><span class="line">      <span class="attr">severity:</span> <span class="string">&#x27;warning&#x27;</span></span><br><span class="line">    <span class="attr">equal:</span> [<span class="string">&#x27;alertname&#x27;</span>, <span class="string">&#x27;dev&#x27;</span>, <span class="string">&#x27;instance&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//删除容器并重新运行</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[root@docker01 ~]</span># <span class="selector-tag">docker</span> <span class="selector-tag">rm</span>  <span class="selector-tag">-f</span>  <span class="selector-tag">alertmanager</span></span><br><span class="line"><span class="selector-attr">[root@docker01 ~]</span># <span class="selector-tag">docker</span>  <span class="selector-tag">run</span>  <span class="selector-tag">-d</span>  <span class="selector-tag">--name</span>  <span class="selector-tag">alertmanager</span>  <span class="selector-tag">-p</span>  9093<span class="selector-pseudo">:9093</span> <span class="selector-tag">-v</span>  /<span class="selector-tag">root</span>/<span class="selector-tag">alertmanager</span><span class="selector-class">.yml</span>:/<span class="selector-tag">etc</span>/<span class="selector-tag">alertmanager</span>/<span class="selector-tag">alertmanager</span><span class="selector-class">.yml</span>  <span class="selector-tag">prom</span>/<span class="selector-tag">alertmanager</span><span class="selector-pseudo">:latest</span></span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//浏览器访问：192.168.1.70:9093</p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113609401.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>Prometheus配置alertmanager报警规则</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">[root@docker01 ~]# <span class="built_in">mkdir</span>  -<span class="keyword">p</span>  prometheus/rules</span><br><span class="line">[root@docker01 ~]# <span class="keyword">cd</span>  prometheus/rules/</span><br><span class="line">[root@docker01 rules]# <span class="keyword">ls</span></span><br><span class="line">node-<span class="keyword">up</span>.rules</span><br><span class="line">[root@docker01 rules]# <span class="keyword">cat</span>  node-<span class="keyword">up</span>.rules </span><br><span class="line">group<span class="variable">s:</span></span><br><span class="line">- name: node-<span class="keyword">up</span></span><br><span class="line">  rule<span class="variable">s:</span></span><br><span class="line">  - aler<span class="variable">t:</span> node-<span class="keyword">up</span></span><br><span class="line">    expr: <span class="keyword">up</span>&#123;job=<span class="string">&quot;prometheus&quot;</span>&#125; == <span class="number">0</span>   //这个job要和prometheus里的job名称一样</span><br><span class="line">    <span class="keyword">for</span>: <span class="number">15</span>s</span><br><span class="line">    label<span class="variable">s:</span></span><br><span class="line">      severity: <span class="number">1</span></span><br><span class="line">      team: node</span><br><span class="line">    annotation<span class="variable">s:</span></span><br><span class="line">      summary: <span class="string">&quot;&#123;&#123; $labels.instance &#125;&#125; 已停止运行超过 15s！&quot;</span></span><br><span class="line">-----------------------------------------------------------------------------------------------</span><br><span class="line">/etc/prometheus $ <span class="keyword">cat</span>  prometheus.yml</span><br><span class="line">.......</span><br><span class="line">- job_name: <span class="string">&#x27;prometheus&#x27;</span></span><br><span class="line">//监控的内容是：</span><br><span class="line">    - target<span class="variable">s:</span> [<span class="string">&#x27;localhost:9090&#x27;</span>,<span class="string">&#x27;localhost:8080&#x27;</span>,<span class="string">&#x27;localhost:9100&#x27;</span>,<span class="string">&#x27;192.168.1.60:9100&#x27;</span>,<span class="string">&#x27;192.168.1.60:8080&#x27;</span>,<span class="string">&#x27;192.168.1.50:9100&#x27;</span>,<span class="string">&#x27;192.168.1.50:8080&#x27;</span>]</span><br><span class="line">.......</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//编辑prometheus的配置文件</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@docker01 ~]<span class="meta"># vim  prometheus.yml</span></span><br><span class="line"><span class="meta"># Alertmanager configuration</span></span><br><span class="line"><span class="symbol">alerting:</span></span><br><span class="line"><span class="symbol">  alertmanagers:</span></span><br><span class="line">  - static_configs:</span><br><span class="line">    - targets:</span><br><span class="line">       - <span class="number">192.168</span><span class="number">.1</span><span class="number">.70</span>:<span class="number">9093</span>   <span class="comment">//目标为alertmanager容器</span></span><br><span class="line"></span><br><span class="line"><span class="symbol">rule_files:</span></span><br><span class="line">  - <span class="string">&quot;/usr/local/prometheus/rules/*.rules&quot;</span>  <span class="comment">//路径是容器内的路径</span></span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//删除prometheus容器，重新挂载配置文件</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@docker01 ~]# docker  rm  -f  prometheus</span><br><span class="line">[root@docker01 ~]# docker run -d -p <span class="number">9090</span>:<span class="number">9090</span> --name prometheus --net=host -v <span class="regexp">/root/</span>prometheus.yml:<span class="regexp">/etc/</span>prometheus<span class="regexp">/prometheus.yml -v /</span>root<span class="regexp">/prometheus/</span>rules<span class="regexp">/node-up.rules:/u</span>sr<span class="regexp">/local/</span>prometheus<span class="regexp">/rules/</span>node-up.rules   prom/prometheus</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//浏览器访问：192.168.1.70:9090</p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113707203.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//随便关闭一个容器进行测试</p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113724396.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>AlertManager配置自定义邮件模板</p>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml">[root@docker01 ~]# mkdir  prometheus/alertmanager-tmpl</span></span><br><span class="line"><span class="xml">[root@docker01 ~]# cd  prometheus/alertmanager-tmpl/</span></span><br><span class="line"><span class="xml">[root@docker01 alertmanager.tmpl]# cat  email.tmpl </span></span><br><span class="line"><span class="template-variable">&#123;&#123; <span class="name">define</span> <span class="string">&quot;email.from&quot;</span> &#125;&#125;</span><span class="xml">2960824193@qq.com</span><span class="template-variable">&#123;&#123; <span class="name">end</span> &#125;&#125;</span><span class="xml">  //哪个邮箱来发送信息</span></span><br><span class="line"><span class="template-variable">&#123;&#123; <span class="name">define</span> <span class="string">&quot;email.to&quot;</span> &#125;&#125;</span><span class="xml">2960824193@qq.com</span><span class="template-variable">&#123;&#123; <span class="name">end</span> &#125;&#125;</span><span class="xml">  //发送到哪个邮箱</span></span><br><span class="line"><span class="template-variable">&#123;&#123; <span class="name">define</span> <span class="string">&quot;email.to.html&quot;</span> &#125;&#125;</span></span><br><span class="line"><span class="template-variable">&#123;&#123; <span class="name">range</span> .Alerts &#125;&#125;</span></span><br><span class="line"><span class="xml">=========start==========<span class="tag">&lt;<span class="name">br</span>&gt;</span></span></span><br><span class="line"><span class="xml">告警程序: prometheus_alert<span class="tag">&lt;<span class="name">br</span>&gt;</span></span></span><br><span class="line"><span class="xml">告警级别: </span><span class="template-variable">&#123;&#123; <span class="name">.Labels.severity</span> &#125;&#125;</span><span class="xml"> 级<span class="tag">&lt;<span class="name">br</span>&gt;</span></span></span><br><span class="line"><span class="xml">告警类型: </span><span class="template-variable">&#123;&#123; <span class="name">.Labels.alertname</span> &#125;&#125;</span><span class="xml"><span class="tag">&lt;<span class="name">br</span>&gt;</span></span></span><br><span class="line"><span class="xml">故障主机: </span><span class="template-variable">&#123;&#123; <span class="name">.Labels.instance</span> &#125;&#125;</span><span class="xml"><span class="tag">&lt;<span class="name">br</span>&gt;</span></span></span><br><span class="line"><span class="xml">告警主题: </span><span class="template-variable">&#123;&#123; <span class="name">.Annotations.summary</span> &#125;&#125;</span><span class="xml"><span class="tag">&lt;<span class="name">br</span>&gt;</span></span></span><br><span class="line"><span class="xml">触发时间: </span><span class="template-variable">&#123;&#123; <span class="name">.StartsAt.Format</span> <span class="string">&quot;2019-08-04 16:58:15&quot;</span> &#125;&#125;</span><span class="xml"> <span class="tag">&lt;<span class="name">br</span>&gt;</span></span></span><br><span class="line"><span class="xml">=========end==========<span class="tag">&lt;<span class="name">br</span>&gt;</span></span></span><br><span class="line"><span class="template-variable">&#123;&#123; <span class="name">end</span> &#125;&#125;</span></span><br><span class="line"><span class="template-variable">&#123;&#123; <span class="name">end</span> &#125;&#125;</span></span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//修改altermanager的配置文件</p>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml">[root@docker01 ~]# vim  alertmanager.yml</span></span><br><span class="line"><span class="xml">//在第九行添加</span></span><br><span class="line"><span class="xml">templates:</span></span><br><span class="line"><span class="xml">  - &#x27;/etc/alertmanager-tmpl/*.tmpl&#x27;  //容器内的路径</span></span><br><span class="line"><span class="xml">//修改第20行，和第21行：</span></span><br><span class="line"><span class="xml">  - to: &#x27;</span><span class="template-variable">&#123;&#123; <span class="name"><span class="builtin-name">template</span></span> <span class="string">&quot;email.to&quot;</span> &#125;&#125;</span><span class="xml">&#x27;  //必须和email.tmpl中的</span><span class="template-variable">&#123;&#123; <span class="name">define</span> “email.to”&#125;&#125;</span><span class="xml"> 2960824193@qq.com</span><span class="template-variable">&#123;&#123;<span class="name">end</span>&#125;&#125;</span><span class="xml">对应</span></span><br><span class="line"><span class="xml">    html: &#x27;</span><span class="template-variable">&#123;&#123; <span class="name"><span class="builtin-name">template</span></span> <span class="string">&quot;email.to.html&quot;</span> . &#125;&#125;</span><span class="xml">&#x27;  //必须和email.tml中的</span><span class="template-variable">&#123;&#123; <span class="name">define</span> <span class="string">&quot;email.to.html&quot;</span> &#125;&#125;</span><span class="xml">名字对应</span></span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//删除alertmanager容器，重新运行并挂载</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@docker01 ~]# docker  rm  -f  alertmanager</span><br><span class="line">[root@docker01 ~]# docker  run  -d  --name  alertmanager  -p  <span class="number">9093</span>:<span class="number">9093</span> -v  <span class="regexp">/root/</span>alertmanager.yml:<span class="regexp">/etc/</span>alertmanager<span class="regexp">/alertmanager.yml -v /</span>root<span class="regexp">/prometheus/</span>alertmanager-tmpl<span class="regexp">/:/</span>etc<span class="regexp">/altermanager-tmpl  prom/</span>alertmanager:latest</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>//停止容器测试</p>
+<p><img src="https://img-blog.csdnimg.cn/20200117113824286.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTYzNjcwMg==,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="阿怪 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="阿怪 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿怪
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://aguai.fun/2020/01/24/Prometheus%EF%BC%88%E6%99%AE%E7%BD%97%E7%B1%B3%E4%BF%AE%E6%96%AF%EF%BC%89/" title="Prometheus（普罗米修斯）">https://aguai.fun/2020/01/24/Prometheus（普罗米修斯）/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+  
+</div>
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/k8s/" rel="tag"># k8s</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2020/01/24/Docker%E5%AE%9E%E7%8E%B0%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0/" rel="next" title="Docker实现服务发现">
+      Docker实现服务发现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Prometheus%EF%BC%88%E6%99%AE%E7%BD%97%E7%B1%B3%E4%BF%AE%E6%96%AF%EF%BC%89"><span class="nav-text">Prometheus（普罗米修斯）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEAlertManager"><span class="nav-text">配置AlertManager</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="阿怪"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">阿怪</p>
+  <div class="site-description" itemprop="description">直到这一刻微笑着说话为止，我至少留下了一公升眼泪</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">103</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/a_guai_" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;a_guai_" rel="noopener" target="_blank"><i class="crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="阿怪"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">博客</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">574k</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/clicklove.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
+
